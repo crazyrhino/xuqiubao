@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/select_video.css"/>
+		<style>
+		</style>
+	</head>
+	<body>
+		<div class="list">
+			<div v-for="(item,index) in list" class="img_div" tapmode="meui_click" v-on:click="fnOpenPreview(item)">
+				<img class="img" v-bind:src="item.thumbPath" alt="" />
+				<div class="duration" v-text="item.formatDuration"></div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript">
+		var vue;
+        var totalVideoNum = '';
+        var currentVideoNum = '';
+		apiready = function() {
+			//fnRefreshOpen();
+            if (api.systemType ==='ios'){
+                $api.fixStatusBar($api.dom('.list'));
+            }
+            fnInitVue();
+            fnInitEventListener();
+			fnScanPictures();
+            fnBackListener(fnBack);
+            addBottomListener(fnGetMoreVideos);
+		};
+		function fnInitVue() {
+			vue = new Vue({
+				el : '.list',
+				data : {
+					list : []
+				},
+				methods : {
+					fnOpenPreview : function(item) {
+                        api.execScript({
+                            name : 'root',
+                            script: 'fnCloseRecord();'
+                        });
+						api.execScript({
+							name : 'video_record',
+	                        script: 'fnCloseRecord();'
+                        });
+                        item.thumbnailPath = item.thumbPath;
+						fnOpenWin('video_preview',null,{
+							video_record : item,
+							recruitId : api.pageParam.recruitId,
+				        	topicId : api.pageParam.topicId,
+							topicName : api.pageParam.topicName,
+                            time:item.time,
+                            taskId:api.pageParam.taskId
+						});
+					}
+				}
+			});
+		}
+        function fnInitEventListener() {
+            console.log("fnInitEventListener")
+            api.addEventListener({
+                name : 'NaviteCallAPICloudMethod'
+            }, function(rets, err) {
+                console.log(JSON.stringify(rets))
+                var ret = rets.value;
+                if (ret.type == 9) {
+                    if (ret.success == 1) {
+                        fnGetVideo();
+                    } else {
+                        // fnToast('没有相应权限', 'middle');
+                        api.alert({
+                            title: '提示',
+                            msg: '没有相机权限，请进入设置添加应用的相机/相册权限',
+                            buttons: ['确定']
+                        }, function (ret, err) {
+                            api.closeWin();
+                        });
+                    }
+                }
+            });
+        }
+		function fnScanPictures() {
+			api.showProgress();
+			var UIAlbumBrowser= api.require('UIAlbumBrowser');
+            if (api.systemType === 'ios') {
+                UIAlbumBrowser.requestAlbumPermissions({}, function (ret, err) {
+                    if (ret.isAccessPermissions) {
+                        fnScanGetVideo()
+                    } else {
+                        api.alert({
+                            title: '提示',
+                            msg: '没有相机权限，请进入设置添加应用的相机/相册权限',
+                            buttons: ['确定']
+                        }, function (ret, err) {
+                            api.closeWin();
+                        });
+                    }
+                });
+            }else {
+                fnScanGetVideo()
+            }
+		}
+        function fnScanGetVideo() {
+            if (api.systemType === 'android') {
+                api.sendEvent({
+                    name: 'APICloudCallNaviteMethod',
+                    extra: {
+                        type: 9,          // 权限管理
+                        canCallBack: 1,          // 返回1时，说明有权限，可进行下一步操作
+                        command: ['android.permission.WRITE_EXTERNAL_STORAGE','android.permission.READ_EXTERNAL_STORAGE','android.permission.CAMERA']       // 需要哪些权限就在数组中传过来
+                    }
+                });
+            }else {
+                fnGetVideo();
+            }
+        }
+		function fnAppendData(oldArr, data) {
+			for (var i = 0; i < data.length; i++) {
+				data[i].formatDuration = fnDuration(data[i].duration);
+				data[i].time = fnTime(data[i].duration);
+				oldArr.push(data[i]);
+			}
+		}
+		function fnGetVideo() {
+            var UIAlbumBrowser= api.require('UIAlbumBrowser');
+            UIAlbumBrowser.scan({
+                type : 'video',
+                count : 30,
+                sort : {
+                    key : 'time',
+                    order : 'desc'
+                },
+                thumbnail : {
+                    w : 300,
+                    h : 300
+                }
+            }, function(ret) {
+                api.hideProgress();
+                if (ret) {
+                    fnAppendData(vue.list, ret.list);
+                    totalVideoNum = ret.total;
+                    currentVideoNum = ret.list.length;
+                    fnSetDisplay('.list', true);
+                }
+            });
+        }
+        
+        function fnGetMoreVideos() {
+            if(totalVideoNum > currentVideoNum) {
+                var UIAlbumBrowser = api.require('UIAlbumBrowser');
+                UIAlbumBrowser.fetch(function (ret, err) {
+	                if (ret) {
+	                fnAppendData(vue.list, ret.list);
+                       /* var videoList = ret.list;
+                        for(var j = 0;j < videoList.length; j++){
+                            var fs = api.require('fs');
+                            var ret = fs.getAttributeSync({
+                                path : videoList[j].path
+                            });
+                            if (ret.status) {
+                                if (ret.attribute.size / (1024 *1024) > 30) {
+                                     videoList[j].videoSize = true;
+                                }else{
+                                    videoList[j].videoSize = false;
+                                }
+                            }
+                        }
+                    fnAppendData(vue.list, videoList);*/
+	            }
+	         });
+            }else{
+                fnToast("没有更多视频",'middle');
+            }
+		}
+        
+		function fnDuration(duration) {
+			if (duration) {
+				duration = parseInt(duration/1000);
+				var second = parseInt(duration) % 60;
+				var min = parseInt(duration / 60);
+				if(min<10){
+					min = '0'+min;
+				}
+				if(second<10){
+					second = '0'+second;
+				}
+				return min + ":" + second;
+			}
+			return '00:00';
+		}
+		function fnTime(duration) {
+            if (duration) {
+                var second = parseInt(duration/1000);
+                return second;
+            }
+            return '0';
+        }
+	</script>
+</html>

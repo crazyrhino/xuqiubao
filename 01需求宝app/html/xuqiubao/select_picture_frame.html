@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/select_picture.css"/>
+		<style>
+			.list {
+				-webkit-overflow-scrolling: touch;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="list">
+			<div v-for="(item,index) in list" class="img_div" tapmode="meui_click" v-on:click="fnOpenPreview(item)">
+				<img class="img" v-bind:src="item.thumbPath" alt="" />
+				<div v-if="!item.selected" class="select" tapmode="meui_click" v-on:click.stop="fnSelect(item)"></div>
+				<div v-if="item.selected" class="selected" v-text="item.select_index" tapmode="meui_click" v-on:click.stop="fnSelect(item)"></div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript">
+		var vue;
+		var selectedImgs = [];
+		var totalImageNum = '';
+		var currentImageNum = '';
+		var newObject = '';
+		var arrs = {}
+		apiready = function() {
+			//fnRefreshOpen();
+			fnSysHeaderStyle();
+			fnInitVue();
+			fnScanPictures();
+			addBottomListener(fnGetMorePictures);
+			api.writeFile({
+				path : api.boxDir + '/selectedImgs.txt',
+				data : JSON.stringify(selectedImgs)
+			});
+			// 每次点击获取到的数组
+			newObject = api.readFile({
+				sync : true,
+				path : api.boxDir + '/selectedImgs.txt'
+			})
+			// selectedImgs = newObject
+			// alert(JSON.stringify(api.pageParam))
+			// console.log(JSON.stringify(api.pageParam))
+			arrs = api.pageParam.imgsLists
+			// arrs = JSON.parse(newObject)
+			if(arrs.length == 0){
+				
+			}else{
+				for(var i=0;i<arrs.length;i++){
+					selectedImgs.push(arrs[i])
+				}
+			}
+		};
+		function fnInitVue() {
+			vue = new Vue({
+				el : '.list',
+				data : {
+					list : []
+				},
+				methods : {
+					fnOpenPreview : function(item) {
+						fnOpenPreview(item);
+					},
+					fnSelect : function(item) {
+							for (var i = 0; i < vue.list.length; i++) {
+								if (item.path == vue.list[i].path) {
+									if (item.selected == true) {//如果现实相同的话走这里
+										this.$set(this.$data.list[i], 'selected', false); //设置下为false第二次可以不触发
+										fnDeleteSelect(item);//循环素组删掉相同的那个
+										for (var i = 0; i < vue.list.length; i++) {
+											if (vue.list[i].selected) {
+												for (var j = 0; j < selectedImgs.length; j++) {
+													if (vue.list[i].path == selectedImgs[j].path) {
+														this.$set(this.$data.list[i], 'select_index', j + 1);
+														break;
+													}
+												}
+											}
+										}
+									} else {
+										if(selectedImgs.length == 3){//用本身的数组限制
+											fnToast('最多只能选择3张图片');
+											return;
+										}else{
+											this.$set(this.$data.list[i], 'selected', true);//点击不同的让属性改变
+											this.$set(this.$data.list[i], 'select_index', selectedImgs.length + 1);//点击后让数组增加
+											selectedImgs.push(vue.list[i]);
+										}
+									}
+									break;
+								}
+							}
+						api.writeFile({
+							path : api.boxDir + '/selectedImgs.txt',
+							data : JSON.stringify(selectedImgs)
+						}, function(ret, err) {
+							api.writeFile({
+								path : api.boxDir + '/imgs.txt',
+								data : JSON.stringify(vue.list)
+							}, function(ret, err) {
+								fnSelectNum();//完成的数字
+							});
+						});
+					}
+				}
+			});
+		}
+
+		function fnResetData() {
+			selectedImgs = JSON.parse(api.readFile({
+				sync : true,
+				path : api.boxDir + '/selectedImgs.txt'
+			}));
+			var tmpList = vue.list;
+			for (var i = 0; i < tmpList.length; i++) {
+				tmpList[i].selected = false;
+				tmpList[i].select_index = 0;
+				for (var j = 0; j < selectedImgs.length; j++) {
+					if (tmpList[i].path == selectedImgs[j].path) {
+						tmpList[i].selected = true;
+						tmpList[i].select_index = j + 1;
+						break;
+					}
+				}
+			}
+			vue.list = tmpList;
+			fnSelectNum();
+			api.closeWin({
+				name : 'select_picture_preview'
+			});
+		}
+
+		function fnOpenPreview(item) {
+			api.writeFile({
+				path : api.boxDir + '/imgs.txt',
+				data : JSON.stringify(vue.list)
+			}, function(ret, err) {
+				var activeIndex = 0;
+				for (var i = 0; i < vue.list.length; i++) {
+					if (vue.list[i].path == item.path) {
+						activeIndex = i;
+						break;
+					}
+				}
+				fnOpenWin('select_picture_preview', null, {
+					activeIndex : activeIndex,
+					winName : api.pageParam.winName,
+					frameName : api.pageParam.frameName,
+					canSelectNum : api.pageParam.canSelectNum,
+					suppleAndAwm:api.pageParam.titleName
+				});
+			});
+		}
+
+		function fnSelectNum() {
+			api.execScript({
+				name : 'select_picture',
+				script : 'fnSelectNum(' + selectedImgs.length + ');'
+			});
+		}
+
+		function fnDeleteSelect(item) {
+			for (var i = 0; i < selectedImgs.length; i++) {
+				if (item.path == selectedImgs[i].path) {
+					selectedImgs.splice(i, 1);
+					break;
+				}
+			}
+		}
+
+		function fnScanPictures() {
+			var UIAlbumBrowser = api.require('UIAlbumBrowser');
+			if (api.systemType === 'ios') {
+				UIAlbumBrowser.requestAlbumPermissions({}, function(ret, err) {
+					if (ret.isAccessPermissions) {
+						fnScanGetPictures()
+					} else {
+						api.alert({
+							title : '提示',
+							msg : '没有相机权限，请进入设置添加应用的相机/相册权限',
+							buttons : ['确定']
+						}, function(ret, err) {
+							api.closeWin();
+						});
+					}
+				});
+			} else {
+				fnScanGetPictures()
+			}
+		}
+
+		function fnScanGetPictures() {
+			fnGetPicture();
+		}
+
+		function fnGetPicture() {
+			var UIAlbumBrowser = api.require('UIAlbumBrowser');
+			var w = 300;
+			var h = 300;
+			api.showProgress();
+			UIAlbumBrowser.scan({
+				type : 'image',
+				count : 1,
+				sort : {
+					key : 'time',
+					order : 'desc'
+				},
+				thumbnail : {
+					w : w,
+					h : h
+				}
+			}, function(ret, err) {
+				api.hideProgress();
+				if (ret) {
+					totalImageNum = ret.total;
+					currentImageNum = ret.list.length;
+					fnAppendData(vue.list, ret.list);
+					fnFetch(1);
+					api.writeFile({
+						path : api.boxDir + '/imgs.txt',
+						data : JSON.stringify(vue.list)
+					}, function(ret, err) {
+						fnSetDisplay('.list', true);
+					});
+				}
+			});
+		}
+		
+		function fnFetch(index){
+			if(index == 30){
+				index = 1;
+				api.writeFile({
+						path : api.boxDir + '/imgs.txt',
+						data : JSON.stringify(vue.list)
+					}, function(ret, err) {
+						fnSetDisplay('.list', true);
+					});
+				return;
+			}
+			if (totalImageNum > currentImageNum) {
+				index++;
+				var UIAlbumBrowser = api.require('UIAlbumBrowser');
+				if(folderId == -1){
+					UIAlbumBrowser.fetch(function(ret, err) {
+						if (ret) {
+							currentImageNum += ret.list.length;
+							fnAppendData(vue.list, ret.list);
+							fnFetch(index);
+						}
+					});
+				}else {
+					UIAlbumBrowser.fetchGroup(function(ret, err) {
+					    if (ret) {
+					        currentImageNum += ret.list.length;
+							fnAppendData(vue.list, ret.list);
+							fnFetch(index);
+					    }
+					});
+				}
+			} else {
+				api.writeFile({
+						path : api.boxDir + '/imgs.txt',
+						data : JSON.stringify(vue.list)
+					}, function(ret, err) {
+						fnSetDisplay('.list', true);
+					});
+				fnToast("没有更多图片", false);
+			}
+		}
+		
+		function fnFetchGroup(index){
+			if(index == 30){
+				index = 1;
+				api.writeFile({
+						path : api.boxDir + '/imgs.txt',
+						data : JSON.stringify(vue.list)
+					}, function(ret, err) {
+						fnSetDisplay('.list', true);
+					});
+				return;
+			}
+			if (totalImageNum > currentImageNum) {
+				index++;
+				var UIAlbumBrowser = api.require('UIAlbumBrowser');
+				if(folderId == -1){
+					UIAlbumBrowser.fetchGroup(function(ret, err) {
+						if (ret) {
+							currentImageNum += ret.list.length;
+							fnAppendData(vue.list, ret.list);
+							fnFetch(index);
+						}
+					});
+				}else {
+					UIAlbumBrowser.fetchGroup(function(ret, err) {
+					    if (ret) {
+					        currentImageNum += ret.list.length;
+							fnAppendData(vue.list, ret.list);
+							fnFetch(index);
+					    }
+					});
+				}
+			} else {
+				api.writeFile({
+						path : api.boxDir + '/imgs.txt',
+						data : JSON.stringify(vue.list)
+					}, function(ret, err) {
+						fnSetDisplay('.list', true);
+					});
+				fnToast("没有更多图片", false);
+			}
+		}
+
+		function fnGetMorePictures() {
+			if (totalImageNum > currentImageNum) {
+				var UIAlbumBrowser = api.require('UIAlbumBrowser');
+				if(folderId == -1){
+					fnFetch(1);
+				}else {
+					fnFetchGroup(1);
+				}
+			} else {
+				fnToast("没有更多图片", false);
+			}
+		}
+
+		function fnAppendData(oldArr, data) {
+			for (var i = 0; i < data.length; i++) {
+				var item = data[i];
+				item["selected"] = false;
+				item["select_index"] = 0;
+				oldArr.push(item);
+			}
+			return oldArr;
+		}
+
+		var folderId = -1;
+		function getFolderPhoto(name, id) {
+			folderId = id;
+			api.showProgress();
+			if(id == -1){
+				vue.list = [];
+				fnGetPicture();
+			}else{
+				if (api.systemType == 'ios') {
+					fnGetPhotos(name, id);
+				}else{
+					var UIAlbumBrowser = api.require('UIAlbumBrowser');
+					UIAlbumBrowser.scanGroups({
+						type : 'image',
+						thumbnail : {
+							w : 300,
+							h : 300
+						}
+					}, function(ret) {
+						if (ret) {
+							fnGetPhotos(name, id);
+						}
+					});
+				}
+			}
+		}
+
+		function fnGetPhotos(name, id) {
+			var w = 300;
+			var h = 300;
+			var UIAlbumBrowser = api.require('UIAlbumBrowser');
+			UIAlbumBrowser.scanByGroupId({
+				groupId : id,
+				type : 'image',
+				count : 1,
+				sort : {
+					key : 'time',
+					order : 'desc'
+				},
+				thumbnail : {
+					w : w,
+					h : h
+				}
+			}, function(ret) {
+				api.hideProgress();
+				if (ret) {
+					totalImageNum = ret.total;
+					currentImageNum = ret.list.length;
+					vue.list = [];
+					fnAppendData(vue.list, ret.list);
+					api.writeFile({
+						path : api.boxDir + '/imgs.txt',
+						data : JSON.stringify(vue.list)
+					}, function(ret, err) {
+						fnSetDisplay('.list', true);
+					});
+					fnFetchGroup(1);
+				}
+			});
+		}
+	</script>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <style>
+        body, html {
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+        }
+
+        .preview_div {
+            position: absolute;
+            left: 0;
+            bottom: 26px;
+            width: 100%;
+            height: 40px;
+        }
+
+        .back_btn {
+            position: absolute;
+            left: 16px;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            background: url(../../image/edit_topic/video_back.png) no-repeat center;
+            background-size: 48px;
+            border-radius: 40px;
+        }
+
+        .confirm_btn {
+            position: absolute;
+            right: 16px;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            background: url(../../image/edit_topic/video_confirm.png) no-repeat center;
+            background-size: 48px;
+            border-radius: 40px;
+        }
+    </style>
+</head>
+<body>
+<div class="preview_div">
+    <div class="back_btn" tapmode="meui_click" onclick="fnBack()"></div>
+    <div class="confirm_btn" tapmode="meui_click" onclick="fnConfirm()"></div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript">
+    var videoSize;
+    apiready = function () {
+        //fnRefreshOpen();
+        if (api.pageParam.onlyPreiew) {
+            fnSetDisplay('.confirm_btn', false);
+        }
+        fnGetVideoSize();
+    };
+
+    function fnGetVideoSize() {
+        var fs = api.require('fs');
+        var ret;
+        if (api.systemType === 'ios') {
+            ret = {
+                status:true,
+                attribute:{
+                    size:api.pageParam.video_record.fileSize
+                }
+            }
+        }else {
+            ret = fs.getAttributeSync({
+                path: api.pageParam.video_record.path
+            });
+        }
+        if (ret.status) {
+            if (ret.attribute.size / (1024 * 1024) > 30) {
+                videoSize = true;
+            } else {
+                videoSize = false;
+            }
+        }
+    }
+
+    function fnConfirm() {
+        // if (parseInt(api.pageParam.video_record.time) >= 5) {
+        if(videoSize){
+            fnToast('请上传30M以内的视频', 'middle');
+            return;
+        }else{
+            api.execScript({
+                name: api.winName,
+                script: 'fnClosePlayer();'
+            });
+            fnOpenWin('edit_video_topic', null, {
+                record_video: api.pageParam.video_record,
+                winName: api.winName,
+                frameName: api.pageParam.frameName,
+                recruitId: api.pageParam.recruitId,
+                topicId: api.pageParam.topicId,
+                topicName: api.pageParam.topicName,
+                taskId : api.pageParam.taskId
+            });
+        }
+        // }else {
+        // fnToast("视频长度不能小于5秒")
+        // }
+    }
+</script>
+</html>

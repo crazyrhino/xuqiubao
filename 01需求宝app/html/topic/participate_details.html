@@ -1,0 +1,612 @@
+<!DOCTYPE HTML>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>参与话题详情页面</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/participate_details.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style type="text/css">
+			.htmlCon img {
+				max-width: 100%;
+				width: 100%;
+				height: auto;
+			}
+			
+			#choose {
+				position: fixed;
+				bottom: 0;
+				left: 0;
+				z-index: 10000;
+				background-color: white;
+				width: 100%;
+				height: 43px;
+				background: #F6F6F6;
+			}
+			
+			#footer {
+				box-sizing: border-box;
+				border-top: 1px solid #eee;
+				padding: 6px 16px;
+				position: fixed;
+				bottom: 0;
+				left: 0;
+				z-index: 10000;
+				background-color: white;
+				width: 100%;
+				min-height: 44px;
+				max-height: 300px;
+			}
+			
+			.con:empty:before {
+				content: attr(placeholder);
+				font-size: 12px;
+				color: #999999;
+			}
+			
+			.con:focus {
+				content: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<section id="app">
+			<div v-if="pageData.recruitId" class="details_top">
+				<div class="top_img"><img src="../" alt=""></div>
+				<div class="top_cont"><span>8000名</span>《我的话题名称话题》——征集</div>
+			</div>
+			<div class="details_conts">
+				<div class="details_topic">{{pageData.title}}</div>
+				<div class="details_actor">
+					<div class="actor_header"><img :src="pageData.userImg" alt=""></div>
+					<div class="actor_conts">
+						<p class="actor_name">{{pageData.userName}}</p>
+						<p class="actor_come">{{pageData.summary}}<span>{{formatDateTime(pageData.createDate)}}</span></p>
+					</div>
+					<div class="follow"><img src="../../image/rank/follow.png" alt=""></div>
+				</div>
+			</div>
+			<div class="details_conts htmlCon" v-html="pageData.storyContent">
+
+			</div>
+			<div class="details_conts">
+				<div class="commodities">
+					<div v-for="item in productList" class="commodity_list">
+						<div class="commodity_img"><img :src="item.image" alt=""></div>
+						<div class="commodity_cont">
+							<p class="comm_name">{{item.title}}</p>
+							<p class="comm_detail">{{item.name}}</p>
+							<div class="carefully">
+								<span class="now">￥2{{item.price}}</span>
+								<a class="gobuy">去购买</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div v-if="pageData.tipNumber>0" class="details_conts padd_23">
+				<div class="reward"><img src="../../image/mine/shang@3x.png" alt=""></div>
+				<div class="money">
+					<a v-if="pageData.tipAmount < 1000000">{{pageData.tipAmount}}</a>
+					<a v-else>999999+</a>
+				</div>
+				<div class="position_img">
+					<div class="imgss">
+						<img src="../../image/mine/zan.png" alt="">
+						<img src="../../image/mine/glod.png" alt="">
+						<img src="../../image/test1.jpeg" alt="">
+					</div>
+					<span v-if="pageDatatip.Number < 1000">{{pageDatatip.Number}}次打赏...</span>
+					<span v-else>999+次打赏...</span>
+				</div>
+			</div>
+			<div v-if='pageData.commentNumber>0' class="details_conts padd_0">
+				<div class="comment_sum">
+					<span>评论（{{pageData.commentNumber}}）</span>
+				</div>
+				<div class="commentes">
+					<div class="comment_list">
+						<div class="comment_img"><img src="../../image/mine/glod.png" alt=""></div>
+						<div class="comment_cont">
+							<div class="comm_top">
+								<span class="top_name">凯文扬</span>
+								<span class="top_num"><img src="../../image/mine/zan.png" alt="">6666</span>
+							</div>
+							<p class="comm_center">还是太套路了，不过是主角换成黑人。又一部扩大版图的棋子作品而已，动作场面和剧情亮点都很有限。</p>
+							<div class="comm_bot">
+								<span class="bot_time">1小时前</span>
+								<a class="btn_replay">10回复</a>
+							</div>
+						</div>
+					</div>
+					<div class="comment_list">
+						<div class="comment_img"><img src="../../image/mine/glod.png" alt=""></div>
+						<div class="comment_cont">
+							<div class="comm_top">
+								<span class="top_name">凯文扬</span>
+								<span class="top_num"><img src="../../image/mine/zan.png" alt="">6666</span>
+							</div>
+							<p class="comm_center">还是太套路了，不过是主角换成黑人。又一部扩大版图的棋子作品而已，动作场面和剧情亮点都很有限。</p>
+							<div class="comm_bot">
+								<span class="bot_time">1小时前</span>
+								<a class="btn_replay">10回复</a>
+							</div>
+						</div>
+					</div>
+					<div class="comment_list">
+						<div class="comment_img"><img src="../../image/mine/glod.png" alt=""></div>
+						<div class="comment_cont">
+							<div class="comm_top">
+								<span class="top_name">凯文扬</span>
+								<span class="top_num"><img src="../../image/mine/zan.png" alt="">6666</span>
+							</div>
+							<p class="comm_center">还是太套路了，不过是主角换成黑人。又一部扩大版图的棋子作品而已，动作场面和剧情亮点都很有限。</p>
+							<div class="comm_bot">
+								<span class="bot_time">1小时前</span>
+								<a class="btn_replay">10回复</a>
+							</div>
+						</div>
+					</div>
+					<div class="more">
+						<img src="../../image/rank/more.png" alt="">更多...
+					</div>
+				</div>
+			</div>
+			<!-- 相关推荐 -->
+			<section class="list_wrap">
+				<div class="comment-list-title">相关推荐</div>
+				<div v-for="item in relativeList" class="item">
+					<div v-if="fnImgCount(item) == 1 && item.dataTypeNew != 3" class="list">
+						<div class="flex_container">
+							<div>
+								<div class="title line2" v-text="item.title"></div>
+								<div class="describe line2" v-text="item.summary"></div>
+							</div>
+							<div class="one_img">
+								<img v-bind:src="item.storyImgs[0]" />
+							</div>
+						</div>
+						<div class="flex_container bottom_bar">
+							<div class="flex_container left_bar">
+								<img v-if="item.userHead" class="writer_headIcon" v-bind:src="item.userHead" alt="" />
+								<div v-if="item.userName" class="writer_name" v-text="item.userName">
+								</div>
+							</div>
+							<div class="right_bar flex_container">
+								<div class="bottom_icon icon1"></div>
+								<div class="bottom_num" v-text="item.browserNumber"></div>
+								<div class="bottom_icon icon2"></div>
+								<div class="bottom_num" v-text="item.commentNumber"></div>
+								<div class="bottom_icon icon3"></div>
+								<div class="bottom_num" v-text="item.praiseNumber"></div>
+							</div>
+						</div>
+					</div>
+					<div v-if="fnImgCount(item) == 2 && item.dataTypeNew != 3" class="list">
+						<div class="flex_container imgs_title_wrap">
+							<div class="title2 noBreak" v-text="item.title"></div>
+							<div class="describe2 noBreak" v-text="item.summary"></div>
+							<div class="two_img flex_container">
+								<div>
+									<img class="img_first" v-bind:src="item.storyImgs[0]" />
+								</div>
+								<div>
+									<img class="img_second" v-bind:src="item.storyImgs[1]" />
+								</div>
+							</div>
+						</div>
+						<div class="flex_container bottom_bar">
+							<div class="flex_container left_bar">
+								<img v-if="item.userHead" class="writer_headIcon" v-bind:src="item.userHead" alt="" />
+								<div v-if="item.userName" class="writer_name" v-text="item.userName">
+								</div>
+							</div>
+							<div class="right_bar flex_container">
+								<div class="bottom_icon icon1"></div>
+								<div class="bottom_num" v-text="item.browserNumber"></div>
+								<div class="bottom_icon icon2"></div>
+								<div class="bottom_num" v-text="item.commentNumber"></div>
+								<div class="bottom_icon icon3"></div>
+								<div class="bottom_num" v-text="item.praiseNumber"></div>
+							</div>
+						</div>
+					</div>
+					<div v-if="fnImgCount(item) >= 3 && item.dataTypeNew != 3" class="list">
+						<div class="flex_container imgs_title_wrap">
+							<div class="title2 noBreak" v-text="item.title"></div>
+							<div class="describe2 noBreak" v-text="item.summary"></div>
+							<div class="three_img flex_container">
+								<img class="three_img_first" v-bind:src="item.storyImgs[0]" />
+								<div class="right_twoImgs">
+									<img class="img_second" v-bind:src="item.storyImgs[1]" />
+									<img class="img_third" v-bind:src="item.storyImgs[2]" />
+								</div>
+							</div>
+						</div>
+						<div class="flex_container bottom_bar">
+							<div class="flex_container left_bar">
+								<img v-if="item.userHead" class="writer_headIcon" v-bind:src="item.userHead" alt="" />
+								<div v-if="item.userName" class="writer_name" v-text="item.userName">
+								</div>
+							</div>
+							<div class="right_bar flex_container">
+								<div class="bottom_icon icon1"></div>
+								<div class="bottom_num" v-text="item.browserNumber"></div>
+								<div class="bottom_icon icon2"></div>
+								<div class="bottom_num" v-text="item.commentNumber"></div>
+								<div class="bottom_icon icon3"></div>
+								<div class="bottom_num" v-text="item.praiseNumber"></div>
+							</div>
+						</div>
+					</div>
+					<div v-if="fnImgCount(item) == 0 && item.dataTypeNew != 3" class="list">
+						<div class="flex_container imgs_title_wrap">
+							<div class="title2 noBreak" v-text="item.title"></div>
+							<div class="describe2 noBreak" v-text="item.summary"></div>
+							<div class="readMoreTips">
+								查看全文
+							</div>
+						</div>
+						<div class="flex_container bottom_bar">
+							<div class="flex_container left_bar">
+								<img v-if="item.userHead" class="writer_headIcon" v-bind:src="item.userHead" alt="" />
+								<div v-if="item.userName" class="writer_name" v-text="item.userName">
+								</div>
+							</div>
+							<div class="right_bar flex_container">
+								<div class="bottom_icon icon1"></div>
+								<div class="bottom_num" v-text="item.browserNumber"></div>
+								<div class="bottom_icon icon2"></div>
+								<div class="bottom_num" v-text="item.commentNumber"></div>
+								<div class="bottom_icon icon3"></div>
+								<div class="bottom_num" v-text="item.praiseNumber"></div>
+							</div>
+						</div>
+					</div>
+					<div v-if="item.dataTypeNew == 3" class="list">
+						<div class="video_div">
+							<div class="video_title meui_2_line" v-text="item.title"></div>
+							<img class="video_img" v-bind:src="item.mainImg" alt="" />
+							<img class="play_btn" src="../../image/edit_topic/play.png" alt="" />
+							<div class="video_time">02:15</div>
+						</div>
+						<div class="flex_container bottom_bar">
+							<div class="flex_container left_bar">
+								<img v-if="item.userHead" class="writer_headIcon" v-bind:src="item.userHead" alt="" />
+								<div v-if="item.userName" class="writer_name" v-text="item.userName">
+								</div>
+							</div>
+							<div class="right_bar flex_container">
+								<div class="bottom_icon icon1"></div>
+								<div class="bottom_num" v-text="item.browserNumber"></div>
+								<div class="bottom_icon icon2"></div>
+								<div class="bottom_num" v-text="item.commentNumber"></div>
+								<div class="bottom_icon icon3"></div>
+								<div class="bottom_num" v-text="item.praiseNumber"></div>
+							</div>
+						</div>
+					</div>
+					<div class="device_bar" style="height: 4px;"></div>
+				</div>
+			</section>
+			<!--输入框-->
+			<div :style="{bottom:inputBottom}" id="footer" class="topic_details_move_footer list-flex list-flex-center">
+				<div v-bind:class="{addComment:inputLong}" class="talk con" @input='check()' contenteditable="true" placeholder='来说点什么吧'></div>
+				<div v-if='!inputLong' class="operation list-flex-flex1 list-flex">
+					<span class="item likes list-flex-flex1">
+            <span class="num">6666</span>
+					</span>
+					<span class="item heart list-flex-flex1"></span>
+					<span class="item money list-flex-flex1"></span>
+				</div>
+				<div v-if='inputLong' :style="{color:sendFlag?'red':'black'}" class="post">
+					发布
+				</div>
+			</div>
+			<!--相册 表情条-->
+			<div v-if='cameraBarShow' :style="{bottom:cameraBarBottom}" id="choose" class="topic_details_move_footer list-flex list-flex-center">
+				<div class="operation list-flex">
+					<div id="chooseImg"></div>
+					<div v-if="chooseImgShow" @click='openEmoji' id="emo"></div>
+					<div v-if="!chooseImgShow" @click='openKb' id="kb"></div>
+
+				</div>
+			</div>
+			<!--表情键盘-->
+			<div v-if='emojiFlag' :style='{height:emojiHeight}' style="width:100%;background-color: white;position: fixed;bottom: 0;z-index: 10000000;">
+
+			</div>
+		</section>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+
+	<script type="text/javascript">
+		var vm = null;
+		var keyBoardMgr = null;
+		apiready = function() {
+			//fnRefreshOpen();
+            fnBackListener(fnBack)
+			fnSetHeaderStyle();
+			initVm()
+			vm.init();
+			keyBoardMgr = api.require("keyBoardMgr");
+			keyBoardMgr.addKBListener(function(ret, err) {
+
+			});
+		}
+
+		function initVm() {
+			vm = new Vue({
+				el: '#app',
+				data: {
+					kbShowFlag: false,
+					sendFlag: false,
+					emojiFlag: false,
+					stillH: '', //键盘落下时输入框需要保持的高度
+					//分割，以上为实现键盘功能
+					id: '',
+					pageIndex: 1,
+					pageSize: 10,
+					pageData: {},
+					productList: null,
+					relativeList: null
+				},
+				computed: {
+					inputBottom: function() {
+						if(this.kbShowFlag) {
+							if(this.emojiFlag) {
+								return "43px";
+							} else {
+								return "43px";
+							}
+						} else {
+							if(this.emojiFlag) {
+								return(43 + this.stillH) + 'px';
+							} else {
+								return 0;
+							}
+						}
+					},
+					emojiHeight: function() {
+						return this.stillH + 'px'
+					},
+					inputLong: function() {
+						if(this.kbShowFlag) {
+							if(this.emojiFlag) {
+								return true;
+							} else {
+								return true;
+							}
+						} else {
+							if(this.emojiFlag) {
+								return true;
+							} else {
+								return false;
+							}
+						}
+					},
+					cameraBarShow: function() {
+						if(this.kbShowFlag) {
+							if(this.emojiFlag) {
+								return true;
+							} else {
+								return true;
+							}
+						} else {
+							if(this.emojiFlag) {
+								//下面的计算属性单独实现----当键盘出现时，是自动把表情控制条推上来的，当键盘下去时，虽然显示状态为true，但是它已经位于bottom0的位置了，这个时候需要改变他的bottom
+								return true;
+							} else {
+								return false;
+							}
+						}
+
+					},
+					cameraBarBottom: function() {
+						if(this.kbShowFlag) {
+							if(this.emojiFlag) {
+								return 0;
+							} else {
+								return 0;
+							}
+						} else {
+							if(this.emojiFlag) {
+								//当键盘出现时，是自动把表情控制条推上来的，当键盘下去时，虽然显示状态为true，但是它已经位于bottom0的位置了，这个时候需要改变他的bottom
+								return this.stillH + 'px';
+							} else {
+								return false;
+							}
+						}
+					},
+					chooseImgShow: function() {
+						if(this.kbShowFlag) {
+							if(this.emojiFlag) {
+								return false;
+							} else {
+								return true;
+							}
+						} else {
+							if(this.emojiFlag) {
+								return false;
+							} else {
+								return true;
+							}
+						}
+					}
+				},
+				methods: {
+					init: function() {
+						//						vm.id = 55644;
+						vm.id = api.pageParam.id;
+						vm.loadData(function() {
+							vm.loadProductList();
+							vm.loadRelativeData()
+						});
+					},
+					check: function() {
+						var d = $api.dom('.talk');
+						console.log(d.innerHTML)
+						var content = d.innerHTML
+						if(content == '' || content == null || content == 'undefine') {
+							vm.sendFlag = false;
+						} else {
+							vm.sendFlag = true;
+						}
+					},
+					openEmoji: function() {
+						keyBoardMgr.hideKeyBoard(function(ret, err) {
+							setTimeout(function() {
+								vm.emojiFlag = true;
+							}, 200)
+						})
+					},
+					openKb: function() {
+						var d = $api.dom('.talk');
+						d.focus();
+					},
+					loadData: function(callback) {
+						$service.get('story/info.ajax', {
+							id: vm.id
+						}, function(ret, err) {
+							if(ret) {
+								if(ret.ok == 1) {
+									vm.pageData = ret.data;
+									if(typeof callback == 'function') {
+										callback();
+									}
+
+								} else {
+									if(ret.data.code && ret.data.code == '-100') {
+										//TODO:跳转登录页面
+										fnToast('请前往登录', 'middle')
+										setTimeout(function() {
+
+										}, 500)
+									}
+								}
+
+							} else {
+								fnToast(err.msg, 'middle')
+							}
+						}, true)
+
+					},
+					loadProductList: function() {
+						if(!vm.pageData.goodsId) {
+							return false;
+						}
+						$service.get(HOST_PRODUCT+'/v3/h5/item/price.json', {
+							skuStr: vm.pageData.productId
+						}, function(ret, err) {
+							if(ret) {
+								if(ret.success) {
+									vm.productList = ret.data;
+									if(typeof callback == 'function') {
+										callback();
+									}
+								} else {
+									if(ret.data.code && ret.data.code == '-100') {
+										//TODO:跳转登录页面
+										fnToast('请前往登录', 'middle')
+										setTimeout(function() {
+
+										}, 500)
+									}
+								}
+
+							} else {
+								fnToast(err.msg, 'middle')
+							}
+						}, true)
+
+					},
+					formatDateTime: function(datetime) { //格式化时间，几天前
+						if(!datetime) return "";
+						var current_date = new Date().getTime();
+						var mul = current_date - datetime;
+						var time = parseInt(mul / 1000);
+						if(time < 60) {
+							return "刚刚"
+						} else if(time < 3600) {
+							return parseInt(time / 60) + " 分钟前"
+						} else if(time < 86400) {
+							return parseInt(time / 3600) + " 小时前"
+						} else if(time < 604800) {
+							return parseInt(time / 86400) + " 天前"
+						} else if(time < 2592000) {
+							return parseInt(time / 604800) + " 周前"
+						} else if(time < 31536000) {
+							return parseInt(time / 2592000) + " 个月前"
+						} else {
+							return parseInt(time / 31536000) + " 年前"
+						}
+						return datetime
+					},
+					//相关推荐
+					loadRelativeData: function(callback) {
+						$service.get('es/story/getStoryIndexByCondition.ajax', {
+							searchType: 4,
+							pageIndex: vm.pageIndex,
+							pageSize: 20,
+							storyId: vm.id
+						}, function(ret, err) {
+							if(ret) {
+								if(ret.ok == 1) {
+									vm.relativeList = ret.data.list;
+									if(typeof callback == 'function') {
+										callback();
+									}
+								} else {
+									if(ret.data.code && ret.data.code == '-100') {
+										//TODO:跳转登录页面
+										fnToast('请前往登录', 'middle')
+										setTimeout(function() {
+
+										}, 500)
+									}
+								}
+
+							} else {
+								fnToast(err.msg, 'middle')
+							}
+						}, true, true)
+
+					},
+					fnImgCount: function(item) {
+						if(item.storyImgs) {
+							return item.storyImgs.length;
+						}
+						return 0;
+					}
+				}
+			})
+		}
+
+		function onKeyBoardChanged(isShow, height) {
+			if(isShow == 1) {
+				setTimeout(function() {
+						vm.kbShowFlag = true;
+					}, 100)
+					//键盘打开，表情则需要关闭,但是键盘关闭，表情不一定打开，有可能全部关闭
+				vm.emojiFlag = false;
+				if(!vm.stillH) {
+					//api.winHeight和api.screenHeight的区别
+					vm.stillH = height * api.winHeight / api.screenHeight;
+					console.log(vm.stillH)
+				}
+				//键盘第一次弹出记录高度，当表情框出现时，输入框需要依旧在这个高度
+			} else if(isShow == 0) {
+				vm.kbShowFlag = false;
+			}
+		}
+	</script>
+
+</html>

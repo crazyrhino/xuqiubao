@@ -1,0 +1,57 @@
+.my_communitys {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.my_communitys .comm_tit{
+  padding-top: 11px;
+  font-size: 12px;
+  color: #666;
+}
+.communitys_list{
+  padding-top: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(0,0,0,.1);
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+}
+.communitys_list .communityimg{
+  border-radius: 4px;
+  overflow: hidden;
+  width: 65px;
+  height: 65px;
+}
+.communitys_list .communityimg img{
+  width: 100%;
+  height: 100%;
+}
+.communitys_list .communityscont{
+  padding-left: 10px;
+  flex: 1;
+}
+.communitys_list .communityscont .contname{
+  font-size: 15px;
+  color: #333;
+}
+.communitys_list .communityscont .contdescribe{
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 13px;
+  color: #999;
+}
+.communitys_list .communityscont .topicsnum{
+  font-size: 11px;
+  color: #FF4400;
+}
+.communitys_list .communityscont .topicsnum span{
+  padding-right: 20px;
+  color: #3F3F3F;
+}
+.communitys_list .return_arrow{
+  width: 24px;
+  height: 24px;
+}
+.communitys_list .return_arrow img{
+  width: 100%;
+  height: 100%;
+}

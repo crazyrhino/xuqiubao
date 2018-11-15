@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>商学院</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/all_community.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+	</head>
+	<body>
+		<div class="warp">
+			<div id="header"  class="rank_header meui_border_b">
+				<div class="rank_content">
+					<div class="rank_back" tapmode onclick="fnBack()"></div>
+					顺逛学院 
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+            fnBackListener(fnBack)
+			var header = $api.byId('header');
+			fnSysHeaderStyleById();
+			var headerH = $api.offset(header).h;
+			api.openFrame({
+				name : 'business_school',
+				url : './business_school.html?v=' + new Date().getTime(),
+				rect : {
+					x : 0,
+					y : headerH,
+					w : 'auto',
+					h : 'auto'
+				}
+			});
+		};
+	</script>
+</html>

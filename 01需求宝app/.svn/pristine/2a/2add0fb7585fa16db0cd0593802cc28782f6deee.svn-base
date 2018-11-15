@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>友圈荣誉榜</title>
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/main.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/circle_friends_frame.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/communityHonorStick.css" />
+		<style>
+			.communityList .showCircle {
+				width: 2px;
+				height: 2px;
+				border-radius: 2px;
+			}
+			.communityHonor .subtotal ._selfmonth:after {
+				width: 0px;
+			}
+			[v-cloak] {
+				display: none;
+			}
+      .ellipsis-1{
+          display: -webkit-box;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          word-wrap: break-word;
+          word-break: break-all;
+          white-space: normal !important;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+      }
+      .numOther{
+          width:.34rem;
+      }
+			.communityList .self .Perimage .perimage_rel{
+				position: relative;
+			}
+			img.red_vip,img.yellow_vip,img.purple_vip{
+				position: absolute;
+				left: initial !important;
+				right: 1px;
+				top: 42px !important;
+				width: 14px !important;
+				height: 14px !important;
+				transform: none !important;
+			}
+		</style>
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+	</head>
+	<body>
+		<!-- 活跃排行榜 -->
+		<div id="communityHonor" class="communityHonor" v-cloak>
+			<div class="subtotal flex-center">
+				<img src="../../image/rank/trophy.png" alt=""><span>友圈</span><span class="circle"></span>
+				<span> <span v-if="month" class="_selfmonth active">本月</span> <span v-else class="lastMonth active">上月</span> </span>
+			</div>
+			<div class="communityList">
+				<div class="self community-flex flex-center community-flex-h" :class="(!type)&&'bgBlue'">
+					<div class="num">
+						{{personRankMonth.rank}}
+					</div>
+					<div class="Perimage" tapmode v-on:click="fnOpenHome(personRankMonth)">
+						<div class="Perimage-1 perimage_rel">
+							<img v-bind:src="personRankMonth.userImg" alt="">
+							<img v-show="personRankMonth.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png" alt=""/>
+							<img v-show="personRankMonth.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png" alt=""/>
+							<img v-show="personRankMonth.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png" alt=""/>
+						</div>
+					</div>
+					<div class="details community-flex-flex1">
+						<div class="">
+							{{personRankMonth.userName}}
+						</div>
+						<div class="level">
+							指数：{{personRankMonth.rankIndexValue}} <span class="level-alert">友圈人数{{personRankMonth.friendsCount}}人</span>
+						</div>
+						<div v-if="type" class="topic community-flex flex-center">
+							<div class="_items">
+								<div class="topic_num">
+									{{personRankMonth.storyCount}}
+								</div>
+								<div>
+									话题
+								</div>
+							</div>
+							<span class="showCircle"></span>
+							<div class="_items">
+								<div class="topic_num">
+									{{personRankMonth.commentCount}}
+								</div>
+								<div>
+									评论
+								</div>
+							</div>
+							<span class="showCircle"></span>
+							<div class="_items">
+								<div class="topic_num">
+									{{personRankMonth.shareCount}}
+								</div>
+								<div>
+									分享
+								</div>
+							</div>
+						</div>
+						<div v-else class="topic community-flex flex-center">
+							<div class="_items">
+								<div class="topic_num">
+									{{personRankMonth.focusCount}}
+								</div>
+								<div>
+									粉丝
+								</div>
+							</div>
+							<span class="showCircle"></span>
+							<div class="_items">
+								<div class="topic_num">
+									{{personRankMonth.commentCount}}
+								</div>
+								<div>
+									获评
+								</div>
+							</div>
+							<span class="showCircle"></span>
+							<div class="_items">
+								<div class="topic_num">
+									{{personRankMonth.praisedCount}}
+								</div>
+								<div>
+									获赞
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div v-if="list.length" class="other">
+					<div class="king_ranking">
+						<div class="circle_ranking">
+							<div v-for="(item,index) in list" v-if="index <= 2" class="circle_people" tapmode v-on:click="fnOpenHome(item)">
+								<div class="circle_img">
+									<img class="fore_pic" v-bind:src="item.userImg">
+									<div v-if="item.rank == 1" class="back_pic king_one"></div>
+									<div v-if="item.rank == 2" class="back_pic king_two"></div>
+									<div v-if="item.rank == 3" class="back_pic king_three"></div>
+								</div>
+								<p class="circle_name ellipsis-1">
+									{{item.userName}}
+								</p>
+								<p class="circle_num">
+									{{item.rankIndexValue}}
+								</p>
+								<img v-if="item.isFollow == 0 && item.userSelfId != item.userId" class="follow_img" src="../../image/rank/follow.png" alt="" tapmode="meui_click" v-on:click="fnFollow(item,index)">
+								<img v-if="item.isFollow != 0 && item.userSelfId  != item.userId" class="follow_img" src="../../image/rank/cancel_follow.png" alt="" tapmode="meui_click" v-on:click="fnFollow(item,index)">
+							</div>
+						</div>
+					</div>
+					<div v-for="(item,index) in list" v-if="index > 2" class="item community-flex flex-center community-flex-h border-1-top" tapmode v-on:click="fnOpenHome(item)">
+						<div class="num numOther">
+							{{item.rank}}
+						</div>
+						<div class="Perimage perimage_rel">
+							<img class="normal_user_img" v-bind:src="item.userImg" alt="">
+							<!-- <img v-show="item.talentFlag == 1" class="svip_icon svip_iconto" src="../../image/mine/vip.png" alt=""/> -->
+							<!-- <img v-show="item.talentFlag == 2" class="vip_icon svip_iconto" src="../../image/mine/icon_vip.png" alt=""/> -->
+						</div>
+						<div class="contents community-flex-flex1">
+							<div class="otherName">
+								{{item.userName}}
+								<img v-if="item.isFollow == 0 && item.userSelfId  != item.userId" class="float-right" src="../../image/rank/follow.png" alt="" tapmode="meui_click" v-on:click="fnFollow(item,index)">
+								<img v-if="item.isFollow != 0 && item.userSelfId  != item.userId" class="float-right" src="../../image/rank/cancel_follow.png" alt="" tapmode="meui_click" v-on:click="fnFollow(item,index)">
+							</div>
+							<div>
+								指数：{{item.rankIndexValue}}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div v-if="list.length < 6 && !userId" :style="{'margin-top':list.length < 6 && list.length > 0?'1rem':'3.09rem','margin-bottom':list.length < 6 && list.length > 0?'.5rem':''}" class="nofriends">
+					<img src="../../image/empty/no_friends_result.png" alt="">
+					<div class="nofriends_alert">
+						亲，圈子太小，去找更多好朋友吧
+					</div>
+					<div class="btn" tapmode @click="fnOpenWin()">
+						达人推荐
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript">
+		var myVue = null;
+		var pageIndex = 1;
+		var userId;
+		apiready = function() {
+			//fnRefreshOpen();
+			fnInitVue();
+			fnShowType();
+			fnGetData(false, true);
+			myVue.personRankMonth = api.pageParam.myRank;
+			fnSetRefresh(function() {
+				pageIndex = 1;
+				fnGetData(false, true);
+			});
+			addBottomListener(function() {
+				pageIndex++;
+				fnGetData(true, false);
+			});
+            userId = api.readFile({//获取当前用户信息，作为分享使用
+                sync : true,
+                path : api.boxDir + '/userid.txt'
+            });
+		}
+		function fnInitVue() {
+			myVue = new Vue({
+				el : "#communityHonor",
+				data : {
+                    usersId : userId,
+					type : true,
+					month : true,
+					list : [],
+					// userId : api.pageParam.userId,
+					personRankMonth : {
+					}
+				},
+				methods : {
+					fnOpenWin : function() {
+						fnOpenWin('recommendation_page_win', './', {
+							type : '友圈'
+						})
+					},
+					fnFollow : function(item, index) {
+                        window.event.stopPropagation();
+                        var follow;
+						if (item.isFollow == 0) {
+							follow = 'Follow';
+						} else {
+							follow = 'UnFollow';
+						}
+						$service.get('user/follow.ajax', {
+							followId : item.userId,
+							type : follow
+						}, function(ret, err) {
+							if (ret) {
+								if (ret.ok == 1) {
+									if (item.isFollow == 0) {
+										myVue.$set(myVue.$data.list[index], 'isFollow', 1);
+									} else {
+										myVue.$set(myVue.$data.list[index], 'isFollow', 0);
+									}
+								}
+							} else {
+								fnToast(err.msg);
+							}
+						});
+					},
+                    fnOpenHome : function(item){
+                        api.readFile({
+                            path: api.boxDir + '/userid.txt'
+                        }, function (ret, err) {
+                            if (ret) {
+                                var _userid = ret.data;
+                                if (item.userId == _userid) {
+                                    fnOpenWin('mine', '../mine/');
+                                } else {
+                                    fnOpenWin('ta_page', '../ta_page/', {
+                                        userId : item.userId,
+                                        isFollow : item.isFollow
+                                    });
+                                }
+                            }
+                        });
+                    }
+				}
+			})
+		}
+
+		function fnShowType() {
+			if (api.pageParam.title != '牛人榜') {
+				myVue.type = false;
+			}
+			myVue.month = api.pageParam.month;
+		}
+
+		function fnGetData(isLoadMore, isRefresh) {
+			if (myVue.type) {
+				if (myVue.month) {
+					fnRankCommunityCMonth(isLoadMore, isRefresh);
+				} else {
+					fnRankCommunityPreMonth(isLoadMore, isRefresh);
+				}
+			} else {
+				if (myVue.month) {
+					fnRankCommunityCMonth2(isLoadMore, isRefresh);
+				} else {
+					fnRankCommunityPreMonth2(isLoadMore, isRefresh);
+				}
+			}
+		}
+
+		function fnRankCommunityCMonth(isLoadMore, isRefresh) {
+			var params;
+			if(api.pageParam.userId){
+				params = {
+					monthFlag : 1,
+					pageIndex : pageIndex,
+					pageSize : 20,
+					type : 2,
+					userId : api.pageParam.userId
+				}
+			}else{
+				params = {
+					monthFlag : 1,
+					pageIndex : pageIndex,
+					pageSize : 20,
+					type : 2
+				}
+			}
+			$service.get('rank/community.ajax', params, function(ret, err) {
+				api.refreshHeaderLoadDone();
+				if (ret) {
+					if (ret.data && ret.data.length > 0) {
+						if (isRefresh) {
+							myVue.list = [];
+						}
+						fnAppendData(myVue.list, ret.data);
+					} else {
+						if (isLoadMore) {
+							fnToast('没有更多');
+						} else {
+//							fnToast('获取数据失败');
+						}
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		function fnRankCommunityPreMonth(isLoadMore, isRefresh) {
+			var params;
+			if(api.pageParam.userId){
+				params = {
+					monthFlag : 0,
+					pageIndex : pageIndex,
+					pageSize : 20,
+					type : 2,
+					userId : api.pageParam.userId
+				}
+			}else{
+				params = {
+					monthFlag : 0,
+					pageIndex : pageIndex,
+					pageSize : 20,
+					type : 2
+				}
+			}
+			$service.get('rank/community.ajax', params, function(ret, err) {
+				api.refreshHeaderLoadDone();
+				if (ret) {
+					if (ret.data && ret.data.length > 0) {
+						if (isRefresh) {
+							myVue.list = [];
+						}
+						fnAppendData(myVue.list, ret.data);
+					} else {
+						if (isLoadMore) {
+							fnToast('没有更多');
+						} else {
+//							fnToast('获取数据失败');
+						}
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		function fnAppendData(oldArr, data) {
+			for (var i = 0; i < data.length; i++) {
+				if (fnIsEmpty(data[i].userImg)) {
+					data[i].userImg = '../../image/home/tmp_default_header.png';
+				}
+                data[i].userSelfId = userId;
+                oldArr.push(data[i]);
+			}
+			return oldArr;
+		}
+
+		function fnRankCommunityCMonth2(isLoadMore, isRefresh) {
+			var params;
+			if(api.pageParam.userId){
+				params = {
+					monthFlag : 1,
+					pageIndex : pageIndex,
+					pageSize : 20,
+					type : 4,
+					userId : api.pageParam.userId
+				}
+			}else{
+				params = {
+					monthFlag : 1,
+					pageIndex : pageIndex,
+					pageSize : 20,
+					type : 4
+				}
+			}
+			$service.get('rank/community.ajax', params, function(ret, err) {
+				api.refreshHeaderLoadDone();
+				if (ret) {
+					if (ret.data && ret.data.length > 0) {
+						if (isRefresh) {
+							myVue.list = [];
+						}
+						fnAppendData(myVue.list, ret.data);
+					} else {
+						if (isLoadMore) {
+							fnToast('没有更多');
+						} else {
+//							fnToast('获取数据失败');
+						}
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		function fnRankCommunityPreMonth2(isLoadMore, isRefresh) {
+			var params;
+			if(api.pageParam.userId){
+				params = {
+					monthFlag : 0,
+					pageIndex : pageIndex,
+					pageSize : 20,
+					type : 4,
+					userId : api.pageParam.userId
+				}
+			}else{
+				params = {
+					monthFlag : 0,
+					pageIndex : pageIndex,
+					pageSize : 20,
+					type : 4
+				}
+			}
+			$service.get('rank/community.ajax', params, function(ret, err) {
+				api.refreshHeaderLoadDone();
+				if (ret) {
+					if (ret.data && ret.data.length > 0) {
+						if (isRefresh) {
+							myVue.list = [];
+						}
+						fnAppendData(myVue.list, ret.data);
+					} else {
+						if (isLoadMore) {
+							fnToast('没有更多');
+						} else {
+//							fnToast('获取数据失败');
+						}
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+	</script>
+</html>

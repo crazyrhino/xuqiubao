@@ -1,0 +1,74 @@
+html,body,
+#warp,.popup_position{
+  height: 100%;
+}
+/*选择精华位置-弹窗  头部*/
+.popup_position{
+  position: relative;
+  background: rgba(0, 0, 0, 0.7);
+}
+.popup_content{
+  width: 8.586667rem;
+  position:absolute;
+  top: 50%;left: 50%;
+  -webkit-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+  background: #fff;
+  border-radius: 0.213333rem;
+  overflow: hidden;
+}
+.cont_tit{
+  padding-top: 0.933333rem;
+  line-height: 0.586667rem;
+  font-size: 0.426667rem;
+  color: #333;
+  text-align: center;
+}
+.hold{
+  padding-left: 0.746667rem;
+  padding-top: 0.426667rem;
+  padding-bottom: 0.506667rem;
+}
+.sp_tit{
+  font-size: 0.373333rem;
+  color: #999;
+}
+.center_tit{
+  padding-left: 0;
+  text-align: center;
+}
+.hold .xz_img{
+  width: 0.426667rem;
+  height: 0.426667rem;
+  margin-right: 0.133333rem;
+  vertical-align: middle;
+}
+.btns{
+  width: 100%;
+  /*display: -webkit-box;*/
+  /*display: -ms-flexbox;*/
+  /*display: flex;*/
+}
+.btn{
+  display: inline-block;
+  float: left;
+  width: 50%;
+  height: 1.280000rem;
+  line-height: 1.280000rem;
+  font-size: 0.453333rem;
+  text-align: center;
+  /*-webkit-box-flex: 1;*/
+      /*-ms-flex: 1;*/
+          /*flex: 1;*/
+}
+.btn_left{
+  color: #999;
+  border-radius: 0 0 0  0.213333rem;
+  border-top: 1px solid #E4E4E4;
+}
+.btn_right{
+  color: #FFF;
+  border-top: 1px solid #FF6026;
+  background-color: #FF6026;
+  border-radius: 0 0 0.213333rem 0;
+}

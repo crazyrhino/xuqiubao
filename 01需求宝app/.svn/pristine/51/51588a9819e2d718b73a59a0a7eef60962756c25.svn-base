@@ -1,0 +1,36 @@
+.user_info {
+	transform: translateZ(2px);
+	-ms-transform: translateZ(2px);
+	-moz-transform: translateZ(2px);
+	-webkit-transform: translateZ(2px);
+	-o-transform: translateZ(2px);
+}
+body, html {
+	transform: translateZ(0px);
+	-ms-transform: translateZ(0px);
+	-moz-transform: translateZ(0px);
+	-webkit-transform: translateZ(0px);
+	-o-transform: translateZ(0px);
+	transform-style: preserve-3d;
+}
+.list {
+	transform: translateZ(1px);
+	-ms-transform: translateZ(1px);
+	-moz-transform: translateZ(1px);
+	-webkit-transform: translateZ(1px);
+	-o-transform: translateZ(1px);
+}
+header {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 70px;
+	background-color: rgba(0,0,0,0);
+	transform: translateZ(3px);
+	transform: translateZ(3px);
+	-ms-transform: translateZ(3px);
+	-moz-transform: translateZ(3px);
+	-webkit-transform: translateZ(3px);
+	-o-transform: translateZ(3px);
+}

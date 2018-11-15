@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>已删除</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <style type="text/css">
+        html, body {
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .popup_content {
+            width: 80%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+            background: #fff;
+            border-radius: 0.213333rem;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .cont_tit {
+            font-size: 17px;
+            line-height: 100px;
+            height: 90px;
+            color: #333;
+            text-align: center;
+        }
+
+        .btn {
+            height: 40px;
+            line-height: 41px;
+            width: 80%;
+            border-radius: 23px;
+            color: #fff;
+            background-color: #2383E2;
+            margin: 10px auto 14px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+<div id="warp">
+    <div class="popup_content">
+        <div class="cont_tit">该话题已被删除</div>
+        <div class="btn" tapmode onclick="fnBack()">返回</div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/flexible.js"></script>
+<script>
+    apiready = function () {
+		//fnRefreshOpen();
+    }
+    
+    function fnBack(){
+    	if (api.winName == 'root') {
+			api.sendEvent({
+				name : 'APICloudCallNaviteMethod',
+				extra : {
+					type : 6
+				}
+			});
+		}else{
+			api.closeWin()
+		}
+    }
+</script>
+</html>

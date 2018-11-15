@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>升级微店主</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <style type="text/css">
+        html, body, .popup_position {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .popup_content {
+            width: 82%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+            background: #fff;
+            border-radius: 0.213333rem;
+            overflow: hidden;
+        }
+
+        .cont_tit {
+            font-size: 17px;
+            line-height: 52px;
+            height: 50px;
+            color: #333;
+            text-align: center;
+        }
+
+        .hold {
+            font-size: 15px;
+            padding: 20px 20px;
+            border-top: 1px solid #E4E4E4;
+            color: #666;
+        }
+
+        .btns {
+            width: 100%;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 50%;
+            height: 46px;
+            line-height: 46px;
+            font-size: 16px;
+            text-align: center;
+            -webkit-box-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+        }
+
+        .btn_left {
+            color: #999;
+            border-radius: 0 0 0 0.213333rem;
+            border-top: 1px solid #E4E4E4;
+        }
+
+        .btn_right {
+            color: #FFF;
+            border-top: 1px solid #2383E2;
+            background-color: #2383E2;
+            border-radius: 0 0 0.213333rem 0;
+        }
+    </style>
+</head>
+<body>
+<div id="warp">
+    <div class="popup_position">
+        <div class="popup_content">
+            <p class="cont_tit">升级微店主</p>
+            <div class="hold">
+                免费升级微店主，可以享受购物佣金、理财收益、社区互动等诸多权益。
+            </div>
+            <div class="btns">
+                <a class="btn btn_left" tapmode onclick="api.closeFrame()">取消</a>
+                <a class="btn btn_right" tapmode onclick="fnOpenUpdate()">升级微店主</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/service.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/flexible.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        //fnRefreshOpen();
+    };
+
+    //TODO 升级微店主
+    function fnOpenUpdate() {
+        api.sendEvent({
+            name: 'APICloudCallNaviteMethod',
+            extra: {
+                type: 1,
+                canCallBack: 1,
+                toPageName: 'OpenStore'
+            }
+        });
+        api.addEventListener({
+            name: 'NaviteCallAPICloudMethod'
+        }, function (ret, err) {
+            if (ret.value.type === 1) {
+                if (ret.value.success == 1) {
+                    fnGetUserType();
+                }
+            }
+        });
+    }
+
+    //用户身份
+    function fnGetUserType() {
+        api.showProgress();
+        $service.get('user/getShopkeepersInfo.ajax', null, function(ret, err) {
+            api.hideProgress();
+            if (ret) {
+                if (ret.ok == 1) {
+                    api.writeFile({
+                        path : api.boxDir + '/userType.txt',
+                        data : ret.data
+                    }, function(ret, err) {
+                        api.closeFrame({
+                            name: api.frameName
+                        });
+                    });
+                } else {
+                    api.writeFile({
+                        path : api.boxDir + '/userType.txt',
+                        data : ''
+                    }, function(ret, err) {
+
+                    });
+                    fnToast('获取身份信息失败', 'middle');
+                }
+            } else {
+                fnToast(err.msg, 'middle')
+            }
+        }, true, null, null, api.winName);
+    }
+
+</script>
+</html>

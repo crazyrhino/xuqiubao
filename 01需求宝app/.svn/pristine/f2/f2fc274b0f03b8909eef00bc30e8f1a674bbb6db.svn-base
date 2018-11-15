@@ -1,0 +1,67 @@
+body,
+html {
+  background: #fff;
+  font-size: 20px;
+}
+body .box p,
+html .box p,
+body .box span,
+html .box span {
+  color: #666;
+  font-size: 0.70rem;
+}
+body .box .order,
+html .box .order {
+  height: 1.30rem;
+  padding-left: 0.5rem;
+  border-bottom: 1px solid #eee;
+  background: #eee;
+}
+body .box .order p,
+html .box .order p {
+  line-height: 1.30rem;
+}
+body .box .content,
+html .box .content {
+  height: 2.50rem;
+  background: #fff;
+}
+body .box .content .content_li,
+html .box .content .content_li {
+  border-bottom: 1px solid #eee;
+  box-sizing: border-box;
+}
+body .box .content .content_li span,
+html .box .content .content_li span {
+  color: #000;
+  margin-left: 0.45rem;
+  line-height: 2.50rem;
+}
+body .box .content .content_li img,
+html .box .content .content_li img {
+  float: left;
+}
+body .box .content .content_li .select,
+html .box .content .content_li .select {
+  width: 1.5rem;
+  height: 1.5rem;
+  float: left;
+  margin-left: 0.35rem;
+  margin-top: 0.8rem;
+}
+body .box .content .content_li .select img,
+html .box .content .content_li .select img {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+body .box .content .content_li .user_img,
+html .box .content .content_li .user_img {
+  width: 1.8rem;
+  height: 1.8rem;
+  margin-top: 0.35rem;
+}
+body .box:first-child ul:first-child li .order,
+html .box:first-child ul:first-child li .order {
+  background: #fff;
+}
+/*# sourceMappingURL=to_see_who_frame.css.map */

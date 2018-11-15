@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<style>
+			body {
+			}
+		</style>
+	</head>
+	<body></body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript">
+		var selectedImgs = [];
+		var UIAlbumBrowser;
+		apiready = function() {
+			//fnRefreshOpen();
+			UIAlbumBrowser = api.require('UIAlbumBrowser');
+			selectedImgs = JSON.parse(api.readFile({
+				sync : true,
+				path : api.boxDir + '/selectedImgs.txt'
+			}));
+			fnGetImgs();
+			fnBackListener(fnBack);
+		};
+		function fnBack() {
+			api.execScript({
+				name : 'select_picture',
+				frameName : 'select_picture_frame',
+				script : 'fnResetData();'
+			});
+		}
+
+		function fnOpenHeader() {
+			api.openFrame({
+				name : api.winName + "_header",
+				url : api.winName + "_header.html",
+				rect : {
+					x : 0,
+					y : 0,
+					w : api.winWidth,
+					h : 64
+				},
+				bgColor : "rgba(0,0,0,0.8)",
+				pageParam : api.pageParam
+			});
+		}
+
+		function fnOpenFooter() {
+			api.openFrame({
+				name : api.winName + "_footer",
+				url : api.winName + "_footer.html?v=" + new Date().getTime(),
+				rect : {
+					x : 0,
+					y : api.winHeight - 49,
+					w : api.winWidth,
+					h : 49
+				},
+				bgColor : "rgba(0,0,0,0.8)",
+				pageParam : api.pageParam
+			});
+		}
+
+		var activeIndex = 0;
+		function fnOpenPhotoViewer(imgs) {
+			var UIPhotoViewer = api.require('UIPhotoViewer');
+			UIPhotoViewer.open({
+				images : imgs,
+				bgColor : '#000',
+				activeIndex : api.pageParam.activeIndex
+			}, function(ret, err) {
+				if (ret) {
+					activeIndex = ret.index;
+					if (ret.eventType == 'show') {
+						fnOpenHeader();
+						fnOpenFooter();
+						setTimeout(function() {
+							fnIsShowing(ret.index);
+						}, 500);
+					} else {
+						fnIsShowing(ret.index);
+					}
+				} else {
+					console.log(JSON.stringify(err));
+				}
+			});
+		}
+
+		function fnSelectImg() {
+			selectedImgs = JSON.parse(api.readFile({
+				sync : true,
+				path : api.boxDir + '/selectedImgs.txt'
+			}));
+			if (selectedImgs.length == api.pageParam.canSelectNum) {
+				fnToast('最多只能选择9张图片');
+				return;
+			}
+			selectedImgs.push(imgs[activeIndex]);
+			api.writeFile({
+				path : api.boxDir + '/selectedImgs.txt',
+				data : JSON.stringify(selectedImgs)
+			}, function(ret, err) {
+				fnIsShowing(activeIndex);
+			});
+		}
+
+		function fnUnSelectImg() {
+			for (var i = 0; i < selectedImgs.length; i++) {
+				if (imgs[activeIndex].path == selectedImgs[i].path) {
+					selectedImgs.splice(i, 1);
+					break;
+				}
+			}
+			api.writeFile({
+				path : api.boxDir + '/selectedImgs.txt',
+				data : JSON.stringify(selectedImgs)
+			}, function(ret, err) {
+				fnIsShowing(activeIndex);
+			});
+		}
+
+		function fnIsShowing(index) {
+			selectedImgs = JSON.parse(api.readFile({
+				sync : true,
+				path : api.boxDir + '/selectedImgs.txt'
+			}));
+			imgs = JSON.parse(api.readFile({
+				sync : true,
+				path : api.boxDir + '/imgs.txt'
+			}));
+			var showingIndex = -1;
+			if (selectedImgs && selectedImgs.length > 0) {
+				for (var i = 0; i < selectedImgs.length; i++) {
+					if (selectedImgs[i].path == imgs[index].path) {
+						selectedImgs[i].showing = true;
+						showingIndex = i;
+					} else {
+						selectedImgs[i].showing = false;
+					}
+				}
+			}
+			api.writeFile({
+				path : api.boxDir + '/selectedImgs.txt',
+				data : JSON.stringify(selectedImgs)
+			}, function(ret, err) {
+				api.execScript({
+					frameName : api.winName + "_footer",
+					script : 'fnResetSelectImgs();'
+				});
+				api.execScript({
+					frameName : api.winName + "_header",
+					script : 'fnSetSelectedIndex(' + (showingIndex + 1) + ');'
+				});
+			});
+		}
+
+		function fnGetImgs() {
+			var ret = api.readFile({
+	            sync:true,
+	            path:api.boxDir + '/imgs.txt'
+            });
+            var imgs;
+           	if(!ret){
+           		ret = [];
+           		imgs = [];
+           	}else{
+				imgs = JSON.parse(ret);
+           	}
+//			fnTransPath(imgs, 0);
+			for(var i = 0; i < imgs.length; i++){
+				imgArr.push(imgs[i].path);
+			}
+			fnOpenPhotoViewer(imgArr);
+		}
+
+		var imgArr = [];
+		function fnTransPath(imgs, index) {
+			if (index == imgs.length) {
+				console.log(JSON.stringify(imgArr));
+				fnOpenPhotoViewer(imgArr);
+				return;
+			}
+			fnLogStr('fnTransPath' + index);
+			UIAlbumBrowser.transPath({
+				path : imgs[index].path
+			}, function(ret, err) {
+				fnLog(ret);
+				if (ret) {
+					imgArr.push(ret.path);
+					fnTransPath(imgs, ++index);
+				} else {
+					fnToast(JSON.stringify(err));
+				}
+			});
+		}
+
+		function fnSetShowImgIndex(index) {
+			var UIPhotoViewer = api.require('UIPhotoViewer');
+			UIPhotoViewer.setIndex({
+				index : index
+			});
+		}
+	</script>
+</html>

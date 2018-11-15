@@ -1,0 +1,47 @@
+body, html {
+	background: #FFF;
+}
+header {
+	width: 100%;
+	height: 44px;
+	line-height: 44px;
+	background: #FFF;
+	display: flex;
+}
+.rank_content{
+	position: relative;
+	width: 100%;
+	height: 44px;
+	line-height: 44px;
+	font-size:17px;
+	text-align: center;
+	border-bottom: 1px solid #EEEEEE;
+}
+.rank_back{
+	position: absolute;
+	left: 16px;
+	top: 7px;
+	width: 24px;
+	height: 24px;
+}
+.mores{
+	position: absolute;
+	right: 16px;
+	top: 7px;
+	width: 24px;
+	height: 24px;
+}
+.options{
+	display: inline-block;
+}
+.option{
+	margin-right: 12px;
+	margin-left: 12px;
+}
+.option_active{
+	color: #FF6026;
+	border-bottom: 2px solid #FF6026;
+}
+.meui_click{
+	opacity: 0.7;
+}

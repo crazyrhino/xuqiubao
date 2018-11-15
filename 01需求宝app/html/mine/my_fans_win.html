@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+	<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+	<title>我的粉丝</title>
+	<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../../css/my_fans_win.css" />
+</head>
+<body>
+	<header id="header" class="rank_header">
+		<p class="rank_content"><img class="rank_back" src="../../image/rank/rank_back.png" tapmode onclick="fnBack()">我的粉丝</p>
+	</header>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/flexible.js"></script>
+<script type="text/javascript">
+	apiready = function() {
+		//fnRefreshOpen();
+        fnBackListener(fnBack)
+    var header = $api.byId('header');
+		fnSysHeaderStyleById();
+		var headerH = $api.offset(header).h+1;
+		api.openFrame({
+			name: 'my_fans_frame',
+			url: 'my_fans_frame.html?v=' + new Date().getTime(),
+			rect: {
+				x: 0,
+				y: headerH,
+				w: 'auto',
+				h: 'auto'
+			},
+			bounces: true
+		})
+	};
+</script>
+</html>

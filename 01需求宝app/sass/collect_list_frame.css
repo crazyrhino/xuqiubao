@@ -1,0 +1,124 @@
+.flex_container {
+	display: -webkit-flex;
+	display: flex;
+}
+
+.line2 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	word-wrap:break-word;
+}
+
+.img_wrap {
+	padding: 16px;
+	border-bottom: 1px solid #EEEEEE;
+	position: relative;
+}
+
+.img_wrap .bacImg {
+	width: 343px;
+	height: 192px;
+	border-radius: 4px;
+}
+
+.status_wrap {
+	position: relative;
+}
+
+.status {
+	width: 77px;
+	height: 24px;
+	position: absolute;
+	right: 0;
+	top: 11px;
+}
+
+.status img {
+	width: 77px;
+	height: 24px;
+}
+
+.statusText {
+	color: white;
+	font-size: 12px;
+	position: absolute;
+	top: 3px;
+	left: 26px;
+}
+
+.title {
+	padding: 0 16px;
+}
+
+.title .wrap {
+	font-family: PingFangSC-Medium;
+	width: 343px;
+	height: 40px;
+	line-height: 40px;
+	text-align: left;
+	font-size: 16px;
+	color: #333333;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	border-bottom: 1px solid #EEEEEE;
+}
+
+.bottom_bar {
+	align-items: center;
+	padding: 13px 16px;
+}
+
+.left_bar {
+	margin-right: auto;
+}
+
+.time {
+	font-family: PingFangSC-Regular;
+	font-size: 12px;
+	color: #999999;
+}
+
+.endTime {
+	height: 16px;
+	font-size: 12px;
+	color: #999999;
+	margin-left: 6px;
+}
+
+.right_bar {
+	align-items: center;
+}
+.headIdcon_wrap img{
+	width: 20px;
+	height: 20px;
+	border: 1px solid white;
+	border-radius: 20px;
+	display: inline-block;
+	position: relative;
+}
+
+.personNum {
+	font-family: PingFangSC-Regular;
+	font-size: 12px;
+	color: #999999;
+	margin-left: 10px;
+}
+
+.bottom_icon {
+	width: 24px;
+	height: 24px;
+	margin-left: 12px;
+	background-size: cover;
+}
+
+.bottom_num {
+	font-size: 12px;
+	color: #999999;
+}

@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>社区榜单</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ranking_list_win.css"/>
+    <script type="text/javascript" src="../../script/flexible.js"></script>
+</head>
+<body>
+<header id="header" class="rank_header">
+    <p class="rank_content">
+        <img class="rank_back" src="../../image/rank/rank_back.png" tapmode onclick="api.closeWin()">排行榜
+        <span class="rule" tapmode="meui_click" onclick="fnOpenWin('rule')">规则</span>
+    </p>
+</header>
+<div class="tabs" id="tabs">
+    <div class="tab tab_left" :class="(index==0)&&'tab_active'" tapmode="meui_click" onclick="fnChangeFrame(0)">友圈</div>
+    <div class="tab tab_right" :class="(index==1)&&'tab_active'" tapmode="meui_click" onclick="fnChangeFrame(1)">社区
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript">
+    var myVue = null;
+    apiready = function () {
+    	//fnRefreshOpen();
+        fnBackListener(fnBack)
+        fnInitVue();
+        var header = $api.byId('header');
+        fnSysHeaderStyle();
+        var headerH = $api.offset(header).h;
+        var tabsH = $api.offset(tabs).h;
+        api.openFrameGroup({
+            name: 'ranking_list_frame',
+            rect: {
+                x: 0,
+                y: headerH + tabsH,
+                w: 'auto',
+                h: 'auto'
+            },
+            index: 1,
+            frames: [{
+                name: 'circle_friends_frame',
+                url: 'circle_friends_frame.html?v=' + new Date().getTime(),
+            }, {
+                name: 'community_honorstick_frame',
+                url: 'community_honorstick_frame.html?v=' + new Date().getTime(),
+            }]
+        }, function (ret, err) {
+            var index = ret.index;
+            myVue.index = index;
+        });
+    };
+
+    function fnInitVue() {
+        myVue = new Vue({
+            el: "#tabs",
+            data: {
+                index: 1,
+            }
+        })
+    }
+
+    function fnChangeFrame(index) {
+        myVue.index = index;
+        api.setFrameGroupIndex({
+            name: "ranking_list_frame",
+            index: index,
+            scroll: true,
+        })
+    }
+</script>
+</html>

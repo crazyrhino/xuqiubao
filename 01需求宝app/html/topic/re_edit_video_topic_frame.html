@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/edit_topic_frame.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/search_editor.css" />
+		<style>
+			.my_search_editor {
+				margin-top: 15px;
+				background: #FFF;
+			}
+			.select_list {
+				position: relative;
+			}
+			[v-cloak] {
+				display: none;
+			}
+			.c_content_area {
+				min-height: 120px;
+				height: auto;
+				max-height: 220px;
+				margin-bottom: 6px;
+				overflow: auto;
+				-webkit-user-select: text;
+			}
+			input{
+				outline:none
+			}
+            .c_title_input{
+                height: initial;
+                line-height: normal;
+                padding: .3rem 0;
+            }
+		</style>
+	</head>
+	<body>
+		<div class="c_edit_layout">
+			<input class="c_title_input" type="text" placeholder="请输入标题（5～30字）" />
+			<textarea class="c_content_area" onpaste="onPaste(this)" id="" placeholder="请输入正文（5～1000字 让和你一样感兴趣的人都看到）"></textarea>
+			<div class="slide-item">
+				<div class="c_add_img hidden"></div>
+				<div class="c_upload_img_layout" onclick="fnPreview()">
+					<img class="c_upload_img" src="" alt="" />
+					<img class="video_item_play_btn" src="../../image/edit_topic/play.png" alt="" />
+				</div>
+			</div>
+		</div>
+		<!--<div class="c_share_layout meui_flex_wrap">-->
+			<!--<div class="c_share_label">-->
+				<!--同步到：-->
+			<!--</div>-->
+			<!--<img class="c_share_item" src="../../image/edit_topic/wx_timeline.png" alt="" tapmode onclick="fnShare(1)"/>-->
+			<!--<img class="c_share_item" src="../../image/edit_topic/sina.png" alt=""  tapmode onclick="fnShare(2)"/>-->
+			<!--<img class="c_share_item" src="../../image/edit_topic/wx_friends.png" alt=""  tapmode onclick="fnShare(0)"/>-->
+			<!--<img class="c_share_item" src="../../image/edit_topic/qq_zone.png" alt=""  tapmode onclick="fnShare(4)"/>-->
+		<!--</div>-->
+		<div class="my_search_editor">
+			<div class="select_all" v-cloak>
+				<div v-for="(item,index) in list" class="select_list">
+					<div class="select_cont">
+						<div class="product_img">
+							<img v-bind:src="item.defaultImageUrl || item.image">
+						</div>
+						<div class="product_cont">
+							<p class="product_tit" v-text="item.productFirstName || item.name"></p>
+							<p class="product_detail"  v-text="item.productSecondName? item.productSecondName + item.productTitle: item.title"></p>
+							<p class="product_price">
+								¥{{item.finalPrice || item.price }}
+							</p>
+						</div>
+					</div>
+					<div class="c_delete_goods" id="delete" tapmode="meui_click" v-on:click="fnDelete(index)"></div>
+				</div>
+			</div>
+		</div>
+		<div class="space"></div>
+		<div class="c_footer">
+			<div class="c_footer_top meui_flex_wrap">
+				<div class="c_circle meui_flex_wrap">
+					<img class="c_circle_icon" id="circle_img" src="../../image/edit_topic/circle.png" alt="" />
+					<div class="c_circle_txt meui_single_line" id="circle_txt">
+						选择圈子
+					</div>
+				</div>
+				<div class="c_label meui_flex_wrap" tapmode="meui_click" onclick="fnSelectLabel()">
+					<img class="c_circle_icon" id="label_img" src="../../image/edit_topic/label.png" alt="" />
+					<div class="c_circle_txt meui_single_line" id="label_txt">
+						+选择标签
+					</div>
+				</div>
+			</div>
+			<div class="c_footer_bottom">
+				<div class="c_add_goods"  tapmode="meui_click" onclick="fnOpenSelectGoods()"></div>
+				<div class="c_hide_keyboard"></div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/jquery.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript" src="../../script/sha1.js"></script>
+	<script type="text/javascript" src="../../script/signature.js"></script>
+	<script type="text/javascript">
+		var recruitId;
+		var storyInfo;
+		var selectGoods = [];
+		var selectCircleId;
+        var selectedImgs;
+    	var haveSelectLabels;
+        apiready = function () {
+            //fnRefreshOpen();
+            if (api.safeArea.bottom > 0) {
+                $api.css($api.dom('.c_footer_bottom'), 'padding-bottom:' + api.safeArea.bottom + 'px');
+                $api.dom('.space').style.paddingBottom = api.safeArea.bottom + 'px';
+            }
+            $api.css($api.dom('.c_footer'), 'bottom:' + api.safeArea.bottom + 'px');
+            recruitId = api.pageParam.recruitId;
+            storyInfo = api.pageParam.storyInfo;
+            fnSetCircle();
+            fnOnFocus();
+            fnSetImgSrc('.c_upload_img', api.pageParam.mainImg);
+            // fnInitTitleInput();
+            $api.val($api.dom('.c_title_input'), storyInfo.storyName);
+            fnSetStoryContent();
+            fnInitGoods();
+            // fnTouchListener();
+            fnInitEventListener();
+            fnAddNativeListener();
+            fnKeyBoardListener();
+            $(document).on('touchmove', function (e) {
+                $api.dom('.c_title_input').blur();
+                $api.dom('.c_content_area').blur();
+            });
+        };
+
+		function fnKeyBoardListener() {
+			api.addEventListener({
+				name : 'keyboardshow'
+			}, function(ret, err) {
+				$api.dom('.c_footer').style.position ='absolute';
+				$api.dom('.c_footer').style.bottom = ret.h - api.safeArea.bottom  + 'px';
+			});
+			api.addEventListener({
+				name : 'keyboardhide'
+			}, function(ret, err) {
+				$api.dom('.c_footer').style.position ='fixed';
+				$api.css($api.dom('.c_footer'), 'bottom:' + api.safeArea.bottom + 'px');
+			});
+		}
+        function onPaste(context) {
+            setTimeout(function () {
+                context.value = context.value.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, '');
+                // fnReplaceComment(context.value)
+            }, 0)
+        }
+        var isOpenWin = false;
+        function fnAddNativeListener() {
+            api.addEventListener({
+                name : 'NaviteCallAPICloudMethod'
+            }, function(rets, err) {
+                api.hideProgress();
+                var ret  = rets.value;
+                if (ret.type == 3) {
+                    api.hideProgress();
+                    if (ret.success == 1) {
+                        fnToast('分享成功', 'middle');
+                        $service.get(HOST + '/v3/h5/sg/member/getShareSuccess.json',{
+                            topicId : publishId
+                        },function(ret,err) {
+                        });
+                        var flag = 1;
+                        if(recruitId) {
+                            flag = 4;
+                        }
+                        $service.get('topic/share.ajax',{
+                            flag : flag,
+                            itemId : publishId
+                        },function(ret,err){
+                        });
+                        setTimeout(function(){
+                            isOpenWin = true;
+                            fnOpenWinReload('topic_details', null, {
+                                type : 3,
+                                id : publishId,
+                                openType : 'publish',
+                                // closeToWin : true,
+                                closeWinName: api.winName
+                            });
+                        },1000);
+                    } else {
+                        fnToast(ret.message, 'middle');
+                        setTimeout(function(){
+                            isOpenWin = true;
+                            fnOpenWinReload('topic_details', null, {
+                                type : 3,
+                                id : publishId,
+                                openType : 'publish',
+                                // closeToWin : true,
+                                closeWinName: api.winName
+                            });
+                        },1000);
+                    }
+                }else if (ret.type == 13) {
+                    if (ret.tag == 'resume') {
+                        if(isPublisShare) {
+                            setTimeout(function(){
+                                if(isOpenWin){
+                                    return;
+                                }
+                                fnOpenWinReload('topic_details', null, {
+                                    type : 3,
+                                    id : publishId,
+                                    openType : 'publish',
+                                    closeWinName: api.winName
+                                });
+                            },500);
+                        }
+                    }
+                }
+            });
+        }
+		var isCircle = false;
+		var isLabel = false;
+		function fnBack() {
+			if(isCircle){
+				fnCloseCircle();
+				return;
+			} else if(isLabel){
+				fnCloseLabel();
+				return;
+			}
+            api.execScript({
+            	name : api.winName,
+	            script: 'fnCancel();'
+            });
+		}
+
+		function fnCloseCircle(){
+			isCircle = false;
+			api.closeFrame({
+				name : 'select_circle_frame'
+            });
+		}
+
+		function fnCloseLabel(){
+			isLabel = false;
+			api.closeFrame({
+				name : 'selection_label'
+            });
+		}
+
+        function fnInitEventListener(){
+            api.addEventListener({
+                name:'selectedNum'
+            },function (ret) {
+                if(ret.value.selectedNum < 5){
+                    api.sendEvent({
+                        name:'haveSelect',
+                        extra: {
+                            selectedNum: ret.value.selectedNum
+                        }
+                    })
+                }else{
+                    api.sendEvent({
+                        name:'unAllowSelect',
+                        extra: {
+                            // selectedNum: num
+                        }
+                    })
+                }
+            });
+            api.addEventListener({
+                name : 'selectLabel'
+            }, function(ret) {
+                if(ret){
+                    haveSelectLabels = ret.value.labels;
+                }
+            })
+        }
+		function fnSetCircle() {
+			selectCircleId = storyInfo.topicId;
+			fnSetImgSrc('circle_img', '../../image/edit_topic/circle_active.png');
+			fnSetTxt('circle_txt', storyInfo.topicName);
+			$api.byId('circle_txt').style.color = '#333';
+			fnSetVisibility('.c_label', true);
+			fnGetTopicLables();
+		}
+		function fnGetTopicLables() {
+			$service.get('topic/getTopicTagsByTopicId.ajax', {
+				id : selectCircleId
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1 && ret.data) {
+						var oldLabels = storyInfo.tagIds.split(',');
+						var oldLablesJson = [];
+						for (var i = 0; i < ret.data.length; i++) {
+							for (var j = 0; j < oldLabels.length; j++) {
+								if (ret.data[i].id == oldLabels[j]) {
+									oldLablesJson.push({
+										id : ret.data[i].id,
+										name : ret.data[i].name
+									});
+									break;
+								}
+							}
+							if (oldLablesJson.length == oldLabels.length) {
+                                haveSelectLabels = JSON.stringify(oldLablesJson);
+								fnExecSelectLabel(oldLablesJson);
+								break;
+							}
+						}
+					} else {
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		function fnSetStoryContent() {
+			fnSetValue('.c_content_area', fnBr(storyInfo.storyContent));
+		}
+        function fnBr(comment) {
+            if (!fnIsEmpty(comment)) {
+                comment = comment.replace(/<br\/>/g,"\r\n");
+                comment = comment.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g,'');
+                return comment;
+            }
+            return '';
+        }
+		function fnTouchListener() {
+			$(document).on('touchstart', function(e) {
+				fnHideKeyBoard();
+			});
+		}
+
+		function fnInitGoods() {
+			selectGoods = api.pageParam.productList;
+			if (selectGoods) {
+				fnRebuildGoodsList(selectGoods);
+			}
+			goodsVue.list = selectGoods;
+			fnLog(selectGoods);
+			$api.setStorage('selectGoods', selectGoods);
+            api.writeFile({
+                path : api.boxDir + '/selected_num.txt',
+                data : selectGoods ? selectGoods.length : 0
+            });
+		}
+
+		function fnRebuildGoodsList(selectGoods) {
+			for (var i = 0; i < selectGoods.length; i++) {
+//				selectGoods[i].sku = selectGoods[i].productId;
+				selectGoods[i].defaultImageUrl = selectGoods[i].metaFileId1;
+				selectGoods[i].productFirstName = selectGoods[i].productName;
+				selectGoods[i].productSecondName = '';
+				selectGoods[i].finalPrice = selectGoods[i].miniPrice;
+			}
+		}
+		var goodsVue = new Vue({
+			el : '.select_all',
+			data : {
+				list : []
+			},
+			methods : {
+				fnDelete : function(index) {
+					goodsVue.list.splice(index, 1);
+					$api.setStorage('selectGoods', goodsVue.list);
+                    api.writeFile({
+                        path : api.boxDir + '/selected_num.txt',
+                        data : goodsVue.list.length
+                    });
+				}
+			}
+		});
+        function fnFillGoods(selectGoodsStr) {
+            goodsVue.list = selectGoodsStr;
+            selectGoods = selectGoodsStr;
+            api.closeWin({
+                name : 'search_editor_win'
+            });
+        }
+
+		function fnOpenSelectGoods() {
+			fnOpenWin("search_editor_win", '../topic/', {
+				winName : api.winName,
+                selectGoods : selectGoods
+			});
+		}
+
+		function fnOnFocus() {
+			var keyBoardMgr = api.require("keyBoardMgr");
+			keyBoardMgr.addKBListener(function(ret, err) {
+			});
+		}
+
+		function onKeyBoardChanged(isShow, height) {
+			if (isShow == 1) {
+				fnSetDisplay(".c_hide_keyboard", true);
+			} else if (isShow == 0) {
+				fnSetDisplay(".c_hide_keyboard", false);
+			}
+		}
+
+		function fnSelectCircle() {
+			api.openFrame({
+				name : 'select_circle_frame',
+				url : '../popup/select_circle_frame.html',
+				bgColor : 'rgba(0,0,0,0)'
+			});
+		}
+
+		function fnSelectLabel(id) {
+			fnHideKeyBoard();
+			isLabel = true;
+			if (!id) {
+				id = selectCircleId;
+			}
+			api.openFrame({
+				name : 'selection_label',
+				url : '../popup/selection_label.html',
+				bgColor : 'rgba(0,0,0,0)',
+				pageParam : {
+					id : id,
+					labels:haveSelectLabels,
+                    frameName : api.frameName
+        		},
+            	reload : true
+			});
+		}
+
+		var selectCircleId;
+		function fnExecSelectCircle(id, name, isNotOpenSelectLabels) {
+            var selectStr = "";
+            if (fnIsEmpty(selectStr)) {
+                fnSetImgSrc('label_img', '../../image/edit_topic/label.png');
+                fnSetTxt('label_txt', '+选择标签');
+                $api.byId('label_txt').style.color = '#999';
+                selectLabels = [];
+            }
+			fnSetImgSrc('circle_img', '../../image/edit_topic/circle_active.png');
+			fnSetTxt('circle_txt', name);
+			$api.byId('circle_txt').style.color = '#333';
+			fnSetVisibility('.c_label', true);
+			selectCircleId = id;
+			api.closeFrame({
+				name : 'select_circle_frame'
+			});
+			if (!isNotOpenSelectLabels) {
+				fnSelectLabel(id);
+			}
+		}
+
+		var selectLabels = [];
+		function fnExecSelectLabel(lables) {
+			var selectStr = "";
+			if (lables) {
+				for (var i = 0; i < lables.length; i++) {
+					if (!fnIsEmpty(selectStr)) {
+						selectStr += ',' + lables[i].name;
+					} else {
+						selectStr += lables[i].name;
+					}
+				}
+			}
+			if (fnIsEmpty(selectStr)) {
+				fnSetImgSrc('label_img', '../../image/edit_topic/label.png');
+				fnSetTxt('label_txt', '+选择标签');
+				$api.byId('label_txt').style.color = '#999';
+				selectLabels = [];
+			} else {
+				selectLabels = lables;
+				fnSetImgSrc('label_img', '../../image/edit_topic/label_active.png');
+				fnSetTxt('label_txt', selectStr);
+				$api.byId('label_txt').style.color = '#333';
+			}
+			api.closeFrame({
+				name : 'selection_label'
+			});
+		}
+
+		function fnCanConfirm(){
+        	api.execScript({
+        		frameName : 'is_publish',
+	            script: 'fnCanConfrim();'
+            });
+        }
+        function fnGetProductId() {
+            var productIds = "";
+            for (var i = 0; i < goodsVue.list.length; i++) {
+                if (i == 0) {
+                    productIds += goodsVue.list[i].sku;
+                } else {
+                    productIds += ',' + goodsVue.list[i].sku;
+                }
+            }
+            return productIds;
+        }
+
+        var publishId;
+		function fnConfirm() {
+			var params = {
+				storyId : storyInfo.id,
+				releaseStatus : 1,
+				storyContent : fnGetValue('.c_content_area'),
+				storyName : title,
+				mainImg : storyInfo.mainImg,
+				topicId : selectCircleId,
+				tagsIds : fnGetTagsIds(),
+				mediaUrl : storyInfo.mediaInfo[0].url,
+                productId : fnGetProductId()
+            };
+			if (api.pageParam.recruitId) {
+				params.recruitId = recruitId;
+			}
+			$service.post('story/updateStoryNew.ajax', params, function(ret, err) {
+			    api.hideProgress();
+				if (ret) {
+					if (ret.ok == 1) {
+						api.sendEvent({
+							name : 'topicPublicSuccessEvent'
+						});
+						fnToast('发表成功');
+						$service.get('topic/joinInTopic.ajax', {
+							topicId : selectCircleId
+						}, function(ret, err) {
+						});
+                        publishId = storyInfo.id;
+                        setTimeout(function(){
+                            if(platformType == -1){
+                                selectedImgs = [];
+                                api.writeFile({
+                                    path : api.boxDir + '/selectedImgs.txt',
+                                    data : JSON.stringify(selectedImgs)
+                                }, function(ret, err) {
+                                    api.execScript({
+                                        name : api.pageParam.winName,
+                                        frameName : api.pageParam.frameName,
+                                        script: 'fnReGetTopicInfo(true);'
+                                    });
+                                    api.closeWin();
+                                });
+                            }else{
+                                fnShareNative();
+                            }
+							/*selectedImgs = [];
+							publishId = storyInfo.id;
+							fnShareNative();
+							api.writeFile({
+								path : api.boxDir + '/selectedImgs.txt',
+								data : JSON.stringify(selectedImgs)
+							}, function(ret, err) {
+								api.execScript({
+									name : api.pageParam.winName,
+									frameName : api.pageParam.frameName,
+		                            script: 'fnReGetTopicInfo(true);'
+	                            });
+							});*/
+						},1000);
+					} else {
+						fnCanConfirm();
+						fnToast(ret.data.content);
+					}
+				} else {
+					fnCanConfirm();
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		var platformType = -1;
+		function fnShare(type) {
+			var shareItems = $api.domAll('.c_share_item');
+			for (var i = 0; i < shareItems.length; i++) {
+				if (i == 0) {
+					shareItems[i].src = '../../image/edit_topic/wx_timeline.png';
+				} else if (i == 1) {
+					shareItems[i].src = '../../image/edit_topic/sina.png';
+				} else if (i == 2) {
+					shareItems[i].src = '../../image/edit_topic/wx_friends.png';
+				} else if (i == 3) {
+					shareItems[i].src = '../../image/edit_topic/qq_zone.png';
+				}
+			}
+			if(platformType == type) {
+				platformType = -1;
+				return;
+			}
+			platformType = type;
+			if (platformType == 0) {
+				shareItems[2].src = '../../image/edit_topic/wx_friends_active.png';
+			} else if (platformType == 1) {
+				shareItems[0].src = '../../image/edit_topic/wx_timeline_active.png';
+			} else if (platformType == 2) {
+				shareItems[1].src = '../../image/edit_topic/sina_active.png';
+			} else if (platformType == 4) {
+				shareItems[3].src = '../../image/edit_topic/qq_zone_active.png';
+			}
+		}
+        var isPublisShare = false;
+        function fnShareNative() {
+			if(platformType == -1) {
+				return;
+			}
+            isPublisShare = true;
+            var url = SHARE_HOST + 'topic_details_frame.html?' + fnGetShareUrl(publishId);
+			var storyContent = fnGetValue('.c_content_area');
+			var content = storyContent.substr(0, 30) || '马上进入，参与话题讨论吧...';
+//			if(platformType == 2){
+//				content += url;
+//			}
+			var picUrl = 'http://www.ehaier.com/mstatic/wd/v2/img/sg.png';
+			if (storyInfo.mainImg && storyInfo.mainImg) {
+				picUrl = storyInfo.mainImg;
+			}
+            api.showProgress();
+			api.sendEvent({
+				name : 'APICloudCallNaviteMethod',
+				extra : {
+					type : 3,
+					canCallBack : 1,
+					command : [title + '-顺逛微社区', content, picUrl, url, 0, platformType]
+				}
+			});
+		}
+
+		function fnGetShareUrl() {
+			var params = {
+				type : 3,
+				id : publishId
+			};
+			return new Base64().encode(JSON.stringify(params));
+		}
+
+		function fnCloseInput() {
+			var UIInput = api.require('UIInput');
+			UIInput.close({
+				id : inputId
+			});
+		}
+
+		function fnGetTagsIds() {
+			var tagsIds = [];
+			if (selectLabels != null && selectLabels.length > 0) {
+				for (var i = 0; i < selectLabels.length; i++) {
+					tagsIds.push(selectLabels[i].id);
+				}
+			}
+			return tagsIds;
+		}
+
+		function fnHideKeyBoard() {
+			var keyBoardMgr = api.require("keyBoardMgr");
+			keyBoardMgr.hideKeyBoard(function(ret, err) {
+			});
+		}
+
+		var title;
+		function fnCheck() {
+            var value = $api.dom('.c_title_input').value || '';
+            if (fnIsEmpty(value)) {
+                fnHideKeyBoard();
+                fnToast('标题不能为空', 'middle');
+                return false;
+            } else {
+                if (value.length < 5 || value.length > 30) {
+                    fnToast('话题标题字数应为5~30字', 'middle');
+                    return false;
+                }
+            }
+            title = value;
+            if (fnIsEmpty(fnGetValue('.c_content_area'))) {
+                fnHideKeyBoard();
+                fnToast('内容不能为空', 'middle');
+                return false;
+            } else {
+                var value = fnGetValue('.c_content_area');
+                value = fnReplaceComment(value);
+                if (value == '请输入正文（5～1000字 让和你一样感兴趣的人都看到）') {
+                    fnToast('内容不能为空', 'middle');
+                    return false;
+                }
+                if (value.length < 5 || value.length > 1000) {
+                    fnToast('话题内容字数应为5~1000字', 'middle');
+                    return false;
+                }
+            }
+           /* if (fnIsEmpty(selectCircleId)) {
+                fnHideKeyBoard();
+                fnToast('请选择圈子', 'middle');
+                return false;
+            }
+            if (fnIsEmpty(fnGetTagsIds())) {
+                fnHideKeyBoard();
+                fnToast('请选择标签', 'middle');
+                return false;
+            }*/
+            api.showProgress();
+            fnConfirm();
+        }
+
+		function fnReplaceComment(comment) {
+            if (!fnIsEmpty(comment)) {
+                comment = comment.replace(/\r\n/g, '<br/>');
+                comment = comment.replace(/\n/g, '<br/>');
+                comment = comment.replace(/\s/g, ' ');
+                comment = comment.replace(/<[^>]+>/g, "");
+                fnLogStr(comment);
+                return comment;
+            }
+            return '';
+        }
+        function fnComment(comment) {
+            if (!fnIsEmpty(comment)) {
+                comment = comment.replace(/\r\n/g, '<br/>');
+                comment = comment.replace(/\n/g, '<br/>');
+                comment = comment.replace(/\s/g, ' ');
+                fnLogStr(comment);
+                return comment;
+            }
+            return '';
+        }
+
+		function fnPreview(){
+			fnLog(storyInfo);
+			fnOpenWinReload('video_only_preview',null,{
+				video_record : {
+					path : storyInfo.mediaInfo[0].url
+				}
+			});
+		}
+
+		var inputId;
+		function fnInitTitleInput() {
+			var UIInput = api.require('UIInput');
+			UIInput.open({
+				rect : {
+					x : 15,
+					y : 5,
+					w : api.winWidth - 30,
+					h : 30
+				},
+				styles : {
+					bgColor : 'rgba(0,0,0,0)',
+					size : 16,
+					color : '#333',
+					placeholder : {
+						color : '#999',
+						size : 16
+					}
+				},
+				autoFocus : true,
+				placeholder : '请输入标题（5～30字）',
+				fixedOn : api.frameName,
+				fixed : false
+			}, function(ret) {
+				inputId = ret.id;
+				if (ret.eventType == 'show') {
+					UIInput.value({
+						id : inputId,
+						msg : storyInfo.storyName
+					});
+				}
+			});
+		}
+
+	</script>
+</html>

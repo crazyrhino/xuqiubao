@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/mine.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+    <style>
+        .red_vip,.yellow_vip,.purple_vip {
+            position: absolute;
+            right: 0.080000rem;
+            bottom: 0.266667rem;
+            width: 0.426667rem;
+            height: 0.426667rem;
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+<div class="mine_info">
+    <div class="c_back_btn" tapmode="meui_click" onclick="fnBack()"></div>
+    <div class="c_share_btn" tapmode="meui_click" onclick="fnShare()"></div>
+    <div class="circle_outer">
+        <div class="circle_inner">
+            <img class="circle_header_img" src="../../image/home/tmp_default_header.png" alt=""/>
+        </div>
+        <img class="red_vip" src="../../image/mine/red_vip.png" alt=""/>
+        <img class="yellow_vip" src="../../image/mine/yellow_vip.png" alt=""/>
+        <img class="purple_vip" src="../../image/mine/purple_vip.png" alt=""/>
+    </div>
+    <div class="user_name"></div>
+    <div class="user_extra_info">
+        <div class="user_extra_info_inner">
+            <div class="meui_flex_wrap">
+                <div class="follows" tapmode="meui_click" onclick="fnOpenConcern()">
+                    关注：<span class="follow_num">0</span>
+                </div>
+                <div class="line"></div>
+                <div class="follows" tapmode="meui_click" onclick="fnOpenFans()">
+                    粉丝：<span class="fans_num">0</span>
+                </div>
+                <!--<div class="line"></div>
+                <div class="follows">
+                青岛
+                </div>-->
+            </div>
+        </div>
+    </div>
+    <div class="lv">
+        LV<span class="level"></span><span class="grideName"></span>
+    </div>
+</div>
+<div class="top_opertions meui_flex_wrap">
+    <div class="top_opertions_item meui_flex_con" tapmode onclick="fnOpenMyPublish()">
+        <img class="top_op_icon" src="../../image/mine/mine_write.png" alt=""/>
+        <div class="top_op_txt">
+            我的发布
+        </div>
+        <div class="top_op_num storyCount">
+            0
+        </div>
+    </div>
+    <div class="top_opertions_item meui_flex_con" tapmode onclick="fnOpenCommentskWin()">
+        <img class="top_op_icon" src="../../image/mine/mine_say.png" alt=""/>
+        <div class="top_op_txt">
+            我的评论
+        </div>
+        <div class="top_op_num commentCount">
+            0
+        </div>
+    </div>
+   <!-- <div class="top_opertions_item meui_flex_con" tapmode onclick="fnOpenLabel()">
+        <img class="top_op_icon" src="../../image/mine/mine_lable.png" alt=""/>
+        <div class="top_op_txt">
+            我的标签
+        </div>
+        <div class="top_op_num collectionTagCount">
+            0
+        </div>
+    </div>-->
+</div>
+<div class="opertions">
+	  <div class="op_item meui_flex_wrap" tapmode="meui_click" onclick="fnOpenXqb()">
+        <img class="op_item_icon" src="../../image/mine/mine_xqb.png" alt=""/>
+        <div class="op_item_txt meui_flex_con">
+            我的需求宝 
+        </div>
+        <img class="right_arrow" src="../../image/home/right_arrow.png" alt=""/>
+    </div>
+    <div class="op_item meui_flex_wrap" tapmode="meui_click" onclick="fnOpenReceiveReward()">
+        <img class="op_item_icon" src="../../image/mine/mine_reward.png" alt=""/>
+        <div class="op_item_txt meui_flex_con">
+            我的收赏<span class="op_item_num tipedCount">(0)</span>
+        </div>
+        <img class="right_arrow" src="../../image/home/right_arrow.png" alt=""/>
+    </div>
+    <div class="op_item meui_flex_wrap" tapmode="meui_click" onclick="fnOpenReward()">
+        <img class="op_item_icon" src="../../image/mine/mine_gratuity.png" alt=""/>
+        <div class="op_item_txt meui_flex_con">
+            我的打赏<span class="op_item_num tipCount">(0)</span>
+        </div>
+        <img class="right_arrow" src="../../image/home/right_arrow.png" alt=""/>
+    </div>
+    <div class="op_item meui_flex_wrap" tapmode="meui_click" onclick="fnOpenCircle()">
+        <img class="op_item_icon" src="../../image/mine/mine_circle.png" alt=""/>
+        <div class="op_item_txt meui_flex_con">
+            我的圈子<span class="op_item_num joinTopicCount">(0)</span>
+        </div>
+        <img class="right_arrow" src="../../image/home/right_arrow.png" alt=""/>
+    </div>
+    <div class="op_item meui_flex_wrap" tapmode="meui_click" onclick="fnOpenCollect()">
+        <img class="op_item_icon" src="../../image/mine/mine_collect.png" alt=""/>
+        <div class="op_item_txt meui_flex_con">
+            我的收藏<span class="op_item_num collectionCount">(0)</span>
+        </div>
+        <img class="right_arrow" src="../../image/home/right_arrow.png" alt=""/>
+    </div>
+    <div class="op_item meui_flex_wrap" tapmode="meui_click" onclick="fnOpenPraise()">
+        <img class="op_item_icon" src="../../image/mine/mine_likes.png" alt=""/>
+        <div class="op_item_txt meui_flex_con">
+            我 &nbsp;的 &nbsp;赞<span class="op_item_num praiseCount">(0)</span>
+        </div>
+        <img class="right_arrow" src="../../image/home/right_arrow.png" alt=""/>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/service.js"></script>
+<script type="text/javascript" src="../../script/signature.js"></script>
+<script type="text/javascript" src="../../script/flexible.js"></script>
+<script type="text/javascript">
+    var userId;
+    var userInfo;
+    var userName;
+    var userNameAll;
+    // var userImg;
+    // var userNames;
+    // var talentFlag;
+    apiready = function () {
+        fnGetUserInfo();
+        fnAddSahreListener();
+        fnBackListener(fnBack);
+        fnSetAndroidTop();
+        fnAddRefreshListener();
+    };
+
+    function fnAddRefreshListener(){
+    	api.addEventListener({
+	        name:'refresh_mine'
+        },function(ret,err){
+        	fnGetUserInfo();
+        });
+    }
+
+    function fnGetUserInfo() {
+        $service.get('user/getUserInfo.ajax', {}, function (ret, err) {
+            if (ret.ok == 1) {
+                userInfo = ret.data.userInfoCount;
+                fnSetImgSrc('.circle_header_img', ret.data.userImg);
+                userName = ret.data.userName;
+                userNameAll = ret.data.userName;
+                // userImg = ret.data.userImg;
+                // userNames = ret.data.userName;
+                // talentFlag = ret.data.talentFlag;
+                if (!fnIsEmpty(userName)) {
+  		             if (userName.length > 10) {
+  		                 userName = userName.substring(0, 10) + '...';
+  		             }
+                }
+                fnSetTxt('.user_name', userName);
+                fnSetDisplay('.red_vip', ret.data.talentFlag == 1 ? true : false);
+                fnSetDisplay('.yellow_vip', ret.data.talentFlag == 2 ? true : false);
+                fnSetDisplay('.purple_vip', ret.data.talentFlag == 3 ? true : false);
+                if(ret.data.level == null || ret.data.level == 'null'){
+                	fnSetDisplay('.level', false);
+                }else{
+	                fnSetTxt('.level', ret.data.level);
+                }
+                if(ret.data.grideName == 'null' || ret.data.grideName == null) {
+                	fnSetDisplay('.grideName', false);
+                }else{
+	                 fnSetTxt('.grideName', ret.data.grideName);
+                }
+                fnSetTxt('.follow_num', ret.data.userInfoCount.followCount);
+                fnSetTxt('.fans_num', ret.data.userInfoCount.followedCount);
+                fnSetTxt('.storyCount', ret.data.userInfoCount.storyCount);
+                fnSetTxt('.commentCount', ret.data.userInfoCount.commentCount);
+                // fnSetTxt('.collectionTagCount', ret.data.userInfoCount.collectionTagCount);
+                fnSetTxt('.tipedCount', '(' + ret.data.userInfoCount.tipedCount + ')');
+                fnSetTxt('.tipCount', '(' + ret.data.userInfoCount.tipCount + ')');
+                fnSetTxt('.joinTopicCount', '(' + ret.data.userInfoCount.joinTopicCount + ')');
+                fnSetTxt('.collectionCount', '(' + ret.data.userInfoCount.collectionCount + ')');
+                fnSetTxt('.praiseCount', '(' + ret.data.userInfoCount.praiseCount + ')');
+            } else {
+            }
+        });
+    }
+
+    function fnOpenCommentskWin() {
+        api.openWin({
+            name: 'comments_win',
+            url: 'comments_win.html',
+            // pageParam: {
+            //     userImg: userImg,
+            //     userName: userNames,
+            //     talentFlag:talentFlag
+            // }
+        });
+    }
+
+    function fnOpenMyPublish() {
+        fnOpenWin("my_publish");
+    }
+
+    function fnOpenReceive() {
+        fnOpenWin("my_receive_reward");
+    }
+
+    function fnOpenLabel() {
+        fnOpenWin("label_list", '../label/');
+    }
+
+    function fnOpenConcern() {
+        fnOpenWin("my_concern_win");
+    }
+
+    function fnOpenFans() {
+        fnOpenWin("my_fans_win");
+    }
+
+    function fnOpenReward() {
+        fnOpenWin("my_reward_win");
+    }
+
+    function fnOpenCircle() {
+        fnOpenWin("my_community_win", '../community/');
+    }
+
+    function fnOpenCollect() {
+        fnOpenWin("my_collection_win");
+    }
+
+    function fnOpenReceiveReward() {
+        fnOpenWin("my_receive_reward");
+    }
+    //进入需求宝
+    function fnOpenXqb() { 
+       
+      
+        fnOpenWin("thought_win", '../xuqiubao/');
+          
+        
+       
+//    var jsfun = 'funcGoto();';
+//			api.execScript({
+//			  script: jsfun,
+//			  name: 'main'
+//	  });
+//	  api.closeToWin({
+//             name: 'main'
+//    });
+//	 
+			       
+    }
+
+    function fnOpenPraise() {
+        fnOpenWin("my_appreciate");
+    }
+
+    function fnGetShareUrl() {
+        if (userInfo) {
+            var params = {
+                memberId: userInfo.userId
+            };
+            return new Base64().encode(JSON.stringify(params));
+        }
+        return '';
+    }
+
+    function fnShare() {
+        var url = SHARE_HOST + 'ta_page.html?' + fnGetShareUrl();
+        if (fnIsEmpty(userNameAll)) {
+    		  userNameAll = userInfo.userId;
+    		}
+        var title = (userNameAll ? userNameAll : '他') + '的社区主页';   //(userInfo.userName ? userInfo.userName : '他') +
+        var content = (userNameAll ? userNameAll : '他') + "已在顺逛社区发表了"+userInfo.storyCount+"话题，拥有"+userInfo.followedCount+"粉丝，欢迎来围观。";
+        api.openFrame({
+            name: 'share_frame',
+            url: '../popup/share_frame.html',
+            bgColor: 'rgba(0,0,0,0)',
+            pageParam: {
+                operationType: 'no_operation',
+                shareUrl: url,
+                title: title,
+                content: content
+            }
+        });
+    }
+
+    function fnAddSahreListener() {
+        api.addEventListener({
+            name: 'shrare_success'
+        }, function (rets, err) {
+            api.hideProgress();
+            fnToast('分享成功', 'middle');
+            api.closeFrame({
+                name: 'share_frame'
+            });
+            $service.get(HOST + '/v3/h5/sg/member/getShareSuccess.json');
+        });
+        api.addEventListener({
+            name: 'shrare_fail'
+        }, function (rets, err) {
+            api.hideProgress();
+            api.closeFrame({
+                name: 'share_frame'
+            });
+        });
+    }
+    //判断 安卓机 设置顶部间距
+    function fnSetAndroidTop(){
+        if (api.systemType == 'android'){
+          $api.css($api.dom('.c_back_btn'),'top:' + 0+ 'px');
+          $api.css($api.dom('.c_share_btn'),'top:' + 0+ 'px');
+        }
+    }
+</script>
+</html>

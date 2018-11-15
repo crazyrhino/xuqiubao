@@ -1,0 +1,124 @@
+html,
+body {
+  font-size: 20px;
+  background: #F2F2F2;
+}
+html .location_select_box .location_select_text,
+body .location_select_box .location_select_text {
+  padding: 0.35rem;
+  background: #F2F2F2;
+  position: relative;
+}
+html .location_select_box .location_select_text #location_select,
+body .location_select_box .location_select_text #location_select {
+  background: #fff !important;
+  height: 1.50rem;
+  width: 98%;
+  -webkit-border-radius: 0.75rem;
+  -moz-border-radius: 0.75rem;
+  border-radius: 0.75rem;
+  position: relative;
+  padding-left: 1.8rem;
+  font-size: 0.70rem;
+}
+html .location_select_box .location_select_text .location_select_cancel,
+body .location_select_box .location_select_text .location_select_cancel {
+  color: #999;
+  font-size: 0.85rem;
+  position: absolute;
+  right: 0.35rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+html .location_select_box .location_select_text img,
+body .location_select_box .location_select_text img {
+  position: absolute;
+  width: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0.65rem;
+  z-index: 99999999999999999999999999999;
+}
+html .location_select_box .location_select_bottom,
+body .location_select_box .location_select_bottom {
+  background: #F2F2F2;
+}
+html .location_select_box .location_select_bottom .location_no,
+body .location_select_box .location_select_bottom .location_no,
+html .location_select_box .location_select_bottom ul,
+body .location_select_box .location_select_bottom ul,
+html .location_select_box .location_select_bottom .location_current,
+body .location_select_box .location_select_bottom .location_current {
+  padding-left: 0.45rem;
+  background: #fff;
+}
+html .location_select_box .location_select_bottom .location_no,
+body .location_select_box .location_select_bottom .location_no {
+  line-height: 2rem;
+  color: #4B78AA;
+  font-size: 0.75rem;
+}
+html .location_select_box .location_select_bottom .location_current,
+body .location_select_box .location_select_bottom .location_current {
+  background: #F2F2F2;
+  line-height: 1.50rem;
+  font-size: 0.70rem;
+  color: #666666;
+}
+html .location_select_box .location_select_bottom ul,
+body .location_select_box .location_select_bottom ul {
+  background: #fff;
+  /*多行溢出 手机端使用*/
+}
+html .location_select_box .location_select_bottom ul li,
+body .location_select_box .location_select_bottom ul li {
+  height: auto;
+  box-sizing: border-box;
+  border-bottom: 1px solid #eee;
+  position: relative;
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
+  width: 100%;
+}
+html .location_select_box .location_select_bottom ul li img,
+body .location_select_box .location_select_bottom ul li img {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 1.00rem;
+  width: 1.50rem;
+}
+html .location_select_box .location_select_bottom ul li p,
+body .location_select_box .location_select_bottom ul li p {
+  padding-right: 2rem;
+}
+html .location_select_box .location_select_bottom ul li p:nth-child(1),
+body .location_select_box .location_select_bottom ul li p:nth-child(1) {
+  color: #333;
+  font-size: 0.75rem;
+}
+html .location_select_box .location_select_bottom ul li p:nth-child(2),
+body .location_select_box .location_select_bottom ul li p:nth-child(2) {
+  color: #999;
+  font-size: 0.60rem;
+}
+html .location_select_box .location_select_bottom ul .txt-cut,
+body .location_select_box .location_select_bottom ul .txt-cut {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用*/
+  display: -webkit-box;
+  /*//显示1行*/
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+html .location_select_box .location_select_bottom ul .location_name,
+body .location_select_box .location_select_bottom ul .location_name {
+  line-height: 2.3rem !important;
+  font-size: 0.75rem;
+}
+html [v-cloak],
+body [v-cloak] {
+  display: none;
+}
+/*# sourceMappingURL=location_select_frame.css.map */

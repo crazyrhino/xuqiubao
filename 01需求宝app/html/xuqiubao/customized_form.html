@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="yes" name="apple-touch-fullscreen" />
+    <meta content="telephone=no,email=no" name="format-detection" />
+    <meta
+      name="App-Config"
+      content="fullscreen=yes,useHistoryState=yes,transition=yes"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
+    <title>个人定制和团队定制</title>
+    <link rel="stylesheet" type="text/css" href="../../css/base.css" />
+    <script type="text/javascript" src="../../script/rem.js"></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="./css/decoration_resource_form.css?v=7"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="./css/custormized_form.css?v=7"
+    />
+  </head>
+  <body>
+    <div id="customizedVue">
+      <div class="box" v-cloak>
+        <div class="sort">
+          <!-- 个人定制 -->
+          <div class="decorationBox" v-show="tableClick == true">
+            <div class="decorationFromBox">
+              <form action="" id="decorationFrom">
+                <input
+                  name="user"
+                  type="text"
+                  placeholder="请输入姓名"
+                  class="name"
+                  v-model="personalName"
+                />
+                <input
+                  id="decorationFromTel"
+                  type="text"
+                  v-model="personalTel"
+                  placeholder="请输入联系电话"
+                />
+                <select
+                  name="a"
+                  v-if="personaSelect == 0"
+                  @change="clickIOS()"
+                  class="selectActice"
+                  v-model="personaSelect"
+                >
+                  <option value="0">请选择品类</option>
+                  <option value="1">西装</option>
+                  <option value="2">T恤</option>
+                  <option value="3">卫衣</option>
+                  <option value="4">夹克</option>
+                </select>
+                <select
+                  v-else
+                  name="a"
+                  class=""
+                  @change="clickIOS()"
+                  v-model="personaSelect"
+                >
+                  <option value="0">请选择品类</option>
+                  <option value="1">西装</option>
+                  <option value="2">T恤</option>
+                  <option value="3">卫衣</option>
+                  <option value="4">夹克</option>
+                </select>
+                <div class="selection">
+                  <textarea
+                    type="text"
+                    class="textareas"
+                    maxlength="200"
+                    id="personsTextarea"
+                    rows="4"
+                    cols="20"
+                    name="orgAuditDesc"
+                    @input="personsTextareaValue(personsTextarea)"
+                    placeholder="其它补充说明(0-200字)"
+                    v-model="personsTextarea"
+                  ></textarea>
+                </div>
+                <input
+                  class="submitBut submitActive"
+                  value="提交预约"
+                  placeholder="提交预约"
+                  type="submit"
+                  v-if="this.personalName != '' && this.personalTel.length > 10 && this.personaSelect != 0 "
+                  type=""
+                  @click="submitPersona()"
+                />
+                <input
+                  v-else
+                  type="submit"
+                  value="提交预约"
+                  placeholder="提交预约"
+                  class="submitBut"
+                  @click="submitPersona()"
+                />
+              </form>
+            </div>
+          </div>
+          <!-- 团队定制 -->
+          <div class="resourceBox" v-show="tableClick == false">
+            <div class="decorationFromBox resourceFromBox">
+              <form action="" id="resourceFrom">
+                <input
+                  name="user2"
+                  type="text"
+                  placeholder="请输入姓名"
+                  class="name2"
+                  v-model="teamName"
+                />
+                <input
+                  id="resourceFromFromTel"
+                  type="text"
+                  v-model="teamTel"
+                  placeholder="请输入联系电话"
+                  class=""
+                />
+                <select
+                  v-if="teamSelect == 0"
+                  name="b"
+                  id="select"
+                  v-model="teamSelect"
+                  class="selectActice"
+                >
+                  <option value="0">请选择品类</option>
+                  <option value="1">西装</option>
+                  <option value="2">T恤</option>
+                  <option value="3">卫衣</option>
+                  <option value="4">夹克</option>
+                </select>
+                <select
+                  v-else
+                  name="b"
+                  v-model="teamSelect"
+                  id="select"
+                  class=""
+                >
+                  <option value="0">请选择品类</option>
+                  <option value="1">西装</option>
+                  <option value="2">T恤</option>
+                  <option value="3">卫衣</option>
+                  <option value="4">夹克</option>
+                </select>
+                <div class="selection" v-if="teamNumber.trim().length > 0 ">
+                  <input
+                    type="text"
+                    v-model="teamNumber"
+                    placeholder="定制数量"
+                    class="name"
+                  />
+                  <i style="display: block!important;">套</i>
+                </div>
+                <div class="selection" v-else>
+                  <input
+                    type="text"
+                    v-model="teamNumber"
+                    placeholder="定制数量"
+                    class="name"
+                  />
+                </div>
+
+                <div class="selection">
+                  <input
+                    type="text"
+                    v-model="teamAddress"
+                    v-Model="teamAddress"
+                    placeholder="请输入城市如:青岛"
+                    class="name"
+                  />
+                </div>
+
+                <div class="selection">
+                  <input
+                    type="text"
+                    v-model="teamDetailedAddress"
+                    placeholder="详细地址"
+                    class="name"
+                  />
+                </div>
+                <div class="selection">
+                  <textarea
+                    type="text"
+                    id="textareas"
+                    maxlength="200"
+                    v-model="teamTextarea"
+                    @input="teamTextareaValue(teamTextarea)"
+                    class="textareas"
+                    rows="4"
+                    cols="20"
+                    name="orgAuditDesc"
+                    placeholder="其它补充说明(0-200字)"
+                  ></textarea>
+                </div>
+
+                <input
+                  value="立即预约"
+                  v-if="this.teamName.length !=''  && this.teamTel.length > 10 && this.teamSelect > 0 && this.teamNumber >= 50 &&this.teamAddress!=''&& this.teamDetailedAddress!=''"
+                  class="submitBut submitActive"
+                  placeholder="立即预约"
+                  @click="submittTeam()"
+                  type="submit"
+                />
+                <input
+                  v-else
+                  class="submitBut"
+                  value="立即预约"
+                  placeholder="立即预约"
+                  @click="submittTeam()"
+                  type="submit"
+                />
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+  <script type="text/javascript" src="../../script/vue.js"></script>
+  <script type="text/javascript" src="../../script/mapi.js"></script>
+  <script type="text/javascript" src="../../script/api.js"></script>
+  <script type="text/javascript" src="../../script/fastclick.js"></script>
+  <script type="text/javascript" src="../../script/common.js"></script>
+  <script type="text/javascript">
+    apiready = function() {
+      FastClick.attach(document.body);
+      api.addEventListener(
+        {
+          //监听table切换传参
+          name: "tableClick"
+        },
+        function(ret, err) {
+          if (ret) {
+            // alert(JSON.stringify(ret.value)); //注意赋值时不用JSON.stringify();
+            customizedVue.tableClick = ret.value.tableClickBlool;
+          }
+        }
+      );
+      softInputBarEnabled: true; //可以设置是否去掉键盘上的工具条
+      $event.isShowHomeTab(false); //隐藏底部导航
+      customizedVue.clickIOS();
+    };
+
+    var customizedVue = new Vue({
+      el: "#customizedVue",
+      data: {
+        tableClick: true, //默认显示我要维修
+        //个人
+        personalName: "", //姓名
+        personalTel: "", //电话
+        personaSelect: 0, //类型
+        personsTextarea: "", //其他说明
+        //团队
+        teamName: "", //姓名
+        teamTel: "", //电话
+        teamSelect: 0, // 类型,
+        teamNumber: "", //数量
+        teamAddress: "", //地址
+        teamDetailedAddress: "", //详细地址
+        teamTextarea: "" //其他说明
+      },
+      methods: {
+        /**
+         * 个人其他说明输入字体数量控制
+         */
+        personsTextareaValue: function(value) {
+          if (value.length > 199) {
+            api.toast({
+              msg: "其它补充说明字数最多为200字!",
+              duration: 1000,
+              location: "middle"
+            });
+          }
+        },
+        //个人提交数据获取和正则判断
+        submitPersona: function() {
+          event.preventDefault(); //默认提交禁止
+          var value = {
+            cityCode: "", // 市编码	number	@mock=123456
+            cityName: "", // 市名称	string	@mock=123456
+            customizationType: parseInt(this.personaSelect), // 定制类型	number	@mock=1
+            personFlag: 0, // 个人定制 0 团队定制 1	number	@mock=1
+            provinceCode: "", // 省编码	number	@mock=123456
+            provinceName: "", // 	// 省名称	string	@mock=123456
+            regionCode: "", // 区编码	string	@mock=123456
+            regionName: "", // 区名称	string	@mock=123456
+            teamAddress: "", //城市
+            userAddress: "", // 地址	string	@mock=123456
+            userCount: "", //定制数量
+            userName: this.regExpStringChar(
+              this.personalName.trim().toString()
+            ), // 姓名	string	@mock=大家
+            userPhone: this.personalTel.trim().toString(), // 手机号	string	@mock=13070878303
+            userRemark: this.regExpStringChar(
+              this.personsTextarea.trim().toString()
+            ) // 备注
+          };
+          if (this.personalName.trim().toString() == "") {
+            api.toast({
+              msg: "请输入姓名!",
+              duration: 1000,
+              location: "middle"
+            });
+          } else if (this.personalTel.trim() == "") {
+            api.toast({
+              msg: "请输入联系电话!",
+              duration: 1000,
+              location: "middle"
+            });
+          } else if (
+            0 == this.ToCDB(this.personalTel.trim())[0] &&
+            !this.regExpTel(this.ToCDB(this.personalTel.trim()))
+          ) {
+            api.toast({
+              msg: "联系电话输入格式不正确!",
+              duration: 1000,
+              location: "middle"
+            });
+          } else if (
+            0 != this.ToCDB(this.personalTel.trim())[0] &&
+            !/^1[34578]\d{9}$/.test(this.ToCDB(this.personalTel.trim()))
+          ) {
+            api.toast({
+              msg: "联系电话输入格式不正确!",
+              duration: 1000,
+              location: "middle"
+            });
+          } else if (this.personaSelect == 0) {
+            api.toast({
+              msg: "请选择品类!",
+              duration: 1000,
+              location: "middle"
+            });
+          } else if (this.personsTextarea.length > 200) {
+            api.toast({
+              msg: "其它补充说明字数最多为200字!",
+              duration: 1000,
+              location: "middle"
+            });
+          } else {
+            this.fnPostSubmit(value);
+          }
+        },
+        /**
+         * 团队其他说明输入字体数量控制
+         */
+        teamTextareaValue: function(value) {
+          if (value.length > 199) {
+            api.toast({
+              msg: "其它补充说明字数最多为200字!",
+              duration: 1000,
+              location: "middle"
+            });
+            return false;
+          }
+        },
+        /*
+         * 全角转为半角
+         * */
+        ToCDB: function(str) {
+          var tmp = "";
+          for (var i = 0; i < str.length; i++) {
+            if (str.charCodeAt(i) == 12288) {
+              tmp += String.fromCharCode(str.charCodeAt(i) - 12256);
+              continue;
+            }
+            if (str.charCodeAt(i) > 65280 && str.charCodeAt(i) < 65375) {
+              tmp += String.fromCharCode(str.charCodeAt(i) - 65248);
+            } else {
+              tmp += String.fromCharCode(str.charCodeAt(i));
+            }
+          }
+          return tmp;
+        },
+
+        /**
+         * 电话座机号码验证
+         * @param value  用户输入的号码
+         * @returns {boolean}
+         */
+        regExpTel: function(value) {
+          return (
+            /^0\d{3}－\d{7,8}$/.test(value.trim()) ||
+            /^0\d{2}－\d{7,8}$/.test(value.trim()) ||
+            /^0\d{3}-\d{7,8}$/.test(value.trim()) ||
+            /^0\d{2}-\d{7,8}$/.test(value.trim()) ||
+            /^0\d{10,11}$/.test(value.trim()) ||
+            /^0\d{9,10}$/.test(value.trim()) ||
+            /^0\d{2}—\d{7,8}$/.test(value.trim()) ||
+            /^0\d{3}—\d{7,8}$/.test(value.trim())
+          );
+        },
+        /*
+         * 特殊字符转换
+         * string 要转换的字符
+         * */
+        regExpStringChar: function(string) {
+          var patt = /[\ud800-\udbff][\udc00-\udfff]/g; // 检测utf16字符正则
+          return string.replace(patt, function(char) {
+            var H, L, code;
+            if (char.length === 2) {
+              H = char.charCodeAt(0); // 取出高位
+              L = char.charCodeAt(1); // 取出低位
+              code = (H - 0xd800) * 0x400 + 0x10000 + L - 0xdc00; // 转换算法
+              return "&#" + code + ";";
+            } else {
+              return char;
+            }
+          });
+        },
+
+        //团体提交数据获取和正则判断
+        submittTeam: function() {
+          event.preventDefault(); //默认提交禁止
+          var value = {
+            cityCode: "", // 市编码	number	@mock=123456
+            cityName: "", // 市名称	string	@mock=123456
+            customizationType: parseInt(this.teamSelect), // 定制类型	number	@mock=1
+            personFlag: 1, // 个人定制 0 团队定制 1	number	@mock=1
+            provinceCode: "", // 省编码	number	@mock=123456
+            provinceName: "", // 	// 省名称	string	@mock=123456
+            regionCode: "", // 区编码	string	@mock=123456
+            regionName: "", // 区名称	string	@mock=
+            userCount: parseInt(this.teamNumber), //定制数量
+            teamAddress: this.regExpStringChar(
+              this.teamAddress.trim().toString()
+            ), //城市
+            userAddress: this.regExpStringChar(
+              this.teamDetailedAddress.toString()
+            ), // 地址	string	@mock=123456
+            userName: this.regExpStringChar(this.teamName.trim().toString()), // 姓名	string	@mock=大家
+            userPhone: this.teamTel.trim().toString(), // 手机号	string	@mock=13070878303
+            userRemark: this.regExpStringChar(
+              this.teamTextarea.trim().toString()
+            ) // 备注
+          };
+          if (this.teamName.trim().toString() == "") {
+            api.toast({
+              msg: "请输入姓名!",
+              duration: 1000,
+              location: "middle"
+            });
+            // return false
+          } else if (this.teamTel.trim() == "") {
+            api.toast({
+              msg: "请输入联系电话!",
+              duration: 1000,
+              location: "middle"
+            });
+            // return false
+          } else if (
+            0 == this.ToCDB(this.teamTel.trim())[0] &&
+            !this.regExpTel(this.ToCDB(this.teamTel.trim()))
+          ) {
+            api.toast({
+              msg: "联系电话输入格式不正确!",
+              duration: 1000,
+              location: "middle"
+            });
+          } else if (
+            0 != this.ToCDB(this.teamTel.trim())[0] &&
+            !/^1[34578]\d{9}$/.test(this.ToCDB(this.teamTel.trim()))
+          ) {
+            api.toast({
+              msg: "联系电话输入格式不正确!",
+              duration: 1000,
+              location: "middle"
+            });
+          } else if (this.teamSelect == 0) {
+            api.toast({
+              msg: "请选择品类!",
+              duration: 1000,
+              location: "middle"
+            });
+            // return false
+          } else if (this.teamNumber.trim().length == 0) {
+            api.toast({
+              msg: "请输入定制数量!",
+              duration: 1000,
+              location: "middle"
+            });
+          } else if (
+            this.teamNumber.length > 0 &&
+            !/^[1-9]\d*$/.test(parseInt(this.teamNumber))
+          ) {
+            api.toast({
+              msg: "定制数量输入格式不对!",
+              duration: 1000,
+              location: "middle"
+            });
+            // return false
+          } else if (parseInt(this.teamNumber) < 50) {
+            api.toast({
+              msg: "定制数量不能小于50套!",
+              duration: 1000,
+              location: "middle"
+            });
+            // return false
+          } else if (this.teamAddress == 0) {
+            api.toast({
+              msg: "请输入城市!",
+              duration: 1000,
+              location: "middle"
+            });
+            // return false
+          } else if (this.teamDetailedAddress == 0) {
+            api.toast({
+              msg: "请输入详细地址!",
+              duration: 1000,
+              location: "middle"
+            });
+            // return false
+          } else if (this.teamTextarea.length > 200) {
+            api.toast({
+              msg: "其它补充说明字数最多为200字!",
+              duration: 1000,
+              location: "middle"
+            });
+            // return false
+          } else {
+            this.fnPostSubmit(value);
+          }
+        },
+        /**
+         * 数据提交接口
+         * @param params   object  {name:"李四",age:18}
+         */
+        fnPostSubmit: function(params) {
+          $app.showProgress("提交中...", "");
+          $http.POST(
+            HOST + UrlRouter.addCustomization,
+            {
+              body: params,
+              h5: 1 //区别app请求
+            },
+            function(ret) {
+              if (ret.ok == "1") {
+                $app.hideProgress();
+                fnToast("提交成功", "middle");
+                api.closeWin();
+              } else {
+                $app.hideProgress();
+                api.toast({
+                  msg: "提交失败,请重新提交...",
+                  duration: 1000,
+                  location: "middle"
+                });
+              }
+            },
+            function(err) {
+              $app.hideProgress();
+              $app.toast(err.msg, "middle");
+            }
+          );
+        },
+        /*
+         * 解决ios单击延迟的问题
+         * */
+        clickIOS: function() {
+          if ($app.SYSTEM_TYPE() === "ios") {
+            $("textarea").on("touchend", function() {
+              $(this).focus();
+              event.preventDefault();
+            });
+            $("input").on("touchend", function() {
+              $(this).focus();
+              event.preventDefault();
+            });
+            $("select").on("change", function() {
+              $("input").blur();
+              event.preventDefault();
+            });
+          }
+        }
+      }
+    });
+  </script>
+  <script>
+    $(function() {
+      $(".selection").on("touchend", "i", function() {
+        $(this)
+          .parent()
+          .find("input")
+          .focus();
+        // alert("ddddd")
+        event.preventDefault();
+        return false;
+      });
+    });
+  </script>
+</html>

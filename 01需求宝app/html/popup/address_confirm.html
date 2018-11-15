@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>选择精华位置-弹窗</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/address_confirm.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+	</head>
+	<body>
+		<div id="warp">
+			<div class="popup_position">
+				<div class="popup_content">
+					<p class="cont_tit">
+						请确认地址正确，如有修改请联系社区运营
+					</p>
+					<div class="hold"></div>
+					<div class="btns">
+						<a class="btn btn_left" tapmode onclick="api.closeFrame();">取消</a>
+						<a tapmode onclick="confirm()" class="btn btn_right">确定</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+            fnBackListener(fnBack)
+		};
+		function confirm() {
+//			api.execScript({
+//				name:'address'
+//				frameName : 'address_frame',
+//				script : 'save()'
+//			});
+			api.sendEvent({
+				name:'saveRewardAddress'
+			});
+//			setTimeout(function() {
+//				api.closeFrame();
+//			}, 500)
+		}
+	</script>
+</html>

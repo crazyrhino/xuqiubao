@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+<title>title</title>
+<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+<link rel="stylesheet" type="text/css" href="../../css/select_picture.css"/>
+<style type="text/css">
+.back_layout {
+	width: 2.4rem;
+}
+</style>
+</head>
+<body>
+<header id="header">
+	<div class="header_div">
+		<div class="title">照片</div>
+		<div class="cancle_btn" tapmode="meui_click" onclick="cancel()"> 取消 </div>
+	</div>
+</header>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/flexible.js"></script>
+<script type="text/javascript">
+	apiready = function() {
+		//fnRefreshOpen();
+		fnSysHeaderStyleById();
+		var headerH = $api.offset($api.byId('header')).h;
+		api.openFrame({
+			name: 'select_picture_folder_frame',
+			url: 'select_picture_folder_frame.html?v=' + new Date().getTime(),
+			rect: {
+				x: 0,
+				y: headerH,
+				w: 'auto',
+				h: 'auto'
+			},
+			bgColor: '#FFF',
+			bounces: true
+		});
+	};
+	function cancel() {
+		api.closeWin({
+		    name: 'select_picture'
+		});
+		setTimeout(function(){
+			api.closeWin();
+		},30);
+	}
+</script>
+</html>

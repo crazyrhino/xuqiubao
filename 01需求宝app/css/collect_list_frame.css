@@ -1,0 +1,129 @@
+.flex_container {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+}
+
+.line2 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	word-wrap:break-word;
+}
+
+.img_wrap {
+	padding: 0.426667rem;
+	border-bottom: 1px solid #EEEEEE;
+	position: relative;
+}
+
+.img_wrap .bacImg {
+	width: 9.146667rem;
+	height: 5.120000rem;
+	border-radius: 0.106667rem;
+}
+
+.status_wrap {
+	position: relative;
+}
+
+.status {
+	width: 2.053333rem;
+	height: 0.640000rem;
+	position: absolute;
+	right: 0;
+	top: 0.293333rem;
+}
+
+.status img {
+	width: 2.053333rem;
+	height: 0.640000rem;
+}
+
+.statusText {
+	color: white;
+	font-size: 0.320000rem;
+	position: absolute;
+	top: 0.080000rem;
+	left: 0.693333rem;
+}
+
+.title {
+	padding: 0  0.426667rem;
+}
+
+.title .wrap {
+	font-family: PingFangSC-Medium;
+	width: 9.146667rem;
+	height: 1.066667rem;
+	line-height: 1.066667rem;
+	text-align: left;
+	font-size: 0.426667rem;
+	color: #333333;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	border-bottom: 1px solid #EEEEEE;
+}
+
+.bottom_bar {
+	-webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+	padding: 0.346667rem 0.426667rem;
+}
+
+.left_bar {
+	margin-right: auto;
+}
+
+.time {
+	font-family: PingFangSC-Regular;
+	font-size: 0.320000rem;
+	color: #999999;
+}
+
+.endTime {
+	height: 0.426667rem;
+	font-size: 0.320000rem;
+	color: #999999;
+	margin-left: 0.160000rem;
+}
+
+.right_bar {
+	-webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+}
+.headIdcon_wrap img{
+	width: 0.533333rem;
+	height: 0.533333rem;
+	border: 1px solid white;
+	border-radius: 0.533333rem;
+	display: inline-block;
+	position: relative;
+}
+
+.personNum {
+	font-family: PingFangSC-Regular;
+	font-size: 0.320000rem;
+	color: #999999;
+	margin-left: 0.266667rem;
+}
+
+.bottom_icon {
+	width: 0.640000rem;
+	height: 0.640000rem;
+	margin-left: 0.320000rem;
+	background-size: cover;
+}
+
+.bottom_num {
+	font-size: 0.320000rem;
+	color: #999999;
+}

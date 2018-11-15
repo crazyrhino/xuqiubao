@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<style>
+			body, html {
+				background: rgba(0,0,0,0);
+			}
+			.header {
+				position: relative;
+				width: 100%;
+				height: 64px;
+				background: rgba(0,0,0,0);
+			}
+			.back_btn {
+				position: absolute;
+				left: 0px;
+				top: 0px;
+				width: 44px;
+				height: 64px;
+				background: url(../../image/ic_back_btn.png) no-repeat center right;
+				background-size: 24px;
+			}
+			.select {
+				position: absolute;
+				right: 0px;
+				top: 0px;
+				width: 54px;
+				height: 64px;
+				background: url(../../image/edit_topic/select_normal.png) no-repeat center;
+				background-size: 26px;
+			}
+			.selected_div {
+				position: absolute;
+				right: 0px;
+				top: 0px;
+				width: 54px;
+				height: 64px;
+				display: none;
+			}
+			.selected {
+				margin-left: 14px;
+				margin-top: 20px;
+				width: 26px;
+				height: 26px;
+				background: #FF6026;
+				line-height: 26px;
+				text-align: center;
+				color: #FFF;
+				font-size: 14px;
+				border-radius: 20px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="header">
+			<div class="back_btn" tapmode="meui_click" onclick="fnBack()"></div>
+			<div class="select"  tapmode="meui_click" onclick="fnSelect()"></div>
+			<div class="selected_div" tapmode="meui_click" onclick="fnUnSelect()">
+				<div class="selected"></div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+		};
+		function fnBack() {
+			api.execScript({
+				name : 'select_picture',
+				frameName : 'select_picture_frame',
+				script : 'fnResetData();'
+			});
+		}
+
+		function fnSetSelectedIndex(index) {
+			if (index >= 1) {
+				fnSetTxt(".selected", index);
+				fnSetDisplay(".selected_div", true);
+				fnSetDisplay(".select", false);
+			} else {
+				fnSetDisplay(".selected_div", false);
+				fnSetDisplay(".select", true);
+			}
+		}
+
+		function fnSelect() {
+			var selectedImgs = JSON.parse(api.readFile({
+				sync : true,
+				path : api.boxDir + '/selectedImgs.txt'
+			}));
+			if (selectedImgs.length == api.pageParam.canSelectNum) {
+				fnToast('最多只能选择9张图片');
+				return;
+			}
+			api.execScript({
+				name : 'select_picture_preview',
+				script : 'fnSelectImg();'
+			});
+			setTimeout(function() {
+				fnSetDisplay(".select", false);
+				fnSetTxt(".selected", selectedImgs.length + 1);
+				fnSetDisplay(".selected_div", true);
+			}, 100);
+		}
+
+		function fnUnSelect() {
+			api.execScript({
+				name : 'select_picture_preview',
+				script : 'fnUnSelectImg();'
+			});
+			setTimeout(function() {
+				fnSetDisplay(".selected_div", false);
+				fnSetDisplay(".select", true);
+			}, 100);
+		}
+	</script>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>添加连接-弹窗</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/select_best_position.css" />
+    <script type="text/javascript" src="../../script/flexible.js"></script>
+  </head>
+  <body>
+    <div id="warp">
+      <div class="add_link_position">
+        <div class="add_link">
+          <div class="add_link_close" tapmode onclick="fnCloseFram()"></div>
+          <div class="add_link_title">添加连接</div>
+          <div class="add_link_input">
+            <input type="text" placeholder="添加链接地址" name="" value="">
+          </div>
+          <div class="add_link_btn">提交</div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+  <script>
+    apiready=function() {
+
+    }
+    function fnCloseFram(){
+      api.closeFrame();
+    }
+  </script>
+</html>

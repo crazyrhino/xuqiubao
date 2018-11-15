@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta content="telephone=no,email=no" name="format-detection">
+    <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>知道</title>
+    <link rel="stylesheet" href="./css/public.css">  
+    <link rel="stylesheet" href="css/need.css?v=4">    
+    <style>
+    	/*list*/
+    	  .viewport{ background-color:#f5f5f5;}    	
+		  .list li{ border-bottom: 1px solid #eee; padding: 0.5rem ;}
+		  .list h4{ font-size: 1.1rem; font-weight: bold;  padding: 3px 0; }
+		  .list a{ color: #333;}
+		  .list p{ color: #555;  padding:0 0 0.5rem 0; font-size:1rem;  }		 
+		  .list span{clear:both;display:block;color:#0e4e96;font-size:0.8rem; padding-top: 0.2rem;}
+		  .list em{color:#0e4e96}
+		  .list img{float:left;margin:0 5px;width:30%}		  	  
+          .list dd{float: left; margin:0px 1%;background-position:0 20%;background-repeat:no-repeat; background-size:cover;height:100px; width:28%}
+		  .goTop{width:3.5rem;height:3.5rem;position: fixed;right:1.2rem;bottom:12rem;}
+    </style>
+    <style>
+    </style>
+</head>
+<body v-cloak>
+  <div v-cloak style="overflow: hidden;" class="viewport">
+      <div v-cloak class="box" id="need">        
+         <!--v1.1-->
+         <div class="banner" @click="banner()">
+            <img src="images/banner.jpg?v=1" />
+        </div>
+    <div v-cloak class="nav">
+         <ul v-cloak style="overflow: hidden;">
+              <li><a @click="goto('ask')"> <img src="images/nav_txq.png">提需求</a></li>
+              <li><a @click="jiejue()"><img src="images/nav_jjxq.png">解决需求</a></li>
+              <li><a @click="goto('idea')"><img src="images/nav_cy.png">提创意</a></li>
+              <li><a @click="goto('family')" ><img src="images/nav_zx.png">全屋定制</a></li>
+              <li><a @click="goto('dress')" ><img src="images/nav_fzdz.png">服装定制</a></li>
+         </ul>
+         <p class="clear"></p>
+    </div>  
+     <div v-cloak class="tops">
+        <h3>需求精选</h3>
+        <ul v-cloak style="overflow: hidden;">    
+             <li v-cloak style="height: 11rem;" v-for="value in message">
+                <a href="javascript:;" @click="opens(value.id)">
+                <img style="width: 100%;height: 11rem;object-fit: cover;" :src="value.mainImgs">
+                <div style="width: 100%;">
+                     <h4 style="height: 2.5rem;" v-html="value.title"></h4>                       
+                     <p> 
+                        <img :src="typeof(value.userImg) !== 'undefined' ?value.userImg : './images/tmp_default_header.png'" alt="">
+                        <span>{{value.userName | ellipsis}}</span>  
+                     </p>
+                </div>
+                </a>
+             </li>     
+        </ul>   
+     <p class="clear"></p>
+    </div> 
+    <div class="list">  
+     <h3>需求推荐</h3>
+        <!-- 需求推荐 --> 
+       <img @click="gotoTop()" class="goTop" style="width:3rem;height:3rem;position: fixed;right:1.2rem;bottom:12rem;" src="./images/scroll_top.png" alt="">
+       <ul v-cloak v-for="(val,index) in msg">
+            <li v-cloak>						  
+                <div v-cloak href="#" @click="opens(val.id)" >						 	  
+                    <h4 v-html="val.title"></h4>
+                    <p>{{val.content | ellipsiss}}</p>
+                </div>	
+                <dl v-cloak v-for="(vals,i) in val.imgArray" > 
+                    <dd v-cloak v-bind:style="{backgroundImage:'url(' + vals + '@200_200)'}"
+                    @click="fnPreviewPictureContent(val.imgArray,i)" :key="i">    
+                </dd>							  
+                </dl>	 
+                <span>有{{val.commentNumber}}个回答</span>                     
+            <!-- <span>{{val.praiseNumber}}赞同</span>--> 
+            </li>
+          </ul> 
+           <div v-cloak style="color:#ccc;text-align: center;margin-top:1rem;">没有更多了...</div>             
+     </div>
+    </div>
+  </div>
+</body>  
+<script src="./js/jquery-1.11.1.min.js"></script>
+<script src="./js/js.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript" src="../../script/common.js?v="></script>
+<script type="text/javascript" src="../../script/signature.js"></script>
+<script type="text/javascript" src="../../script/service.js"></script>
+
+<script> 
+    apiready = function(){    
+        need.getVal();
+        need.getTopThree();
+        isloading();
+        $app.fnSetRefresh(function () {
+            need.getVal();
+            need.getTopThree();
+            api.refreshHeaderLoadDone();
+        })
+        fnInitListener();
+    }
+    function fnInitListener() {
+        $event.addEventListener('select_frame_event_' + 3, function (){
+            api.execScript({
+                name: 'root',
+                script: 'fnCloseScrollTopBtnFrame();'
+            });
+        });
+    }
+    $(function(){
+      document.querySelector(".goTop").style.display="none";
+       $(window).scroll(function(){
+        if($(window).scrollTop()>4000){
+            document.querySelector(".goTop").style.display="block";
+        }else{
+             document.querySelector(".goTop").style.display="none";
+        }
+        
+    })
+    })
+    //上拉加载
+    function isloading(){
+        $event.scrollBottomListener(function () {
+          $app.showProgress();
+          need.fnGetStoryIndexByCondition();
+      });
+    }
+    Vue.filter('ellipsiss', function (value) {
+       if (!value) return ''
+            if (value.length > 53) {
+              return value.slice(0,53) + '...'
+            }
+            return value
+    })
+       Vue.filter('ellipsis', function (value) {
+       if (!value) return ''
+            if (value.length > 5) {
+              return value.slice(0,5) + '...'
+            }
+            return value
+    })
+    var need = new Vue({
+        el:'#need',
+        data:{
+            message:[],
+            msg:[],
+            image:[],
+            inners:"",
+            top:false,
+            img1:"./images/tmp_default_header.jpg"
+        },
+        methods:{
+            //点击回到顶部
+            gotoTop:function(){
+                $('body').animate({
+                    scrollTop: '0'             
+                },100);
+            },               
+            opens:function(id){
+                api.openWin({
+                    name:'details',
+                    url:'./details.html',
+                    slidBackEnabled:false,
+                    pageParam:{
+                        listId:id
+                    }
+                })
+            },
+            //获取推荐信息
+            /*
+                syTuijian:'/v5/sgcommunity/issue/getIssueListTops.ajax',//首页推荐
+                syTopthree:'/v5/sgcommunity/issue/getIssueListTopThree.ajax',//首页top3
+                myList:'/v5/sgcommunity/issue/getIssueList.ajax',//我的需求列表
+                myAnswer:'/v5/sgcommunity/issueAnswers/getIssueAnswersList.ajax',//我的回答列表
+                create:'/v5/sgcommunity/issue/getIssueListCreateDate.ajax',//解决需求页面
+                hdVal:'/v5/sgcommunity/issueAnswers/getQueryIssueAnswers.ajax',//回答详情页面
+                hdZan:'/v5/sgcommunity/issueAnswers/praiseIssueAnswers.ajax',//回答详情点赞
+                hdNotice:'/v5/sgcommunity/user/follow.ajax',//回答关注
+                plTwo:'/v5/sgcommunity/issueAnswers/addIssueAnswers.ajax',//二级评论
+            */
+            getVal:function(){
+             var that=this
+             var token = api.readFile({
+                sync: true,
+                path: api.boxDir + '/token.txt'
+            });             
+                 $http.GET(HOST+UrlRouter.syTuijian,{
+                  header:{
+                    
+                  },
+                  values:{
+                    pageIndex:'0',
+                    pageSize:'10',
+                    TokenAuthorization:token
+                  }
+                },function(ret,err){
+                    that.msg=ret.data; 
+                    var arr=[]
+                    for (var i = 0; i < ret.data.length; i++) {
+                        arr.push(ret.data[i].imgArray)
+                    }
+                   that.image=arr
+                })
+            },
+            //上拉加载
+             fnGetStoryIndexByCondition:function() {            
+                var token = api.readFile({
+                    sync: true,
+                    path: api.boxDir + '/token.txt'
+                });
+              var _this = this;            
+              $http.GET(HOST+UrlRouter.syTuijian,{
+                values:{
+                  pageIndex:_this.msg.length,
+                  pageSize:'10',
+                  TokenAuthorization:token
+                }
+              },function(ret,err){ 
+                $app.hideProgress(); 
+                var b = ret.data                
+                if( b == null){
+                 _this.inners=="没有更多了..."
+                }else{                   
+          	
+	             for (var i = 0; i < ret.data.length; i++) {
+	                _this.msg.push(ret.data[i])
+	               }   
+                   
+                }                
+              })
+            },  
+            //获取Top3数据
+            getTopThree:function(){
+                 var that=this
+                 var token = api.readFile({
+                        sync: true,
+                        path: api.boxDir + '/token.txt'
+                    });
+                 $http.GET(HOST+UrlRouter.syTopthree,{
+                    header:{
+                        
+                      },
+                  values:{
+                    TokenAuthorization:token
+                  }
+                },function(ret,err){  
+                    that.message=ret.data
+            
+                })
+            },
+            banner:function(page){ 
+              api.openWin({
+		                  name:"about_win",
+		                  url:"./about_win.html",
+		                  slidBackEnabled:false,
+		              })
+             },
+            //导航跳转
+            goto:function(page){            	         	
+            	//ask  answer  idea   family dress
+            	 var token = api.readFile({
+                    sync: true,
+                    path: api.boxDir + '/token.txt'
+                });
+                  
+
+                if(token.indexOf("#") != -1){
+                	var page_name="";
+                	switch(page){
+                		case 'ask':
+                		 page_name ="index";
+                		  break;                		  
+                	   case 'answer':
+                		 page_name ="news_win";
+                		 break;
+                	   case 'idea':
+                		 page_name ="idea_win";
+                		 break; 
+                	   case 'family':
+                		 page_name ="decoration_resource_topic";
+                		 break;
+                	   case 'dress':
+                		 page_name ="customized_topic";
+                		 break; 
+                		case 'banner':
+                		  page_name ="about_win";
+                		 break;
+                		default:
+                		 page_name ="need";
+                		 break; 
+                	}               	
+                    api.openWin({
+		                  name:page_name,
+		                  url:"./"+page_name+".html",
+		                  slidBackEnabled:false,
+		              })
+                   
+                }else{                   
+                    $event.callRNEvent(1, 1, {  // 跳转登录页面
+                        toPageName: 'Login'
+                    });
+                }           	            	
+            },            
+            jiejue:function(){
+                api.openWin({
+                        name:"news_win",
+                        url:"./news_win.html",
+                        slidBackEnabled:false,
+                    })
+            },
+             fnPreviewPictureContent:function(vals,index){
+              $event.isShowHomeTab(false);
+                var arr = vals
+                $app.openWin('preview_picture', {
+                    urlArr: arr,
+                    activeIndex: index
+                }, {
+                    url: '../topic/preview_picture.html'
+                })
+            },
+        } 
+    })
+</script>
+</html>

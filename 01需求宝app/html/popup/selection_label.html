@@ -1,0 +1,141 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>选择标签</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/selection_label.css"/>
+		<style>
+		</style>
+	</head>
+	<body>
+		<div id="warp">
+			<div class="popup_position">
+				<div id="main" class="list-flex-flex1" tapmode onclick="fnCloseLabel()"></div>
+				<div class="popup_content">
+					<div class="popup_content_title">
+						选择标签 <span class="float_r" tapmode onclick="fnCloseLabel()"></span>
+					</div>
+					<div class="select_lists">
+						<div v-for="(item,index) in list" class="c_item" tapmode v-on:click="fnSelectLabel(item,index)">
+							<div v-if="item.active" class="every_one every_one_active" v-text="item.name"></div>
+							<div v-else class="every_one" v-text="item.name"></div>
+						</div>
+					</div>
+					<div class="submits" tapmode="meui_click" onclick="fnConfirm()">
+						<a class="sure">确定</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+			fnGetTopicLables();
+			$api.fixTabBar($api.dom('.popup_content'));
+		};
+		
+		function fnCloseLabel(){
+			api.execScript({
+				frameName : api.pageParam.frameName,
+	            script: 'fnCloseLabel();'
+            });
+		}
+		
+		var selectSum = 0;
+		var vue = new Vue({
+			el : '.select_lists',
+			data : {
+				list : []
+			},
+			methods : {
+				fnSelectLabel : function(item, index) {
+					if (item.active) {
+						vue.$set(vue.$data.list[index], 'active', false);
+						selectSum--;
+					} else {
+						if (selectSum == 3) {
+							fnToast('最多只能选择3个标签', 'middle');
+							return;
+						}
+						vue.$set(vue.$data.list[index], 'active', true);
+						selectSum++;
+					}
+				}
+			}
+		});
+		function fnGetTopicLables() {
+			$service.get('topic/getTopicTagsByTopicId.ajax', {
+				id : api.pageParam.id
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+					    if(api.pageParam.labels){
+					        var selectabels = JSON.parse(api.pageParam.labels);
+                            // selectSum = selectabels.length;
+                            for(var j = 0;j < selectabels.length;j++){
+                                for(var i = 0;i < ret.data.length;i++){
+                                    if(selectabels[j].id == ret.data[i].id){
+                                        ret.data[i].active = true;
+                                        selectSum ++
+                                    }
+                                }
+                            }
+						}
+                        fnAppendData(vue.list, ret.data);
+                    } else {
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		function fnGetSelectLabels() {
+			var selectLabels = [];
+			for (var i = 0; i < vue.list.length; i++) {
+				if (vue.list[i].active) {
+					selectLabels.push(vue.list[i]);
+				}
+			}
+			return JSON.stringify(selectLabels);
+		}
+		function fnCloseFrame() {
+			api.closeFrame();
+		}
+
+		function fnConfirm() {
+			if (vue.list.length == 0) {
+				fnToast('请选择标签');
+			} else {
+				var labels = fnGetSelectLabels();
+                api.sendEvent({
+                    name: 'selectLabel',
+                    extra: {labels: labels}
+                });
+                if(api.pageParam.winName == 'root' && api.pageParam.topicType == 'image'){
+                    api.execScript({
+                        name : api.winName,
+                        frameName : 'edit_topic_frame',
+                        script : 'fnExecSelectLabel(' + labels + ');'
+                    });
+                }else {
+                    api.execScript({
+                        name : api.winName,
+                        frameName : api.winName + '_frame',
+                        script : 'fnExecSelectLabel(' + labels + ');'
+                    });
+                }
+			}
+		}
+	</script>
+</html>

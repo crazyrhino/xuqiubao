@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<style>
+			body, html {
+				background: rgba(0,0,0,0.3);
+			}
+			.close_btn {
+				position: absolute;
+				right: 16px;
+				bottom: 102px;
+				width: 48px;
+				height: 48px;
+				background: url(../../image/close_frame.png) no-repeat center;
+				background-size: 48px;
+			}
+			.video_btn {
+				position: absolute;
+				right: 16px;
+				bottom: 175px;
+				width: 48px;
+				height: 48px;
+				background: url(../../image/video_type.png) no-repeat center;
+				background-size: 48px;
+			}
+			.img_btn {
+				position: absolute;
+				right: 16px;
+				bottom: 248px;
+				width: 48px;
+				height: 48px;
+				background: url(../../image/img_type.png) no-repeat center;
+				background-size: 48px;
+			}			
+			
+			.img_type {
+				position: absolute;
+				right: 77px;
+				bottom: 261px;
+				width: 34px;
+				height: 22px;
+				line-height: 22px;
+				color: #FFF;
+				font-size: 16px;
+			}
+			.xqb_btn {
+				position: absolute;
+				right: 16px;
+				bottom: 332px;
+				width: 48px;
+				height: 48px;
+				background: url(../../image/xqb_type.png) no-repeat center;
+				background-size: 48px;
+			}			
+			
+			.xqb_type {
+				position: absolute;
+				right: 77px;
+				bottom: 345px;
+				width: 34px;
+				height: 22px;
+				line-height: 22px;
+				color: #FFF;
+				font-size: 16px;
+			}
+			
+			
+			
+			.video_type {
+				position: absolute;
+				right: 77px;
+				bottom: 186px;
+				width: 34px;
+				height: 22px;
+				line-height: 22px;
+				color: #FFF;
+				font-size: 16px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="xqb_type">
+			需求
+		</div>
+		<div class="xqb_btn" tapmode="meui_click" onclick="fnOpenEditXqb()"></div>
+		<div class="img_type">
+			图文
+		</div>
+		<div class="img_btn" tapmode="meui_click" onclick="fnOpenEditTopic()"></div>
+		<div class="video_type">
+			视频
+		</div>
+		<div class="video_btn" tapmode="meui_click" onclick="fnOpenRecord()"></div>
+		<div class="close_btn" tapmode="meui_click" onclick="fnClose()"></div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/common.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+            api.addEventListener({
+                name : 'NaviteCallAPICloudMethod'
+            }, function(rets, err) {
+                var ret = rets.value;
+                if (ret.type == 9) {
+                    if (ret.success == 1) {
+                        setTimeout(function () {
+                            api.closeFrame({});
+                        }, 500)
+                        fnOpenWinReload("video_record", null, api.pageParam);
+                        api.writeFile({
+                            path : api.boxDir + '/publish_back_winname.txt',
+                            data : api.winName
+                        }, function(ret, err) {
+
+                        });
+                        // $api.setStorage('publish_back_winname', api.winName);
+                    } else {
+                        // fnToast('没有相应权限', 'middle');
+                        api.alert({
+                            title: '提示',
+                            msg: '没有相机权限，请进入设置添加应用的相机/相册权限',
+                            buttons: ['确定']
+                        }, function (ret, err) {
+                            api.closeWin();
+                        });
+                    }
+                }
+            });
+		};
+        //打开提需求
+        function fnOpenEditXqb() {
+			if(fnIsEmpty(api)){
+				fnToast('引擎加载失败！');
+			}
+            api.openWin({
+                name : 'index',
+                url :'../xuqiubao/index.html?v=' + new Date().getTime(),
+                pageParam : api.pageParam,
+                slidBackEnabled : false,
+                reload : true
+            });
+            $event.isShowHomeTab(false);
+            api.writeFile({
+                path : api.boxDir + '/publish_back_winname.txt',
+                data : api.winName
+            }, function(ret, err) {
+
+            });
+            setTimeout(function(){
+                api.closeFrame({
+                    name : api.frameName
+                });
+            },500);
+		} 
+		function fnOpenEditTopic() {
+			if(fnIsEmpty(api)){
+				fnToast('引擎加载失败！');
+			}
+            api.openWin({
+                name : 'edit_topic',
+                url :'edit_topic.html?v=' + new Date().getTime(),
+                pageParam : api.pageParam,
+                slidBackEnabled : false,
+                reload : true
+            });
+            $event.isShowHomeTab(false);
+            api.writeFile({
+                path : api.boxDir + '/publish_back_winname.txt',
+                data : api.winName
+            }, function(ret, err) {
+
+            });
+            setTimeout(function(){
+                api.closeFrame({
+                    name : api.frameName
+                });
+            },500);
+		}
+
+		function fnOpenRecord() {
+			if(fnIsEmpty(api)){
+				fnToast('引擎加载失败！');
+			}
+		    if (api.systemType === 'android'){
+                api.sendEvent({
+                    name: 'APICloudCallNaviteMethod',
+                    extra: {
+                        type: 9,          // 权限管理
+                        canCallBack: 1,          // 返回1时，说明有权限，可进行下一步操作
+                        command: ['android.permission.WRITE_EXTERNAL_STORAGE','android.permission.READ_EXTERNAL_STORAGE','android.permission.CAMERA','android.permission.RECORD_AUDIO']       // 需要哪些权限就在数组中传过来
+                    }
+                });
+			} else {
+                fnOpenWinReload("video_record", null, api.pageParam);
+                api.writeFile({
+                    path : api.boxDir + '/publish_back_winname.txt',
+                    data : api.winName
+                }, function(ret, err) {
+
+                });
+                setTimeout(function(){
+                    api.closeFrame({
+                        name : api.frameName
+                    });
+                },500);
+                // $api.setStorage('publish_back_winname', api.winName);
+            }
+		}
+
+		function fnClose() {
+			if (api.pageParam.frameName) {
+				api.execScript({
+					name : api.pageParam.winName,
+					frameName : api.pageParam.frameName,
+					script : 'fnShowEditBtn();'
+				});
+			} else {
+				api.execScript({
+					name : api.pageParam.winName,
+					script : 'fnShowEditBtn();'
+				});
+			}
+		}
+	</script>
+</html>

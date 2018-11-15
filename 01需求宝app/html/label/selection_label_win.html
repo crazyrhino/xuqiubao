@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>选择标签</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/selectionLabel.css" />
+    <style></style>
+    <script type="text/javascript" src="../../script/flexible.js"></script>
+</head>
+
+<body>
+    <header class="selection_label">
+        <div class="header">
+            <span class="msg-btn" tapmode onclick="api.closeWin()"></span>
+        </div>
+    </header>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script>
+    apiready = function() {
+        var header = $api.dom('header');
+        fnSysHeaderStyle()
+        var headerH = $api.offset(header).h;
+        api.openFrame({
+            name: 'selection_label',
+            url: './selection_label.html',
+            rect: {
+                x: 0,
+                y: headerH,
+                w: 'auto',
+                h: 'auto'
+            },
+            pageParam: {
+                name: 'test'
+            },
+            bounces: false
+        });
+    }
+</script>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>搜索列表页面</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/search_list.css"/>
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style type="text/css">
+			#search-wrap .header #input{
+				position: relative;
+				height: 28px;
+				line-height: 28px;
+				background: #EEEEEE;
+				border-radius: 14px;
+				background-image: url(../../image/home/search_icon.png);
+				background-position: 5px center;
+				background-repeat: no-repeat;
+				background-size: 24px;
+				padding-left: 35px;
+			}
+			 .input_search{
+			 	width : 100%;
+            	height: 20px;
+            	padding-right : 24px;
+            	margin-top : 4px;
+				line-height: 20px;
+				font-size : 14px;
+                outline: none;
+            }
+            #header .clear{
+				display: inline-block;
+                position: absolute;
+                top:0;
+                right: 0;
+                height:30px;
+                width: 30px;
+                z-index: 999;
+                background: url("../../image/label/delete.png") no-repeat center;
+                background-size: 17px;
+            }
+			input[type="search"]::-webkit-search-cancel-button {
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="search-wrap">
+			<div id="header" class="header list-flex list-flex-h list-flex-center">
+				<span class="back" tapmode onclick="api.closeWin()"></span>
+				<div id="input" class="input-wrap list-flex-flex1">
+					<form action="javascript:fnSearch();">
+						<input class="input_search" type="search" placeholder="搜索" oninput="fnIsShow()" onchange="fnIsShow()">
+					</form>
+					<div class="clear" tapmode onclick="fnClearContent()"></div>
+				</div>
+				<span class="search-btn" tapmode onclick="fnSearch()">搜索</span>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js?v=1"></script>
+	<script type="text/javascript">
+        var input = document.getElementById('input'), UIInput;
+        apiready = function() {
+        	//fnRefreshOpen();
+            fnBackListener(fnBack)
+        	if (api.systemType ==='ios'){
+                $api.fixStatusBar($api.dom('#search-wrap'));
+			}
+            UIInput = api.require('UIInput');
+            fnOpenSearchFrame();
+			// fnInit();
+            $api.val($api.dom('.input_search'), api.pageParam.keyword || '');
+		};
+		function fnOpenSearchFrame() {
+			var searchType = api.pageParam.searchType;
+			if (searchType == 'user') {
+				fnOpenSearchUserFrame();
+			} else if (searchType == 'community') {
+			    if(typeof api.pageParam.keyword == 'undefined'){
+                    $api.css($api.dom('.clear'), 'display:none');
+                }
+                fnOpenSearchCommunityFrame();
+			} else if (searchType == 'topic') {
+				fnOpenSearchTopicFrame();
+			} else if (searchType == 'video') {
+				fnOpenSearchVideoFrame();
+			} else if (searchType == 'xqb') {
+				fnOpenSearchXqb();
+			}   
+		}
+
+		function fnOpenSearchUserFrame() {
+			api.openFrame({
+				name : 'search_result_user',
+				url : 'search_result_user.html',
+				bounces : true,
+				rect : {
+					x : 0,
+					y : fnGetTopY(44),
+					w : 'auto',
+					h : 'auto'
+				},
+				pageParam : api.pageParam
+			});
+		}
+         function fnOpenSearchXqb() { 
+            api.openFrame({
+				name : 'search_xqb',
+				url : 'search_xqb.html?'+new Date().getTime(),
+				bounces : true,
+				rect : {
+					x : 0,
+					y : fnGetTopY(44),
+					w : 'auto',
+					h : 'auto'
+				},
+				pageParam : api.pageParam
+			});
+		}
+		function fnOpenSearchCommunityFrame() {
+            api.openFrame({
+				name : 'search_community_frame',
+				url : 'search_community_frame.html?'+new Date().getTime(),
+				bounces : true,
+				rect : {
+					x : 0,
+					y : fnGetTopY(44),
+					w : 'auto',
+					h : 'auto'
+				},
+				pageParam : api.pageParam
+			});
+		}
+
+		function fnOpenSearchTopicFrame() {
+			api.openFrame({
+				name : 'search_result',
+				url : 'search_result.html',
+				bounces : true,
+				rect : {
+					x : 0,
+					y : fnGetTopY(44),
+					w : 'auto',
+					h : 'auto'
+				},
+				pageParam : api.pageParam
+			});
+		}
+
+		function fnOpenSearchVideoFrame() {
+			api.openFrame({
+				name : 'search_result_video',
+				url : 'search_result_video.html',
+				bounces : true,
+				rect : {
+					x : 0,
+					y : fnGetTopY(44),
+					w : 'auto',
+					h : 'auto'
+				},
+				pageParam : api.pageParam
+			});
+		}
+
+		function fnSetInputValue(value) {
+			UIInput.value({
+				msg : value
+			});
+		}
+
+		function fnInit() {
+			UIInput.open({
+				rect : {
+					x : input.offsetLeft + 30,
+					y : input.offsetTop,
+					w : input.offsetWidth - 80,
+					h : input.offsetHeight
+				},
+				styles : {
+					bgColor : '#eee',
+					size : 14,
+					color : '#333',
+					placeholder : {
+						color : '#999',
+						size : 14
+					}
+				},
+				autoFocus : false,
+				placeholder : '搜索',
+				keyboardType : 'search',
+			}, function(ret) {
+				if (ret.eventType == 'show') {
+                    if (fnIsEmpty(ret.msg)) {
+                        $api.css($api.dom('.clear'), 'display:none');
+                    }
+                    if(api.pageParam.keyword != ''){
+                        $api.css($api.dom('.clear'), 'display:inline-block');
+                    }
+					UIInput.value({
+						msg : api.pageParam.keyword
+					});
+				} else if (ret.eventType == 'search') {
+					fnSearch();
+				}else if(ret.eventType == 'change'){
+                    fnIsShow()
+                }else {
+					console.log(JSON.stringify(ret));
+				}
+			});
+		}
+        function fnIsShow() {
+            if (fnIsEmpty($api.dom('.input_search').value)) {
+                $api.css($api.dom('.clear'), 'display:none');
+            } else {
+                $api.css($api.dom('.clear'), 'display:block');
+            }
+        }
+        function fnClearContent() {
+            $api.dom('.input_search').value = "";
+            $api.css($api.dom('.clear'), 'display:none');
+        }
+		function fnHideKeyBoard() {
+			var keyBoardMgr = api.require("keyBoardMgr");
+			keyBoardMgr.hideKeyBoard(function(ret, err) {
+			});
+		}
+
+		function fnSearch() {
+            fnHideKeyBoard();
+            var value = $api.dom('.input_search').value || '';
+            var frameName = fnExecSearchFrameName();
+            api.execScript({
+                name: api.winName,
+                frameName: frameName,
+                script: 'fnReSearch("' + value + '");'
+            });
+            if (!fnIsEmpty(value)) {
+                api.execScript({
+	                name: 'search_list',
+	                frameName: 'search_list_frame',
+	                script: 'fnSaveStorage("' + value + '");'
+	            });
+            }
+        }
+
+		function fnExecSearchFrameName() {
+			var searchType = api.pageParam.searchType;
+			if (searchType == 'user') {
+				return 'search_result_user';
+			} else if (searchType == 'community') {
+				return 'search_community_frame';
+			} else if (searchType == 'topic') {
+				return 'search_result';
+			} else if (searchType == 'video') {
+				return 'search_result_video';
+			}
+			else if (searchType == 'xqb') {
+				return 'search_xqb';
+			}
+		}
+	</script>
+</html>

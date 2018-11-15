@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>话题详情</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/recommend_frame.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/edit_topic_frame.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/topic_details.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/flex-layout.css"/>
+    <link rel="stylesheet" href="../../css/normalize3.0.2.min.css"/>
+    <link rel="stylesheet" href="../../css/style.css?v=7"/>
+    <link href="../../css/mobiscroll.css" rel="stylesheet"/>
+    <link href="../../css/mobiscroll_date.css" rel="stylesheet"/>
+    <style>
+        body, html {
+            padding-bottom: 50px;
+            background-color: transparent;
+        }
+
+        .reward_div{
+            display: block;
+        }
+        .reward_dialog{
+            top: 1.8rem;
+        }
+    </style>
+</head>
+<body id="body">
+<!--打赏列表对话框-->
+<div class="reward_div">
+    <div class="reward_dialog">
+        <div class="reward_header meui_border_b">
+            选择打赏金币数
+            <div class="reward_close" tapmode="meui_click" onclick="fnCloseRewardDialog(event)"></div>
+        </div>
+        <div class="reaward_select_list meui_border_b">
+            <div v-for="(item,index) in list" class="reward_item" v-bind:class="{ active: item.isActive }"
+                 v-on:click="fnSelect(item,index)">
+                {{item.num}}个
+            </div>
+        </div>
+        <div class="reward_custom_num meui_flex_wrap meui_border_b">
+            <div class="reward_other_num_label">
+                其他数量
+            </div>
+            <div class="reward_v_line"></div>
+            <input class="reward_custom_num_input meui_flex_con_no_w" type='tel' maxlength="4" :placeholder="canRewardNum"
+                   oninput="fnOnRewardInputChange(this)"/>
+        </div>
+        <div class="reward_confirm" tapmode="meui_click" onclick="fnConfirmReward()">
+            确定打赏
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js?v=1"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/service.js"></script>
+<script type="text/javascript" src="../../script/flexible.js"></script>
+<script type="text/javascript" src="../../script/mobiscroll_date.js"></script>
+<script type="text/javascript" src="../../script/mobiscroll.js"></script>
+<script type="text/javascript">
+    var storageUserId,
+        commentId,
+        commentUserCode,
+        replyMoreOperationUserId,
+        replyMoreOperationId,
+        topicDetailsId,
+        topicDetailsUserCode,
+        isReply;
+
+    apiready = function () {
+        replyMoreOperationId = api.pageParam.replyMoreOperationId;
+        commentId = api.pageParam.commentId;
+        commentUserCode = api.pageParam.commentUserCode;
+        replyMoreOperationUserId = api.pageParam.replyMoreOperationUserId;
+        topicDetailsId = api.pageParam.topicDetailsId;
+        topicDetailsUserCode = api.pageParam.topicDetailsUserCode;
+        canRewardNum = api.pageParam.canRewardNum;
+        isReply = api.pageParam.isReply;
+        rewardNumVue.canRewardNum = '您可打赏币数为'+canRewardNum;
+    };
+
+    //关闭打赏列表对话框
+    function fnCloseRewardDialog(event) {
+        api.execScript({
+            frameName: api.pageParam.frameName,
+            script: 'fnCloseRewardDialog()'
+        });
+        api.closeFrame({
+            name: api.frameName
+        });
+    }
+
+    var canRewardNum = 0;
+    //确认打赏
+    function fnConfirmReward() {
+        var rewardNum;
+        if (rewardNumVue.selectIndex != -1) {
+            rewardNum = rewardNumVue.list[rewardNumVue.selectIndex].num;
+        } else {
+            rewardNum = fnGetValue('.reward_custom_num_input');
+            if (fnIsEmpty(rewardNum)) {
+                fnToast('请选择打赏金币数', 'middle');
+                return;
+            }
+        }
+        if (rewardNum > 9999) {
+            fnToast('最多可打赏9999金币，请修改打赏金额', 'middle');
+            return;
+        }
+        if (rewardNum > canRewardNum) {
+            fnToast('最多可打赏' + canRewardNum + '金币，请修改打赏金额', 'middle');
+            return;
+        }
+        if (String(rewardNum).indexOf(".") > -1) {
+            fnToast('打赏金币数不能为小数，请修改打赏金额', 'middle');
+            return;
+        }
+        api.showProgress();
+        api.execScript({
+            frameName: api.pageParam.frameName,
+            script: 'fnConfirmReward("'+rewardNum+'")'
+        });
+    }
+    //打赏列表对话框vue
+    var rewardNumVue = new Vue({
+        el: '.reward_div',
+        data: {
+            list: [{
+                num: 1,
+                isActive: false
+            }, {
+                num: 5,
+                isActive: false
+            }, {
+                num: 10,
+                isActive: false
+            }, {
+                num: 30,
+                isActive: false
+            }, {
+                num: 50,
+                isActive: false
+            }, {
+                num: 100,
+                isActive: false
+            }],
+            selectIndex: -1,
+            isShow: false,
+            canRewardNum:''
+        },
+        methods: {
+            fnSelect: function (item, index) {
+            	$api.dom('.reward_custom_num_input').value = '';
+                if (rewardNumVue.selectIndex != -1) {
+                    rewardNumVue.$set(rewardNumVue.$data.list[rewardNumVue.selectIndex], 'isActive', false);
+                }
+                rewardNumVue.$set(rewardNumVue.$data.list[index], 'isActive', true);
+                rewardNumVue.selectIndex = index;
+            }
+        }
+    });
+    
+    function fnOnRewardInputChange(el) {
+			el.value = el.value.replace(/[^0-9.]+/, '');
+			rewardNumVue.selectIndex = -1;
+			for (var i = 0; i < rewardNumVue.list.length; i++) {
+				rewardNumVue.$set(rewardNumVue.$data.list[i], 'isActive', false);
+			}
+		}
+</script>
+</html>

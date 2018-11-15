@@ -1,0 +1,199 @@
+/*******************************样式重置 开始**********************************/
+/*# sourceMappingURL=decoration_resource_form.css.map */
+::-webkit-input-placeholder {
+  /* WebKit, Blink, Edge */
+  color: #404040;
+}
+:-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: #404040;
+}
+::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: #404040;
+}
+:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: #404040;
+}
+::-ms-input-placeholder {
+  /* Microsoft Edge */
+  color: #404040;
+}
+/*******************************头部 样式开始******************************/
+html,
+body {
+  background: #fff;
+}
+.box {
+  background: #fff;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+/*******************************我要装修 样式开始******************************/
+.sort .decorationBox .swiper-container,
+.sort .resourceBox .swiper-container {
+  width: 100%;
+  height: 7.13rem;
+}
+.sort .decorationBox .swiper-container img,
+.sort .resourceBox .swiper-container img {
+  display: inline-block;
+  height: 8rem;
+  width: 100% !important;
+}
+.sort .decorationBox .decorationFromBox,
+.sort .resourceBox .decorationFromBox {
+  box-sizing: border-box;
+  padding: 1.470rem 0.80rem 2.00rem 0.80rem;
+}
+.sort .decorationBox .decorationFromBox select,
+.sort .resourceBox .decorationFromBox select,
+.sort .decorationBox .decorationFromBox input,
+.sort .resourceBox .decorationFromBox input {
+  box-sizing: border-box;
+  height: 2rem;
+  border-radius: 0.20rem;
+  padding-left: 1.00rem;
+  border: 1px solid #eeece8;
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+}
+.sort .decorationBox .decorationFromBox input,
+.sort .resourceBox .decorationFromBox input {
+  width: 100%;
+}
+.sort .decorationBox .decorationFromBox .select,
+.sort .resourceBox .decorationFromBox .select {
+  width: 100%;
+}
+.sort .decorationBox .decorationFromBox .select select,
+.sort .resourceBox .decorationFromBox .select select {
+  width: 30% !important;
+  overflow: hidden;
+  margin-left: 3%;
+  /*将默认的select选择框样式清除*/
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  -ms-appearance: none;
+  outline: none;
+  background: url("../images/jiantou.png") no-repeat right;
+  background-position: 93% center;
+  padding-right: 0.6rem;
+  background-size: 0.53rem;
+  border: 1px solid #eeece8;
+}
+.sort .decorationBox .decorationFromBox .select select:first-child,
+.sort .resourceBox .decorationFromBox .select select:first-child {
+  margin-left: 0px;
+}
+.sort .decorationBox .decorationFromBox .select select option,
+.sort .resourceBox .decorationFromBox .select select option {
+  background: #ffff !important;
+}
+.sort .decorationBox .decorationFromBox .selection,
+.sort .resourceBox .decorationFromBox .selection {
+  position: relative;
+}
+.sort .decorationBox .decorationFromBox .selection span,
+.sort .resourceBox .decorationFromBox .selection span,
+.sort .decorationBox .decorationFromBox .selection i,
+.sort .resourceBox .decorationFromBox .selection i {
+  position: absolute;
+  font-size: 0.75rem;
+  color: #9a9a9a;
+  right: 1rem;
+  top: 0.9rem;
+}
+.sort .decorationBox .decorationFromBox .selection span img,
+.sort .resourceBox .decorationFromBox .selection span img,
+.sort .decorationBox .decorationFromBox .selection i img,
+.sort .resourceBox .decorationFromBox .selection i img {
+  vertical-align: middle;
+  position: absolute;
+  right: 2rem;
+}
+.sort .decorationBox .decorationFromBox .selection:last-child i,
+.sort .resourceBox .decorationFromBox .selection:last-child i {
+  top: 0;
+}
+.sort .decorationBox .decorationFromBox .selection:last-child i img,
+.sort .resourceBox .decorationFromBox .selection:last-child i img {
+  display: inline-block;
+  width: 0.70rem;
+  height: 0.65rem;
+}
+.sort .decorationBox .decorationFromBox .selection:last-child i:nth-child(2),
+.sort .resourceBox .decorationFromBox .selection:last-child i:nth-child(2) {
+  top: 12%;
+  width: 0.70rem;
+  vertical-align: middle;
+}
+.sort .decorationBox .decorationFromBox .submitBut,
+.sort .resourceBox .decorationFromBox .submitBut {
+  background: #b1b6be;
+  opacity: 0.8;
+  border-radius: 1.75rem;
+  color: #fff;
+  text-align: center !important;
+  margin-top: 2rem;
+}
+.sort .decorationBox .decorationFromBox .submitActive,
+.sort .resourceBox .decorationFromBox .submitActive {
+  background: #2979ff;
+}
+.sort .decorationBox .technologicalProcessBox,
+.sort .resourceBox .technologicalProcessBox {
+  padding-bottom: 2rem;
+}
+.sort .decorationBox .technologicalProcessBox img,
+.sort .resourceBox .technologicalProcessBox img {
+  display: inline-block;
+  width: 100%;
+  height: auto;
+}
+/*******************************推荐资源 样式开始*******************************/
+.sort .resourceBox {
+  background: #fff;
+  border-top: 1px solid #eeece8;
+}
+.sort .resourceBox .address {
+  font-size: 0.75rem;
+  color: #404040;
+  margin-top: 0.6rem;
+  padding-left: 0.36rem;
+}
+.sort .resourceBox .decorationFromBox {
+  padding-bottom: 2.75rem;
+}
+.sort .resourceBox .decorationFromBox .select select {
+  margin-top: 0.15rem;
+}
+.sort .resourceBox .decorationFromBox #button {
+  margin-top: 2.75rem;
+}
+.selectActice {
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+  font-size: 0.6rem !important;
+}
+.dateSelection {
+  top: 0.4rem !important;
+}
+.dateSelection img {
+  width: 0.85rem;
+  height: 0.88rem;
+  top: 0.11rem;
+}
+.dateSelection span {
+  top: 0.4rem !important;
+}
+.dateSelection .imgI {
+  top: 0.5rem !important;
+}
+input[type='submit'] {
+  padding-left: 0 !important;
+}
+/*# sourceMappingURL=decoration_resource_form.css.map */

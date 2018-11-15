@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta content="telephone=no,email=no" name="format-detection">
+    <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>需求宝</title>
+    <link rel="stylesheet" href="css/skin.css">
+    <style>
+    	.boxDetails{ width: 100%;}
+    	.imgMore{ margin-right: 0.8rem;}
+    	.go_back{padding: 0rem 2rem .2rem 0; display: block; height:3rem;}     
+    	.title span:nth-child(1) img{width:1.2rem}
+    	.title  span:nth-child(1){ margin: 0; padding:0.8rem; width:20%; text-align: left;}
+    	.title {padding: 0 ; width: 100%;}
+    </style>
+</head>
+
+<body>
+    <div class="boxDetails" id="boxDetails">
+      <!-- 标题 -->
+        <div class="title" id="title">       
+            <span  class="go_back" style="" @click="backIndex()"><img src="images/back.png"> </span>
+            <span class="imgMore" @click.stop="shares('1')"><img  src="./images/more_@2x.png" alt=""></span>
+        </div>
+    </div>
+</body>
+<script src="./js/jquery-1.11.1.min.js"></script>
+<script src="./js/js.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/signature.js"></script>
+<script type="text/javascript" src="../../script/common.js?v=0"></script>
+<script>   
+    FastClick.prototype.onTouchEnd = function(event) {
+          if(event.target.hasAttribute("type") && event.target.getAttribute("type") == "text") {
+                event.preventDefault();　　　
+                return false;　　
+          }
+     }
+  apiready = function() {  
+    fnInitListener(api.pageParam.listId);
+    boxs.getSupple(api.pageParam.JumpPage)
+    $app.fixStatusBar('#boxDetails');
+      var o = $api.dom('#boxDetails');
+        var titleTop = $api.offset(o).h;
+      api.openFrame({
+          name: 'details_frame',
+          url: './details_frame.html',
+          rect: {
+              x: 0,
+              y: titleTop,
+              w: 'auto',
+              h: 'auto'
+          },
+          softInputMode : 'pan',
+          softInputDismissMode: ['tap', 'drag'],
+          softInputBarEnabled:true,  //可以设置是否去掉键盘上的工具条,true 显示， false 隐藏		
+          reload : true,
+          allowEdit : true, 	
+          pageParam: {
+              listId: api.pageParam.listId,
+          }
+      });
+      fnAddNormalNativeListener()
+        if (api.winName == 'root' && api.systemType == 'android') {
+            fnGetAndroidParams();
+        } else {
+            var params = api.pageParam;
+        }
+    $event.isShowHomeTab(false);
+    // 监听手机返回按钮
+    api.addEventListener({
+        name: 'keyback'
+    }, function(ret, err) {
+            if(api.pageParam.listNews == 'news'){
+                api.closeWin({})
+            }else{
+                api.closeToWin({
+                name: 'root',
+                animation: {
+                    type: 'push',
+                    subType: 'from_left',
+                    duration: 300
+                    }
+                });
+            }
+        // }
+    });
+    // 监听列表头部信息
+    api.addEventListener({
+        name: 'detailsList'
+    }, function(ret, err) {
+        boxs.dataTittle = ret.value.lists
+    });
+  }
+  // 金币跳转RN
+  function fnGetAndroidParams() {
+      api.sendEvent({
+          name: 'APICloudCallNaviteMethod',
+          extra: {
+              type: 8,
+              canCallBack: 1
+          }
+      });
+  }
+  function fnAddNormalNativeListener(){
+    api.addEventListener({
+      name: 'NaviteCallAPICloudMethod'
+  }, function (rets, err) {
+      var ret = rets.value;
+      if (ret.type == 8) {
+          var params = {
+            listId: ret.listId,
+          };
+      }else if(ret.type == 13){
+        // api.toast({
+        //     msg: '分享成功',
+        //     duration: 2000,
+        //     location: 'middle'
+        // });
+        $event.isShowHomeTab(false);
+        api.closeFrame({
+            name: 'list_share_frame'
+        });
+      }
+    });
+  };
+  var boxs = new Vue({
+    el:'#boxDetails',
+    data:{      
+        dataTittle:{},
+        dataContent:[],
+        items:{},
+        showImgs:true,
+        clickAddNumber:'30',
+        clickAddData:'',
+        needsId:'',
+        img2:"./images/zang@3x.png",
+        img3:"./images/zan@3x.png",
+        listState:'1',
+        image:[],
+        getSu:''
+    },
+    methods:{
+      getSupple:function(a){
+        this.getSu = a
+      },
+      backIndex:function(){
+        if(this.getSu == 'supplement'){
+          api.closeToWin({
+              name: 'root'
+          });
+          this.getSu = ''
+        }else{
+          api.closeWin({});
+        }
+      },
+    shares:function(lists){
+        api.sendEvent({
+            name: 'openFx',
+            extra: {
+                opensDeta: lists,
+            }
+        });
+        var token = api.readFile({
+            sync: true,
+            path: api.boxDir + '/token.txt'
+        });
+        if(token.indexOf("#") != -1){
+            $app.openFrame('list_share_frame',null,null,{
+                frameName:'details_frame'
+            },{
+                bounces: false,
+            })
+        }else{
+          // 跳转登录页面
+          $event.callRNEvent(1, 1, {
+              toPageName: 'Login'
+          });
+        }
+    },
+      openHui:function(){
+        api.openWin({
+          name:'answer',
+          url:'./answer.html',
+          pageParam:{
+            issueId:this.dataTittle.id,
+            nameTittle:this.dataTittle.title
+          }
+        })
+      },
+      fnReplaceComment:function(comment) {
+          if (!$app.isEmpty(comment)) {
+              comment = comment.replace(/<br\s*\/?>/gi, "\r\n");
+              comment = comment.replace(/<br\/>/g, "\r\n");
+              comment = comment.replace(/<br>/g, "\r\n");
+              comment = comment.replace(/<[^>]+>/g, "");
+              return comment;
+          }
+          return '';
+      },
+      fnunlisth:function(){
+        //   alert(JSON.stringify(this.dataTittle))
+      },
+    }
+  })
+  
+  function fnShareNative(platformType) {
+      var shareTopicInfo={
+        summary:boxs.dataTittle.contentNostyle,
+        title:boxs.dataTittle.title,
+        userName:boxs.dataTittle.userName,
+        mainImg:boxs.dataTittle.mainImgs,
+        userCode:boxs.dataTittle.userCode,
+        dataTypeNew:boxs.dataTittle.contentNostyle,
+        id:boxs.dataTittle.id
+      }
+      var storyContent = boxs.fnReplaceComment(shareTopicInfo.summary);
+      var url = SHARE_HOST + '/details.html?'+fnGetShareUrl();
+      var title = shareTopicInfo.title ? shareTopicInfo.title + '-顺逛微社区' : shareTopicInfo.userName + '的话题-顺逛微社区'; //分享标题
+      var content = storyContent ? storyContent.substr(0, 30) : '马上进入，参与话题讨论吧...';
+      var pic = shareTopicInfo.mainImg && shareTopicInfo.mainImg.indexOf('../') == '-1' ? shareTopicInfo.mainImg : 'http://www.ehaier.com/mstatic/wd/v2/img/sg.png';//分享图片，写绝对路径  是否后台获取
+      if ($app.isEmpty(pic)) {
+          pic = 'http://www.ehaier.com/mstatic/wd/v2/img/sg.png';
+      }
+      $app.showProgress();
+      $event.callRNEvent(3,1,{
+          command : [title, content, pic, url, 0, platformType]
+      });
+  }
+  function fnGetShareUrl() {
+    var shareTopicInfo={
+            summary:boxs.dataTittle.contentNostyle,
+            title:boxs.dataTittle.title,
+            userName:boxs.dataTittle.userName,
+            mainImg:boxs.dataTittle.mainImgs,
+            userCode:boxs.dataTittle.userCode,
+            dataTypeNew:boxs.dataTittle.contentNostyle,
+            id:boxs.dataTittle.id
+        }
+      var memberId = api.readFile({
+          sync: true,
+          path: api.boxDir + '/userid.txt'
+      });
+      if ($app.isEmpty(memberId)) {
+          memberId = shareTopicInfo.userCode;
+      }
+      var params = {
+          type: shareTopicInfo.dataTypeNew,
+          id: shareTopicInfo.id,
+          memberId: memberId
+      };
+      return new Base64().encode(JSON.stringify(params));
+  }
+  function fnInitListener(needId) {
+    $event.isShowHomeTab(false);
+        $event.scrollBottomListener(function () {
+            $app.showProgress();
+            boxs.fnGetStoryIndexByCondition(needId);
+        });
+        $event.addEventListener('NaviteCallAPICloudMethod', function (ret) {
+            $app.hideProgress();
+            var ret = ret.value;
+            if (ret.type == 3 && ret.tag == api.frameName) {
+                $app.hideProgress();
+                if (ret.success == 1) {
+                    isShare = true;
+                    $app.toast('分享成功');
+                } else {
+                    $app.toast('分享失败');
+                }
+            } else if (ret.type == 13) {
+                if (ret.tag == 'resume') {
+                }
+            }
+        }); 
+    } 
+</script>
+</html>

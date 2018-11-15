@@ -1,0 +1,145 @@
+.warp {
+	padding: 16px;
+}
+.accumulatives {
+	background-image: linear-gradient(-179deg, #FF6026 0%, #FF9526 99%);
+	border-radius: 4px;
+}
+.accumulative_list {
+	height: 88px;
+	box-sizing: border-box;
+	padding-top: 12px;
+	padding-bottom: 14px;
+}
+.gglod {
+	font-size: 10px;
+	color: #fff;
+	padding-left: 14px;
+	padding-right: 14px;
+}
+.accumulative_list .glodimg {
+	width: 25px;
+	height: 25px;
+	margin-right: 9px;
+	vertical-align: middle;
+}
+.accumulative_list .details {
+	padding-top: 8px;
+	padding-left: 9px;
+	color: #fff;
+	text-align: center;
+	display: flex;
+}
+.details .detail {
+	line-height: 28px;
+	font-size: 20px;
+	flex: 1;
+}
+.detail_bor {
+	border-right: 1px solid rgba(255, 255, 255, .3);
+}
+.sign {
+	font-size: 10px;
+}
+.my_commtent .commtent_list {
+	padding-top: 11px;
+	padding-bottom: 15px;
+	border-bottom: 1px solid rgba(0,0,0,.1);
+	display: flex;
+}
+.commtent_list .comm_li_img {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	overflow: hidden;
+}
+.commtent_list .comm_li_img img {
+	width: 100%;
+	height: 100%;
+}
+.commtent_list .comm_li_cont {
+	flex: 1;
+	padding-left: 11px;
+	padding-top: 8px;
+}
+.commtent_list .comm_li_cont .vip_name {
+	padding-bottom: 12px;
+	line-height: 20px;
+	font-size: 14px;
+	color: #000000;
+}
+.comm_li_cont .vip_name .vip_bor {
+	color: #2979FF;
+	height: 12px;
+	line-height: 12px;
+	padding: 1px;
+	margin-left: 5px;
+	border: 1px solid transparent;
+	background-clip: padding-box, border-box;
+	background-origin: padding-box, border-box;
+	background-image: linear-gradient(45deg,#fff,#fff), linear-gradient(45deg,#FF6026,#2979FF);
+	border-radius: 2px;
+}
+.vip_name .vip_bor .span_contt {
+	border-radius: 2px;
+	padding-left: 3px;
+	padding-right: 3px;
+	display: flex;
+	align-items: center;
+	flex-flow: row;
+}
+.vip_name .vip_bor .vip_img {
+	margin-right: 2px;
+	width: 10px;
+	height: 10px;
+}
+.vip_name .vip_bor .dj {
+	font-size: 11px;
+}
+.vip_name .at_time {
+	float: right;
+	font-size: 10px;
+	color: #999;
+}
+.commtent_list .comm_li_cont .reply {
+	display: flex;
+	padding-bottom: 11px;
+}
+.reply .my_reply {
+	flex: 1;
+}
+.img_reply {
+	height: 15px;
+	background: #FDC223;
+	color: #FFF;
+	font-size: 12px;
+	line-height: 15px;
+	padding-left: 8px;
+	padding-right: 8px;
+	border-radius: 100px;
+}
+.original {
+	background: #EFEFEF;
+	padding: 5px 7px 5px 6px;
+	display: flex;
+}
+.original_img {
+	width: 33px;
+	height: 33px;
+}
+.original_img img {
+	width: 100%;
+	height: 100%;
+}
+.original_text {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+	padding-left: 8px;
+	font-size: 12px;
+	line-height: 18px;
+	color: #000;
+	flex: 1;
+	word-wrap:break-word;
+}

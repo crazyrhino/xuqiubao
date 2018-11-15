@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>选择圈子</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/select_circle_frame.css"/>
+		<style>
+			.c_my_circle_list{
+				-webkit-overflow-scrolling: touch;
+				box-sizing: border-box;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="c_main meui_flex_wrap meui_flex_vertical">
+			<div class="c_space"></div>
+			<div class="c_select_circle meui_flex_con">
+				<div class="c_title">
+					选择圈子 <div class="c_close" tapmode onclick="fnCloseCircle();"></div>
+				</div>
+				<div class="c_line"></div>
+				<div class="c_sub_title_recommend">
+					推荐圈子
+				</div>
+				<div class="c_recommend_circles">
+					<div class="slide-box">
+						<div v-for="item in list" class="slide-item" tapmode v-on:click="fnSelectCircle(item)">
+							<img class="circle_img" v-bind:src="item.topicImg" alt="" />
+							<div class="c_circle_name meui_single_line" v-text="item.topicName"></div>
+						</div>
+					</div>
+				</div>
+				<div class="c_sub_title_mine">
+					我加入的圈子
+				</div>
+				<div class="c_my_circle_list">
+					<div v-for="item in list" class="c_my_circle_item" tapmode v-on:click="fnSelectCircle(item)">
+						<img class="c_my_circle_img" v-bind:src="item.topicImg" alt="" />
+						<div class="c_my_circle_name meui_single_line" v-text="item.topicName"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript" src="../../script/jquery.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+			fnGetTopicRecommond();
+			fnTopicGetFollowed();
+			fnListBottomListener();
+            $api.css($api.dom('.c_my_circle_list'), 'height:'+ (api.winHeight - $api.offset($api.dom('.c_my_circle_list')).t -10) + 'px');
+		};
+		
+		function fnCloseCircle(){
+			api.execScript({
+				frameName : api.pageParam.frameName,
+	            script: 'fnCloseCircle();'
+            });
+		}
+		
+		var vue = new Vue({
+			el : '.slide-box',
+			data : {
+				list : []
+			},
+			methods : {
+				fnSelectCircle : function(item) {
+                    $api.setStorage('recommend','isRecommend');
+                    fnSelectCircle(item.id, item.topicName);
+				}
+			}
+		});
+		var myCircleVue = new Vue({
+			el : '.c_my_circle_list',
+			data : {
+				list : [],
+			},
+			methods : {
+				fnSelectCircle : function(item) {
+                    $api.setStorage('recommend','');
+					fnSelectCircle(item.id, item.topicName);
+				}
+			}
+		});
+		function fnSelectCircle(id, name) {
+			api.execScript({
+				name : api.winName,
+				frameName : api.winName + '_frame',
+				script : 'fnExecSelectCircle(' + id + ',"' + name + '");'
+			});
+		}
+
+		var pageNo = 1;
+		function fnGetTopicRecommond(isLoadMore) {
+			$service.get('topic/recommend.ajax', {
+				pageNo : 1,
+				pageSize : 20
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						if (ret.data && ret.data.length > 0) {
+							fnAppendTopicData(vue.list, ret.data);
+						} else {
+							if (isLoadMore) {
+								fnToast('没有更多');
+							}
+						}
+					} else {
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		};
+		function fnAppendTopicData(oldArr, data) {
+			for (var i = 0; i < data.length; i++) {
+				if (fnIsEmpty(data[i].topicImg)) {
+					data[i].topicImg = '../../image/home/tmp_default_header.png';
+				}
+				oldArr.push(data[i]);
+			}
+			return oldArr;
+		}
+
+		function fnTopicGetFollowed(isLoadMore) {
+			$service.get('topic/getFollowed.ajax', {
+				pageNo : pageNo,
+				pageSize : 20,
+				type : 1
+			}, function(ret, err) {
+				if (ret.ok == 1) {
+					if (ret.data.list && ret.data.list.length > 0) {
+						fnAppendTopicData(myCircleVue.list, ret.data.list);
+					} else {
+						if (isLoadMore) {
+//							fnToast('没有更多');
+						}
+					}
+				}
+			},true);
+		}
+
+		function fnListBottomListener() {
+			$(".c_my_circle_list").scroll(function() {
+				var h = $(this).height();
+				//div可视区域的高度
+				var sh = $(this)[0].scrollHeight;
+				//滚动的高度，$(this)指代jQuery对象，而$(this)[0]指代的是dom节点
+				var st = $(this)[0].scrollTop;
+				//滚动条的高度，即滚动条的当前位置到div顶部的距离
+				fnLogStr(h +' '+ st +' '+ sh);
+				if (h + st + 51 >= sh) {
+					pageNo++;
+					fnTopicGetFollowed(true);
+				}
+			});
+		}
+	</script>
+</html>

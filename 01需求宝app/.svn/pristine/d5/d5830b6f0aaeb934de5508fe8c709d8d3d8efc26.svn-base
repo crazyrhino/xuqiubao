@@ -1,0 +1,167 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>我的圈子</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/my_community.css" />
+		<style>
+			html,body,.my_communitys{
+				height: 100%;
+			}
+			[v-cloak] {
+				display: none;
+			}
+			.no-data{
+				text-align: center;
+				height: 100%;
+				overflow: hidden;
+			}
+			.no-data img{
+				height:97px;
+				width: 124px;
+				margin:64px 0 12px 0;
+			}
+			.no-data p{
+				font-size: 14px;
+				color: #999;
+				margin-bottom:24px;
+			}
+			.no-data div{
+				height: 38px;
+				width: 126px;
+				margin:0 auto;
+				border-radius: 100px;
+				border:1px solid #FF6026;
+				color: #FF6026;
+				font: 16px/38px '';
+			}
+		</style>
+	</head>
+	<body>
+		<div class="my_communitys" v-cloak>
+			<div class="no-data" v-if="list.length == 0">
+				<img src="../../image/empty/no_friends_result.png" alt="">
+				<p>看看社区的热门圈子</p>
+				<div tapmode onclick="fnOpenMain();">热圈</div>
+			</div>
+			<p class="comm_tit" v-show="list.length > 0">
+				已经加入<span>{{count}}</span>个圈子
+			</p>
+			<div v-for="item in list" class="communitys_list" @click="fnOpenCommunityDetail(item.id)">
+				<div class="communityimg">
+					<img v-bind:src="item.topicImg" alt="">
+				</div>
+				<div class="communityscont">
+					<p class="contname" v-text="item.topicName"></p>
+					<p class="contdescribe" v-text="item.topicDescription"></p>
+					<p class="topicsnum">
+						<span class="num" v-if="item.storyCount <= 999">{{item.storyCount}}</span><span class="num" v-else>999+</span><span>个话题</span><span class="num" v-if="item.followCount <= 999">{{item.followCount}}</span><span class="num" v-else>999+</span><span>个人</span>
+					</p>
+				</div>
+				<div class="return_arrow"><img src="../../image/rank/right_arrow.png" alt="">
+				</div>
+			</div>
+            <footer></footer>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript">
+		var pageIndex = 1;
+		apiready = function() {
+            $api.css($api.dom('footer'),'height:' + api.safeArea.bottom + 'px');
+            //fnRefreshOpen();
+            fnBackListener(fnBack)
+			fnTopicGetFollowed();
+			fnSetRefresh(function() {
+				pageIndex = 1;
+				fnTopicGetFollowed(false, true);
+			});
+			addBottomListener(function() {
+				if(isLoading)return;
+				pageIndex++;
+				fnTopicGetFollowed(true, false);
+			});
+		}
+		var vue = new Vue({
+			el : '.my_communitys',
+			data : {
+				list : [],
+                count:0
+			},
+			updated:function(){
+		        fnLogStr('数据变化更新后');
+		        isLoading = false;
+		    },
+			methods : {
+				fnOpenCommunityDetail : function(id) {
+					fnOpenCommunityDetail(id);
+				}
+			}
+		});
+        function fnOpenMain() {
+            fnOpenWin("all_community", null);
+        }
+		function fnOpenCommunityDetail(id) {
+            api.writeFile({
+                path: api.boxDir + '/isRoot.txt',
+                data: ''
+            });
+            api.writeFile({
+                path : api.boxDir + '/topicId.txt',
+                data : ''
+            });
+			fnOpenWin('community_detial', '../community/', {
+				id: id
+			});
+		}
+
+		var isLoading = false;
+		function fnTopicGetFollowed(isLoadMore, isRefresh) {
+			if(isLoadMore){
+				isLoading = true;
+			}
+			$service.get('topic/getFollowed.ajax', {
+				pageNo : pageIndex,
+				pageSize : 20,
+                type : 0
+			}, function(ret, err) {
+				api.refreshHeaderLoadDone();
+				if (ret) {
+					if (ret.data.list && ret.data.list.length > 0) {
+                        vue.count = ret.data.count;
+                        if (isRefresh) {
+							vue.list = [];
+						}
+						fnAppendTopicData(vue.list, ret.data.list);
+					} else {
+						if (isLoadMore) {
+							fnToast("没有更多");
+						} else if (isRefresh) {
+//							fnToast("获取数据失败");
+						}
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		function fnAppendTopicData(oldArr, data) {
+			for(var i = 0; i < data.length; i++) {
+				if(fnIsEmpty(data[i].topicImg)) {
+					data[i].topicImg = '../../image/home/tmp_default_header.png';
+				}
+				oldArr.push(data[i]);
+			}
+			return oldArr;
+		}
+	</script>
+</html>

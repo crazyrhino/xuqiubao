@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta content="telephone=no,email=no" name="format-detection">
+    <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>最新需求</title>
+    <link rel="stylesheet" href="css/public.css">    
+    <style>
+    	.top{width: 100%;background-color: #f6f6f6;  border-bottom: 1px solid #e1e1e1;}
+    	.top ul {display: flex;height: 2.8rem;line-height: 2.8rem; }
+		 .t_left{ width:20%; text-align:left; padding-left: 0.8rem;}
+		 .t_left img{ width:1.2rem;}
+		 .t_left ul{ width: 100%;}
+		 .title{  font-size:1.1rem;line-height: 3rem; color: #555;width: 100%;font-weight:bold; padding-left: 5rem; }  
+		 .top ul {display: flex;height: 2.8rem;line-height: 2.8rem; }		
+    </style>
+</head>
+<body style="background:#fff;">
+	    <div class="box" id="idea" v-cloak>
+    	   <div class="top" id="title">
+		     	<ul>
+		     	   	  <li class="t_left" onclick="backHome()" > <img src="images/back.png">  </li>
+		     	   	  <li class="title">提创意</li> 
+		     	</ul>		     	
+    	  </div>   
+    </div>	 
+	
+	<script src="./js/jquery.js"></script>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/fastclick.js"></script>
+	<script type="text/javascript" src="../../script/common.js?v=0"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			$app.fixStatusBar('#title');			  
+            var o = $api.dom('#title');
+            var titleTop = $api.offset(o).h; 
+
+
+			api.openFrame({
+				name: 'idea',
+				url: './idea.html',
+				softInputMode : 'pan',
+				softInputDismissMode: ['tap', 'drag'],
+				rect: {
+					x: 0,
+					y: titleTop,
+					w: 'auto',
+					h: 'auto'
+				},
+			    softInputBarEnabled:true,  //可以设置是否去掉键盘上的工具条,true 显示， false 隐藏		
+                reload : true,
+                allowEdit : true, 				
+			});
+			api.addEventListener({
+				name: 'keyback'
+			}, function(ret, err) { 
+				backHome() 
+			});
+		}
+		 
+		//返回首页
+				function backHome() {
+				var jsfun = 'funcGotoBack();';
+				api.execScript({
+					frameName: 'idea',
+					script: jsfun
+				});
+                api.openFrame({
+                    name : 'exit_hints',
+                    url : '../popup/exit_hints.html',
+                    rect : {
+                        x : 0,
+                        y : 0,
+                        w : 'auto',
+                        h : 'auto'
+                    },
+                    pageParam : api.pageParam,
+                    bgColor : 'rgba(0,0,0,0)',
+                    bounces : false
+                });
+			
+			
+		}
+	</script>
+</body>
+
+</html>

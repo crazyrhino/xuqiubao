@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>图片预览</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../script/swiper/swiper-4.2.2.min.css"/>
+    <style>
+        body, html {
+            background: transparent;
+            height: 100%;
+        }
+        .wrap{
+            height: calc(100% - 340px);
+            padding-top: 340px;
+        }
+        .btn{
+            border-radius: 4px;
+            text-align: center;
+            color: #FF6026;
+            font-size: 17px;
+            line-height: 50px;
+            background-color: #fff;
+            width: 80%;
+            /*left: 10%;*/
+            transform: translateX(10%);
+            z-index: 999;
+        }
+        .btn span{
+            display: block;
+            height: 48px;
+            width: 100%;
+        }
+        .cancle{
+            color: #999;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+<div class="wrap" tapmode onclick="fnCloseFrame()">
+    <div class="btn">
+        <span tapmode onclick="FnIsSave()">保存图片</span>
+        <span class="cancle" tapmode onclick="fnCloseFrame()">取消</span>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        addEvent();
+    };
+    function FnIsSave() {
+        event.stopPropagation();
+        if (api.systemType === 'android') {
+            api.sendEvent({
+                name : 'APICloudCallNaviteMethod',
+                extra : {
+                    tag : api.frameName,
+                    type : 9, // 权限管理
+                    canCallBack : 1, // 返回1时，说明有权限，可进行下一步操作
+                    command : ['android.permission.WRITE_EXTERNAL_STORAGE', 'android.permission.READ_EXTERNAL_STORAGE', 'android.permission.CAMERA'] // 需要哪些权限就在数组中传过来
+                }
+            });
+        } else {
+            api.execScript({
+                name: api.winName,
+                script: 'savePicture("'+ api.pageParam.currentIndex +'")'
+            });
+            api.closeFrame()
+        }
+    }
+    function addEvent() {
+        api.addEventListener({
+            name : 'NaviteCallAPICloudMethod'
+        }, function(rets, err) {
+            var ret = rets.value;
+            if (ret.tag == api.frameName && ret.type == 9) {
+                api.execScript({
+                    name: api.winName,
+                    script: 'savePicture("'+ api.pageParam.currentIndex +'")'
+                });
+                api.closeFrame()
+            }
+        });
+    }
+    function fnCloseFrame() {
+        event.stopPropagation();
+        api.execScript({
+            name: api.winName,
+            script: 'changeStatus()'
+        });
+        api.closeFrame();
+    }
+</script>
+</html>

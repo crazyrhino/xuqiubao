@@ -1,0 +1,1209 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>圈子详情</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/swiper.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/community_detial.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/recommend_frame.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/address_confirm.css"/>
+    <link id="os_refresh_css" rel="stylesheet" type="text/css" href=""/>
+    <script type="text/javascript" src="../../script/flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+        body{
+            height: 100%;
+        }
+        .refresh_header {
+            height: 32px;
+            margin-top: -32px;
+            line-height: 32px;
+            text-align: center;
+            color: #FFF;
+            font-size: 14px;
+            background: #EEEEEE;
+        }
+
+        .refresh_header_inner {
+            display: inline-block;
+        }
+
+        .refresh_img {
+            width: 16px;
+            height: 16px;
+            margin-top: 8px;
+            margin-right: 4px;
+        }
+
+        .refresh_txt {
+            height: 32px;
+            line-height: 32px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .refresh_result {
+            display: none;
+            width: 100%;
+            background: #FF6026;
+        }
+
+        .refresh_no_result {
+            display: none;
+            width: 100%;
+            background: #000;
+        }
+
+        .writer_headIcon {
+            width: 16px;
+            height: 16px;
+            border-radius: 16px;
+            background: url(../../image/home/tmp_default_header.png) no-repeat;
+            background-size: 16px;
+        }
+
+        .top_item {
+            padding: 11px 0 0 0;
+        }
+
+        #warp {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            background: rgba(0, 0, 0, 0);
+            display: none;
+            z-index:999;
+        }
+
+        .top_list {
+            padding: 0;
+        }
+
+        .header_div {
+            margin-top: 0;
+        }
+
+        .video_img {
+            background-color: #8FA8CC;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+        .backToH5{
+            position:fixed;
+            bottom : 100px;
+            right: 16px;
+            display: none;
+            height: 48px;
+            width: 48px;
+            border-radius: 50%;
+        }
+        .title,.title2 {
+            height: auto;
+        }
+        .describe{
+            font-size: 0.426667rem;
+            color: #333;
+            height: auto;
+            line-height: normal;
+        }
+        .describe2 {
+        	margin-bottom: 0;
+            font-size: 0.426667rem;
+            color: #333;
+            width: 100%;
+        }
+        .bottom_bar{
+        	padding: 0 15px;
+        	padding-bottom: 11px;
+        	margin-top: 0px;
+        }
+        .no-data{
+            height: calc(100% - 7.2rem);
+            text-align: center;
+            overflow: hidden;
+            background: #fff;
+            display: none;
+        }
+        .no-data img{
+            height:97px;
+            width: 124px;
+            margin:80px 0 12px 0;
+        }
+        .no-data p{
+            font-size: 15px;
+            color: #999;
+        }
+        .video_img{
+				background-color: #8FA8CC;
+				background-repeat: no-repeat;
+				background-size: cover;
+				background-position: center;
+			}
+        .img_bg{
+			background-color: #8FA8CC;
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+		}
+		.one_img {
+			border-radius: 4px;
+		}
+		.img_third{
+			margin-top: 3px;
+		}
+        header {
+			height: 44px;
+		}
+        .meui_flex_con,.meui_txt_center{
+            text-shadow: #000 0 0 35px;
+        }
+        .video_img {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .video_title{
+            margin-left: 10px;
+            text-shadow: #000 0 1px 2px;
+            position: relative;
+            color: #fff;
+        }
+        .two_img,.three_img{
+            margin-top: .5rem;
+        }
+    </style>
+</head>
+<body>
+<!--个人中心-->
+<header>
+    <div class="header_div">
+        <div class="c_back_btn" tapmode="meui_click" onclick="fnBacks()"></div>
+        <div class="meui_txt_center c_title"></div>
+        <div class="c_modify_btn" tapmode="meui_click" onclick="fnOpenCircleInfo()"></div>
+        <div class="c_share_btn" tapmode="meui_click" onclick="fnShare()"></div>
+    </div>
+</header>
+<div class="user_info">
+    <div class="base_info meui_flex_wrap">
+        <div class="circle_outer">
+            <div class="circle_inner">
+                <img class="circle_header_img" src="../../image/home/tmp_default_header.png" alt=""/>
+            </div>
+        </div>
+        <div class="meui_flex_con">
+            <div class="circle_name"></div>
+            <div class="circle_desc"></div>
+        </div>
+    </div>
+    <div class="base_bottom_info meui_flex_wrap">
+        <div class="num_info_div meui_flex_wrap meui_flex_con">
+            <div class="num_info meui_flex_con">
+                <div class="num" id="storyCount"></div>
+                <div class="num_info_txt">
+                    话题
+                </div>
+            </div>
+            <div class="num_info meui_flex_con">
+                <div class="num" id="followCount"></div>
+                <div class="num_info_txt">
+                    成员
+                </div>
+            </div>
+            <div class="num_info meui_flex_con">
+                <div class="num" id="shareCount"></div>
+                <div class="num_info_txt">
+                    热度
+                </div>
+            </div>
+        </div>
+        <div class="join_btn" tapmode="meui_click" onclick="fnJoin()">
+            加入
+        </div>
+    </div>
+</div>
+<div id="list">
+    <div class="refresh_header">
+        <div class="refresh_header_inner">
+            <div class="meui_flex_wrap">
+                <img class="refresh_img" src="../../image/loading_more.gif" alt=""/>
+                <div class="refresh_txt" id="refresh"></div>
+            </div>
+        </div>
+        <div class="refresh_result">
+            为您推荐<span class="refresh_num"></span>条更新
+        </div>
+        <div class="refresh_no_result">
+            暂无更多，添加兴趣标签看更多
+        </div>
+    </div>
+    <!--导航条-->
+    <div class="nav_wrap">
+        <div class="slide-box">
+            <div v-for="(item,index) in labelList" class="slide-item" tapmode="meui_click"
+                 @click="fnSelectLabel(item,index)">
+                <div v-if="item.active" class="label_name active" v-text="item.name"></div>
+                <div v-else class="label_name" v-text="item.name"></div>
+            </div>
+        </div>
+    </div>
+    <div class="top_list" style="margin-top: 4px;" v-cloak v-show="tagIndex == 0 && list.length > 0">
+        <div v-for="(item,index) in list" style="padding-left:18px " class="flex_container imgs_title_wrap top_item"
+             @click="openDetails(item.dataTypeNew,item.id)">
+            <div class="top_title line2">
+                <span class="top">顶</span>
+                <span v-show="item.isChoice != 0" class="fine-label"></span>
+                {{item.title}}
+            </div>
+            <div v-if="index < list.length - 1" class="device_bar" style="height: 1px;"></div>
+        </div>
+    </div>
+    <section v-if="refresh" style="margin-top: 4px;" class="list_wrap" v-cloak>
+        <div v-for="(item,index) in list" @click="openDetails(item.dataTypeNew,item.id)" class="item">
+            <div class="list">
+                <!--一图-->
+                <div v-if="fnImgCount(item) == 1 && item.dataTypeNew != 3" class="flex_container">
+                    <div>
+                        <div class="title line2">
+                            <span v-if="item.isChoice != 0" class="fine-label"></span>
+                            {{item.title}}
+                        </div>
+                        <div class="describe line2" v-text="fnReplaceComment(item.summary)"></div>
+                    </div>
+                    <div class="one_img img_bg" :style="{'background-image':'url('+fnSizeImg(item.storyImgs[0])+')'}">
+							<!--<img v-bind:src="fnSizeImg1(item.storyImgs[0])" />-->
+					</div>
+                </div>
+                <!--2图-->
+                <div v-if="fnImgCount(item) == 2 && item.dataTypeNew != 3" class="flex_container imgs_title_wrap">
+                    <div class="title2 noBreak">
+                        <span v-if="item.isChoice != 0" class="fine-label"></span>
+                        {{item.title}}
+                    </div>
+                    <div class="describe2 noBreak" v-text="fnReplaceComment(item.summary)"></div>
+                    <div class="two_img flex_container">
+                        <div class="img_first img_bg" :style="{'background-image':'url('+fnSizeImg(item.storyImgs[0])+')'}">
+								<!--<img class="img_first" v-bind:src="fnSizeImg2(item.storyImgs[0])" />-->
+							</div>
+							<div class="img_second img_bg" :style="{'background-image':'url('+fnSizeImg(item.storyImgs[1])+')'}">
+								<!--<img class="img_second" v-bind:src="fnSizeImg2(item.storyImgs[1])" />-->
+							</div>
+                    </div>
+                </div>
+                <!--大于3图-->
+                <div v-if="fnImgCount(item) >= 3 && item.dataTypeNew != 3" class="flex_container imgs_title_wrap">
+                    <div class="title2 noBreak">
+                        <span v-if="item.isChoice != 0" class="fine-label"></span>
+                        {{item.title}}
+                    </div>
+                    <div class="describe2 noBreak" v-text="fnReplaceComment(item.summary)"></div>
+                    <div class="three_img flex_container">
+                        <div class="three_img_first img_bg" :style="{'background-image':'url('+fnSizeImg(item.storyImgs[0])+')'}"></div>
+							<!--<img class="three_img_first" v-bind:src="fnSizeImg3(item.storyImgs[0])" />-->
+							<div class="right_twoImgs">
+								<div class="img_second img_bg" :style="{'background-image':'url('+fnSizeImg(item.storyImgs[1])+')'}"></div>
+								<div class="img_third img_bg" :style="{'background-image':'url('+fnSizeImg(item.storyImgs[2])+')'}"></div>
+								<!--<img class="img_second" v-bind:src="fnSizeImg4(item.storyImgs[1]+'@300_200')" />
+								<img class="img_third" v-bind:src="fnSizeImg4(item.storyImgs[2])" />-->
+							</div>
+                    </div>
+                </div>
+                <!--无图无封面-->
+                <div v-if="fnImgCount(item) == 0 && item.dataTypeNew != 3 && !item.mainImg"
+                     class="flex_container imgs_title_wrap">
+                    <div class="title2 noBreak">
+                        <span v-if="item.isChoice != 0" class="fine-label"></span>
+                        {{item.title}}
+                    </div>
+                    <div class="describe2 line2" v-text="fnReplaceComment(item.summary)"></div>
+                </div>
+                <!--无图有封面-->
+                <div v-if="fnImgCount(item) == 0 && item.dataTypeNew != 3 && item.mainImg" class="flex_container">
+                    <div>
+                        <div class="title line2">
+                            <span v-if="item.isChoice != 0" class="fine-label"></span>
+                            {{item.title}}
+                        </div>
+                        <div class="describe line2" v-text="fnReplaceComment(item.summary)"></div>
+                    </div>
+                    <div class="one_img img_bg" :style="{'background-image':'url('+fnSizeImg(item.mainImg)+')'}">
+							<!--<img v-bind:src="fnSizeImg5(item.mainImg)"/>-->
+					</div>
+                </div>
+                <!--视频-->
+                <div v-if="item.dataTypeNew == 3" class="video_div">
+                    <div class="video_title meui_2_line">
+                        <span v-if="item.isChoice != 0" class="fine-label"></span>
+                        {{item.title}}
+                    </div>
+                    <!--<img class="video_img" v-bind:src="item.mainImg" onerror="fnImgError(this,true)"/>-->
+                   <div class="video_img" :style="{'background-image':'url('+item.storyMediaList[0].url+'?x-oss-process=video/snapshot,t_3000,f_jpg )'}" >
+							<!--<img v-bind:src="fnSizeImg5(item.mainImg)"/>-->
+						</div>
+                        <img class="play_btn" src="../../image/edit_topic/play.png" alt=""/>
+                        <div class="video_time" v-text="item.duration"></div>
+                    </div>
+                </div>
+                <div class="flex_container bottom_bar">
+                    <div class="flex_container left_bar" tapmode="meui_click" v-on:click.stop="fnOpenUser(item)">
+                        <img class="writer_headIcon" v-bind:src="item.userHead"/>
+                        <div class="writer_name" v-text="item.userName"></div>
+                    </div>
+                    <div class="right_bar flex_container">
+                        <div class="bottom_icon icon1"></div>
+                        <div class="bottom_num" v-text="item.browserNumber"></div>
+                        <div class="bottom_icon icon2"></div>
+                        <div class="bottom_num" v-text="item.commentNumber"></div>
+                        <div v-if="item.userPraiseFlag == 0" class="bottom_icon icon3" tapmode="meui_click"
+                             v-on:click.stop="fnPraise(item,index)"></div>
+                        <div v-else class="bottom_icon icon4" tapmode="meui_click"
+                             v-on:click.stop="fnPraise(item,index)"></div>
+                        <div class="bottom_num" v-text="item.praiseNumber"></div>
+                    </div>
+                </div>
+            </div>
+    </section>
+    <img class="backToH5" src="../../image/community/zbs.png" alt="" tapmode onclick="fnbackToH5();">
+</div>
+<div class="no-data">
+    <img src="../../image/empty/nojz@2x.png" alt="">
+    <p>暂无动态</p>
+</div>
+<div id="warp">
+    <div class="popup_position">
+        <div class="popup_content">
+            <p class="cont_tit">
+                亲，先加入我们再秀话题。
+            </p>
+            <div class="hold"></div>
+            <div class="btns">
+                <a class="btn btn_left" tapmode onclick="fnCloseDialog()">再想想</a>
+                <a tapmode onclick="fnJoin()" class="btn btn_right">加入</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js?v=1"></script>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/swiper.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/refresh.js"></script>
+<script type="text/javascript" src="../../script/service.js"></script>
+<script type="text/javascript" src="../../script/signature.js"></script>
+<script type="text/javascript">
+    var isToRoot;
+    var userToken = '';
+    var userId;
+    apiready = function () {
+        if(typeof api.pageParam.isToRoot != 'undefined' && api.pageParam.isToRoot == 'isToRoot'){
+            userToken = api.pageParam.token;
+            isToRoot = api.pageParam.isToRoot;
+        }else if(typeof api.pageParam.userToken != 'undefined'){
+            userToken = api.pageParam.userToken;
+        }else{
+            userToken = api.readFile({
+                sync : true,
+                path : api.boxDir + '/token.txt'
+            });
+        }
+        if(userToken.indexOf("Bearer") < 0){
+            userToken = 'Bearer' + userToken
+        }
+        api.setFullScreen({
+            fullScreen : false
+        });
+        userId = api.readFile({//获取当前用户信息，作为分享使用
+            sync : true,
+            path : api.boxDir + '/userid.txt'
+        });
+        fnSysHeaderStyle();
+        fnInitStyle();
+        fnAddTouchListener(scrollBottom, function () {
+            fnGetStoryIndexByCondition(false, true, tagId, true);
+            fnGetTopList();
+        }, fnChangeHeaderBg, fnSetHeaderBgColor);
+        fnGetTopicInfo(true);
+        fnGetTopicLables();
+        fnGetStoryIndexByCondition(false, false);
+        fnScrollListener();
+        fnGetTopList();
+        fnAddSahreListener();
+    };
+    function fnInitStyle() {
+        if(api.pageParam.id == '662' || api.pageParam.id == '665'){
+            $api.css($api.dom('.join_btn'), "display:none");
+            $api.css($api.dom('.backToH5'), "display:block");
+        }
+    }
+    function fnbackToH5() {
+        var type;
+        if(api.pageParam.id == 662){
+            type = 1;
+        }else if(api.pageParam.id == 665){
+            type = 3;
+        }
+        api.ajax({
+            url: HOST_h5 + "/circle/getSqzbLink.ajax",
+            method: 'get',
+            headers: {
+                'TokenAuthorization': userToken
+                // 'TokenAuthorization': 'Bearer6c890dd5-b974-4b83-b277-a7d362cd91e1966#BZLZo/6FAufLJrFNGWi777hzaQsc9Kyvk33OJFCutscAbbP1RV0YPfPVD8pWfSRw'
+            },
+            data: {
+                body: {
+                    type:type
+                }
+            }
+        }, function(ret, err) {
+            if (ret) {
+                var eventUrl = ret.data;
+                api.sendEvent({
+                    name : 'APICloudCallNaviteMethod',
+                    extra : {
+                        type : 1,
+                        canCallBack : 1,
+                        toPageName : 'CommunityWeb',
+                        toPageParams : {url: eventUrl}
+                    }
+                })
+                // window.location.href = ret.data;
+            } else {
+                fnToast(ret.message);
+            }
+        });
+    }
+    function getUrlParams(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null)
+            return unescape(r[2]);
+        return null;
+    }
+    function fnBacks() {
+        if (api.winName == 'root') {
+            api.sendEvent({
+                name : 'APICloudCallNaviteMethod',
+                extra : {
+                    type : 6
+                }
+            });
+        } else if(isToRoot == 'isToRoot') {
+            api.writeFile({
+                path: api.boxDir + '/isRoot.txt',
+                data: ''
+            });
+            api.writeFile({
+                path : api.boxDir + '/topicId.txt',
+                data : ''
+            });
+            api.sendEvent({
+                name : 'APICloudCallNaviteMethod',
+                extra : {
+                    type : 6
+                }
+            });
+        }else if(api.pageParam.needRefreshJoin){
+        	fnBack();
+        }else{
+            api.closeWin();
+        }
+    }
+    function getUrlParams(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null)
+            return unescape(r[2]);
+        return null;
+    }
+    function fnCloseDialog() {
+        api.setFrameAttr({
+            name: 'edit_btn_frame',
+            hidden: false
+        });
+        setTimeout(function () {
+            fnSetDisplay('warp', false)
+        }, 100);
+    }
+
+    var selectIndex = 0;
+    var tagId;
+    var vue = new Vue({
+        el: '.slide-box',
+        data: {
+            labelList: [{
+                id: 0,
+                name: '全部',
+                active: true
+            },{
+                id: -1,
+                name: '视频',
+                active: false
+            }]
+        },
+        methods: {
+            fnSelectLabel: function (item, index) {
+                vue.$set(vue.$data.labelList[selectIndex], 'active', false);
+                vue.$set(vue.$data.labelList[index], 'active', true);
+                selectIndex = index;
+                topVue.tagIndex = index;
+                // fnSetDisplay('.top_list', selectIndex === 0);
+                pageIndex = 1;
+                tagId = item.id;
+                isChangeLabel = true;
+                fnGetStoryIndexByCondition(false, true, item.id);
+            }
+        }
+    });
+    
+    var isChangeLabel = false;
+
+    var topVue = new Vue({
+        el: '.top_list',
+        data: {
+            list: [],
+            isShow: true,
+            refresh : false,
+            tagIndex:0
+        },
+        methods: {
+            openDetails: function (_dataTypeNew, _id) {
+                api.openWin({
+                    name: guid() + 'topic_details',
+                    url: '../topic/topic_details.html?time='+new Date().getTime(),
+                    pageParam: {
+                        type: _dataTypeNew,
+                        id: _id,
+                        topicId: api.pageParam.id
+                    },
+                    slidBackEnabled: false,
+                    allowEdit: true
+                });
+            }
+        }
+    });
+    var storyVue = new Vue({
+        el: '.list_wrap',
+        data: {
+            list: [],
+            refresh : false
+        },
+        methods: {
+            fnImgCount: function (item) {
+                if (item.storyImgs) {
+                    return item.storyImgs.length;
+                }
+                return 0;
+            },
+            fnSizeImg : function(url){
+				if(url && (url.indexOf('ehaier.com')!=-1 || url.indexOf('aliyuncs.com')!=-1) && url.indexOf('cdn41')==-1 && url.indexOf('sg-video-test')==-1){
+					return url+'@300_200';
+				}
+				return url;
+			},
+            openDetails: function (_dataTypeNew, _id) {
+                api.openWin({
+                    name: guid() + 'topic_details',
+                    url: '../topic/topic_details.html',
+                    slidBackEnabled : false,
+                    pageParam: {
+                        type: _dataTypeNew,
+                        id: _id,
+                        topicId: api.pageParam.id
+                    },
+                });
+            },
+            fnPraise: function (item, index) {
+                fnPraise(item, index);
+            },
+            fnOpenUser: function (item) {
+                api.readFile({
+                    path: api.boxDir + '/userid.txt'
+                }, function (ret, err) {
+                    if (ret) {
+                        var _userid = ret.data;
+                        if (_userid === '') {
+                            fnOpenLogin();
+                            return
+                        }
+                        if (item.userId == _userid) {
+                            fnOpenWin('mine', '../mine/');
+                        } else {
+                            fnOpenWin('ta_page', '../ta_page/', {
+                                userId: item.userId
+                            });
+                        }
+                    }
+                })
+            },
+            fnLoadImage: function (url) {
+                fnLoadImage(url);
+            },
+            fnReplaceComment: function (comment) {
+                if (!fnIsEmpty(comment)) {
+                    comment = comment.replace(/<br\s*\/?>/gi, "\r\n");
+                    comment = comment.replace(/<[^>]+>/g, "");
+                    fnLogStr(comment);
+                    return comment;
+                }
+                return '';
+            }
+        }
+    });
+
+    function fnOpenLogin() {
+        api.sendEvent({
+            name: 'APICloudCallNaviteMethod',
+            extra: {
+                type: 1,
+                canCallBack: 1,
+                toPageName: 'Login'
+            }
+        });
+    }
+    function fnGetTopicLables() {
+        $service.get('topic/getTopicTagsByTopicId.ajax', {
+            id: api.pageParam.id
+        }, function (ret, err) {
+            if (ret) {
+                if (ret.ok == 1) {
+                    fnAppendData(vue.labelList, ret.data);
+                } else {
+                }
+            } else {
+                fnToast(err.msg);
+            }
+        });
+    }
+
+    //置顶列表
+    function fnGetTopList() {
+        $service.get('story/getStoryIndexByCondition.ajax', {
+            searchType: 1,
+            pageIndex: 1,
+            pageSize: 3,
+            groupId: api.pageParam.id
+        }, function (ret, err) {
+            if (ret) {
+                if (ret.ok == 1) {
+                    topVue.list = [];
+                    fnAppendData(topVue.list, ret.data.list);
+                } else {
+                    fnToast("获取置顶列表失败");
+                }
+            } else {
+                fnToast("网络连接失败，请请检查网络！");
+            }
+        }, true, true);
+    }
+
+    var pageIndex = 1;
+
+    function fnGetStoryIndexByCondition(isLoadMore, isRefresh, tagId, isPullRefresh) {
+        $service.get('story/getStoryIndexByCondition.ajax', fnGetParams(tagId), function (ret, err) {
+            api.refreshHeaderLoadDone();
+            if (ret.ok == 1) {
+                if (ret.data.list && ret.data.list.length > 0) {
+                    if (isRefresh) {
+                        if(pageIndex == 1){
+							storyVue.refresh = false;
+						}
+						storyVue.list = [];
+                    }
+                    if (isPullRefresh) {
+                        fnShowRefreshResult(ret.data.list.length);
+                    }
+                    fnAppendData(storyVue.list, ret.data.list);
+                    $api.css($api.dom('.no-data'),'display:none');
+                } else {
+                    if (isPullRefresh) {
+                        fnShowRefreshNoResult();
+                        return;
+                    }
+                    if (isLoadMore) {
+                        fnToast("没有更多");
+                    } else if (isRefresh) {
+                    	$api.css($api.dom('.no-data'),'display:block');
+                        storyVue.list = [];
+                    }
+                    if(!isLoadMore && !isRefresh){
+                        $api.css($api.dom('.no-data'),'display:block');
+                    }
+                }
+            }
+            setTimeout(function(){
+            	isChangeLabel = false;
+            },1000);
+        }, isRefresh, true);
+    }
+
+    function fnGetParams(tagId) {
+        if (tagId == 0) {
+            return {
+                pageIndex: pageIndex,
+                pageSize: 20,
+                searchType: 5,
+                groupId: api.pageParam.id
+            }
+        }else if(tagId == -1){
+            return {
+                pageIndex: pageIndex,
+                pageSize: 20,
+                searchType: 5,
+                groupId: api.pageParam.id,
+                tagId: tagId
+            }
+        }else {
+            return {
+                pageIndex: pageIndex,
+                pageSize: 20,
+                searchType: 5,
+                groupId: api.pageParam.id,
+                tagId: tagId
+            }
+        }
+    }
+
+    function fnAppendData(oldArr, data) {
+        for (var i = 0; i < data.length; i++) {
+            if (!fnIsEmpty(data[i].storyImgs)) {
+                data[i].storyImgs = data[i].storyImgs.split(",");
+                var lengths = data[i].storyImgs.length;
+                if (data[i].storyImgs[lengths - 1] == '') {
+                    data[i].storyImgs.splice(-1);
+                }
+            }
+            if (fnIsEmpty(data[i].userHead)) {
+                data[i].userHead = '../../image/home/tmp_default_header.png';
+            }
+            if (fnIsEmpty(data[i].userName)) {
+                data[i].userName = data[i].userId;
+            }
+            if (!fnIsEmpty(data[i].userName)) {
+                if (data[i].userName.length > 10) {
+                    data[i].userName = data[i].userName.substring(0, 10) + '...';
+                }
+            }
+            var ext;
+            if (data[i].storyMediaList) {
+                ext = data[i].storyMediaList[0].ext;
+            }
+            var duration = 0;
+            if (ext) {
+                duration = JSON.parse(ext).duration;
+            }
+            data[i].durationTime = fnDuration(duration);
+            data[i].duration = data[i].durationTime;
+            oldArr.push(data[i]);
+        }
+        if(pageIndex == 1) {
+			setTimeout(function(){
+				storyVue.refresh = true;
+			},100);
+		}
+        return oldArr;
+    }
+
+    function scrollBottom() {
+    	if(!isChangeLabel){
+	    	pageIndex++;
+	        fnGetStoryIndexByCondition(true, false, tagId, false);
+    	}
+    }
+
+    function fnChangeHeaderBg() {
+        if (fnIsEmpty(topicBgImg)) {
+            $api.dom("header").style.backgroundImage = "url(../../image/community/circle_bg.png)";
+        } else {
+            $api.dom("header").style.background = '#EEE url(' + topicBgImg + ') no-repeat';
+            $api.dom('header').style.backgroundSize = '100%';
+        }
+        $api.dom(".c_title").innerHTML = circleName;
+    }
+
+    function fnSetHeaderBgColor() {
+        $api.dom("header").style.backgroundImage = "";
+        $api.dom("header").style.backgroundColor = "rgba(0,0,0,0)";
+        $api.dom(".c_title").innerHTML = "";
+    }
+
+    var circleName = '';
+    var topicBgImg = '';
+    var circleInfo;
+
+    function fnGetTopicInfo(isNotRefreshJoin) {
+        $service.get('topic/getTopicInfo.ajax', {
+            topicId: api.pageParam.id
+        }, function (ret, err) {
+            if (ret.ok == 1) {
+                circleInfo = ret.data;
+                if (ret.data.allowPubStory == 1 && ret.data.isShield == 1) {
+                    fnOpenEditBtnFrame();
+                }
+                fnSetImgSrc('.circle_header_img', ret.data.topicImg);
+                fnSetTxt('.circle_name', ret.data.topicName);
+                circleName = ret.data.topicName;
+                fnSetTxt('.circle_desc', ret.data.topicDescription);
+                fnSetTxt('storyCount', ret.data.storyCount);
+                fnSetTxt('followCount', ret.data.followCount);
+                fnSetTxt('shareCount', ret.data.commentCount);
+                if (ret.data.isShield == 0) {
+                    $api.css($api.dom('.join_btn'), "display:none")
+                }
+                $api.dom('.user_info').style.background = '#EEE url(' + ret.data.topicBgImg + ') no-repeat';
+                topicBgImg = ret.data.topicBgImg;
+                $api.dom('.user_info').style.backgroundSize = '100% 100%';
+                if (ret.data.isJoin == 1) {
+                    fnSetDisplay('.join_btn', false);
+                } else {
+                    if(ret.data.id == '662' || ret.data.id == '665'){
+                        fnSetDisplay('.join_btn', false);
+                    }else{
+                        fnSetDisplay('.join_btn', true);
+                    }
+                }
+                if(!isNotRefreshJoin){
+	                fnRefreshJoin();
+                }
+                if (typeof ret.data.isJoin != 'undefined') {
+                    api.writeFile({
+                        path: api.boxDir + '/isJoin.txt',
+                        data: ret.data.isJoin
+                    });
+                }
+            } else {
+            }
+        });
+    }
+    
+    function fnRefreshJoin(){
+    	api.sendEvent({
+             name: 'join_status',
+             extra: {
+                 topicId: circleInfo.id,
+                 isJoin: circleInfo.isJoin
+             }
+        });
+        api.writeFile({
+            path: api.boxDir + '/isJoin.txt',
+            data: circleInfo.isJoin
+        }, function (ret, err) {
+        });
+    }
+
+    function fnReSetJoinBtn() {
+    	api.closeToWin({
+    		name : api.winName
+        });
+        fnSetDisplay('.join_btn', true);
+        circleInfo.isJoin = 0;
+        api.sendEvent({
+             name: 'join_status',
+             extra: {
+                 topicId: circleInfo.id,
+                 isJoin: circleInfo.isJoin
+             }
+        });
+        api.writeFile({
+            path: api.boxDir + '/isJoin.txt',
+            data: circleInfo.isJoin
+        }, function (ret, err) {
+            if (ret.status) {
+                //成功
+            } else {
+
+            }
+        });
+    }
+
+    function fnJoin() {
+        api.setFrameAttr({
+            name: 'edit_btn_frame',
+            hidden: false
+        });
+        $service.get('topic/joinInTopic.ajax', {
+            topicId: api.pageParam.id
+        }, function (ret, err) {
+            if (ret && ret.ok == 1) {
+                fnToast('加入圈子成功', 'middle');
+                //加入之后，刷新上一个页面
+                var jsFun = "fnRefreshStatus("+api.pageParam.index+")";
+                api.execScript({
+                	name:'all_community',
+                	frameName:'all_community_frame',
+				    script: jsFun
+				});
+                api.execScript({
+                    name:'search_more',
+                    frameName:'search_community_frame',
+                    script: jsFun
+                });
+                api.sendEvent({
+                    name: 'join_status',
+                    extra: {
+                        search:'search',
+                        topicId: api.pageParam.id,
+                        isJoin: 1
+                    }
+                });
+                fnSetDisplay('.join_btn', false);
+                fnCloseDialog();
+                circleInfo.isJoin = 1;
+                api.writeFile({
+                    path: api.boxDir + '/isJoin.txt',
+                    data: circleInfo.isJoin
+                }, function (ret, err) {
+                    if (ret.status) {
+                        //成功
+//                      api.sendEvent({name:'join_status'})
+                    } else {
+
+                    }
+                });
+            } else {
+                if (ret.data.content == '需要登录') {
+                    return;
+                }
+                fnToast(ret.data.content, 'middle');
+            }
+        });
+    }
+
+    function fnOpenCircleInfo() {
+        if (circleInfo) {
+            fnOpenWin('community_info', null, {
+            	name : api.winName,
+            	frameName : api.frameName,
+                circleInfo: circleInfo,
+                id:api.pageParam.id
+            });
+        }
+    }
+
+    function fnPraise(item, index) {
+        $service.get('story/praiseStory.ajax', {
+            storyId: item.id,
+            userCode: item.userId
+        }, function (ret, err) {
+            if (ret) {
+                if (ret.ok == 1) {
+                    if (item.userPraiseFlag == 0) {
+                        storyVue.$set(storyVue.$data.list[index], 'userPraiseFlag', 1);
+                        storyVue.$set(storyVue.$data.list[index], 'praiseNumber', item.praiseNumber + 1);
+                    } else {
+                        storyVue.$set(storyVue.$data.list[index], 'userPraiseFlag', 0);
+                        storyVue.$set(storyVue.$data.list[index], 'praiseNumber', item.praiseNumber - 1);
+                    }
+                } else {
+                }
+            } else {
+                fnToast(err.msg, 'middle')
+            }
+        }, true)
+    }
+
+    function fnBack() {
+        api.closeWin();
+    }
+
+    function fnOpenEditBtnFrame() {
+        if(api.pageParam.id == '662' || api.pageParam.id == '665') {
+
+        }else{
+            api.openFrame({
+                name: 'edit_btn_frame',
+                url: '../topic/edit_btn_frame.html?v=' + new Date().getTime(),
+                rect: {
+                    w: 48,
+                    h: 48,
+                    marginLeft: api.winWidth - 64,
+                    marginTop: api.winHeight - 150
+                },
+                bgColor: 'rgba(0,0,0,0)',
+                pageParam: {
+                    winName: api.winName,
+                    frameName: api.frameName,
+                    topicId: circleInfo.id,
+                    topicName: circleInfo.topicName
+                }
+            });
+        }
+    }
+
+	var isScrollBtnShow = false;
+    function fnOpenScrollTopBtnFrame() {
+    	isScrollBtnShow = true;
+        api.openFrame({
+            name: 'scroll_top_btn_frame',
+            url: '../topic/scroll_top_btn_frame.html',
+            rect: {
+                w: 48,
+                h: 48,
+                marginLeft: api.winWidth - 64,
+                marginTop: api.winHeight - 214
+            },
+            bgColor: 'rgba(0,0,0,0)'
+        });
+    }
+    
+    function fnHideScrollTopBtnFrame(){
+		api.closeFrame({
+			name : 'scroll_top_btn_frame',
+		});
+	}
+
+    function fnCloseScrollTopBtnFrame() {
+    	isScrollBtnShow = false;
+        api.closeFrame({
+            name: 'scroll_top_btn_frame',
+        });
+    }
+
+    function fnShowEditBtn() {
+        if (api) {
+        		api.setFrameAttr({
+	                name: 'edit_btn_frame',
+	                hidden: false
+	            });
+	            api.closeFrame({
+	                name: 'select_topic_type'
+	            });
+	            api.closeToWin({
+	                name: api.winName
+	            });
+	            if(isScrollBtnShow) {
+					fnOpenScrollTopBtnFrame();
+				}
+        }
+    }
+
+    var isOpen = false;
+
+    function fnScrollListener() {
+        $(document).scroll(function (e) {
+            if ($(this).scrollTop() == 0) {
+                refreshStatus = 1;
+                fnSetHeaderBgColor();
+            } else {
+                refreshStatus = 0;
+                fnChangeHeaderBg();
+            }
+            var scrollTop = $(this).scrollTop();
+            var scrollHeight = $(document).height();
+            var windowHeight = api.winHeight;
+            if (scrollTop + windowHeight == scrollHeight) {
+                scrollBottom();
+            }
+            if (scrollTop > api.winHeight * 3) {
+                if (!isOpen) {
+                    fnOpenScrollTopBtnFrame();
+                    api.setPrefs({
+                        key: 'scroll_frame_name',
+                        value: api.frameName
+                    });
+                }
+                isOpen = true;
+            } else {
+                if (isOpen) {
+                    fnCloseScrollTopBtnFrame();
+                }
+                isOpen = false;
+            }
+        });
+    }
+
+    function fnScrollTop() {
+        document.body.scrollTop = document.documentElement.scrollTop = 0;
+    }
+
+    function fnOpenDialog() {
+        fnSetDisplay('warp', true);
+    }
+
+    function fnDuration(duration) {
+        if (duration) {
+            duration = parseInt(duration);
+            var second = parseInt(duration) % 60;
+            var min = parseInt(duration / 60);
+            if (min < 10) {
+                min = '0' + min;
+            }
+            if (second < 10) {
+                second = '0' + second;
+            }
+            return min + ":" + second;
+        }
+        return '00:00';
+    }
+
+    function fnGetShareUrl() {
+        var params = {
+            circleId: api.pageParam.id
+        };
+        return new Base64().encode(JSON.stringify(params));
+    }
+
+    function fnShare() {
+        var url = SHARE_HOST + 'community_detail.html?' + fnGetShareUrl();
+        var title = '推荐圈子['+circleInfo.topicName + ']';
+        var content ='['+circleInfo.topicName + ']圈子，'+circleInfo.topicDescription.substring(0, 30)+'，邀请您关注。';
+        var token = api.readFile({
+			sync : true,
+			path : api.boxDir + '/token.txt'
+		});
+		if (token.indexOf('#') === -1) {
+            api.writeFile({
+                path : api.boxDir + '/userid.txt',
+                data : ''
+            });
+            fnOpenLogin();
+		}else{
+			api.openFrame({
+                name: 'share_frame',
+                url: '../popup/share_frame.html?v=' + new Date().getTime(),
+                bgColor: 'rgba(0,0,0,0)',
+                pageParam: {
+                    operationType: 'no_operation',
+                    shareUrl: url,
+                    title: title,
+                    content: content
+                }
+            });
+		}
+    }
+
+    function fnAddSahreListener() {
+        api.addEventListener({
+            name: 'shrare_success'
+        }, function (rets, err) {
+        	api.closeFrame({
+        		name : 'share_frame'
+            });
+            api.hideProgress();
+            fnToast('分享成功', 'middle');
+            $service.get(HOST + '/v3/h5/sg/member/getShareSuccess.json', {
+                topicId: api.pageParam.id
+            });
+        });
+        api.addEventListener({
+            name : 'shrare_fail'
+        }, function(rets, err) {
+            api.hideProgress();
+            api.closeFrame({
+                name: 'share_frame'
+            });
+        });
+    }
+
+</script>
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta content="yes" name="apple-touch-fullscreen">
+  <meta content="telephone=no,email=no" name="format-detection">
+  <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <title>需求宝</title>
+  <link rel="stylesheet" href="css/skin.css">
+  <style>
+  </style>
+</head>
+
+<body>
+        <header class="topTitles">
+            <div class="header_div" class="supplement" id="answer">
+                <span onclick="fnCancel()">上一步</span>
+                <span>补充说明</span>
+                <span @click="submitscPle" id="toptests">提交</span>
+            </div>
+        </header>
+  <script src="./js/jquery-1.11.1.min.js"></script>
+  <script src="./js/js.js"></script>
+  <script type="text/javascript" src="../../script/vue.js"></script>
+  <script type="text/javascript" src="../../script/api.js"></script>
+  <script type="text/javascript" src="../../script/service.js"></script>
+  <script type="text/javascript" src="../../script/common.js?v=0"></script>
+  <script type="text/javascript" src="../../script/mapi.js"></script>
+    <script type="text/javascript" src="../../script/flexible.js"></script>
+    <script type="text/javascript" src="../../script/fastclick.js"></script>
+  <script>
+//       var flag = 0;
+//       function change(){
+// 　　　　　　flag = 1;
+// 　　　　　}
+      function fnGetSelectedImgs() {
+        answer.fnAppendData();
+        api.closeToWin({
+            name : api.winName
+        });
+    }
+    apiready = function() {
+      answer.opensName(api.pageParam.nameTittle)
+      answer.tittles(api.pageParam.name)
+      $event.isShowHomeTab(false);
+      $app.fixStatusBar('#answer');
+      // if ($app.SYSTEM_TYPE() === 'ios') {
+      //   var titleTop = $('#topTitle').height()+14
+      // }else{
+      //   var titleTop = $('#topTitle').height()
+      // }
+      fnOpenFrameInWinMarginTop(0,false);
+			fnClosePreWin();
+            api.addEventListener({
+                name: 'keyback'
+            }, function(ret, err) {
+                api.closeWin({})
+            });
+        api.addEventListener({
+            name: 'myNumber'
+        }, function(ret, err) {
+            answer.textContent = ret.value.keyContent
+        });
+        // 接受图片
+        api.addEventListener({
+            name: 'arrayImgList'
+        }, function(ret, err) {
+            answer.imgsList = ret.value.imgsList
+            var aa = ret.value.isShangS
+            answer.isBenS = aa.length
+        });
+    };
+    function fnClosePreWin(){
+			setTimeout(function () {
+                api.closeWin({
+                    name:'video_record'
+                });
+                api.closeWin({
+                    name:'select_video'
+                })
+                api.closeWin({
+                   name:'video_preview'
+                })
+            },1000);
+		}
+    function fnOpenFrameInWinMarginTop(marginTop, isBounce) {
+        api.openFrame({
+            name : api.winName + '_frame',
+            url : api.winName + '_frame.html?v=' + new Date().getTime(),
+            rect : {
+                y : $api.dom('header').offsetHeight + marginTop,
+                h : api.winHeight - $api.dom('header').offsetHeight - marginTop
+            },
+        softInputBarEnabled:true,  //可以设置是否去掉键盘上的工具条
+                pageParam : api.pageParam,
+                bounces : isBounce,
+        softInputMode : 'pan',
+        reload : true,
+            allowEdit : true,
+            softInputDismissMode:['tap','drag'],
+        });
+    }
+    function fnCancel() {
+        api.closeWin({})
+    }
+    function fnConfirm(){
+        api.execScript({
+            name : api.winName,
+            frameName : api.winName +'_frame',
+            script: 'fnCheck();'
+        });
+    }
+    var answer = new Vue({
+      el:'#answer',
+      data:{
+            close:'取消',
+            submit:'提交',
+            titleName:'',
+            textContent:'',
+            transImgs:[],//选择后图片存放地方path
+            imgPaths:[],//回调图片后的接口地址
+            aaa:[{"id":"23"}],
+            showImgs:true,
+            imgsList:[],
+            isBenS:'0',//是否上传图片
+            contents:''
+        
+      },
+      methods:{
+        clearTimer:function() {
+            if (this.timer) {
+            clearTimeout(this.timer)
+            }
+        },
+        submitscPle:function(){
+            $app.showProgress();
+            this.clearTimer()
+            // this.isBenS = this.imgsList.length
+            var _this = this
+            _this.timer = setTimeout(function(){
+            if(_this.isBenS > 0){//有图片上传
+                    if(_this.imgsList.length > 0){
+                        var patt=/[\ud800-\udbff][\udc00-\udfff]/g; // 检测utf16字符正则
+                        var titleName = ''
+                        var titleContent = ''
+                        if(typeof(_this.textContent) == "undefined"){
+                            titleContent = ''
+                        }else{
+                            titleContent = _this.textContent.replace(patt, function(char){
+                                var H, L, code;
+                                if (char.length===2) {
+                                    H = char.charCodeAt(0); // 取出高位
+                                    L = char.charCodeAt(1); // 取出低位
+                                    code = (H - 0xD800) * 0x400 + 0x10000 + L - 0xDC00; // 转换算法
+                                    return "&#" + code + ";";
+                                } else {
+                                    return char;
+                                }
+                            });
+                        }
+                        titleName = _this.titleName.replace(patt, function(char){
+                            var H, L, code;
+                            if (char.length===2) {
+                                H = char.charCodeAt(0); // 取出高位
+                                L = char.charCodeAt(1); // 取出低位
+                                code = (H - 0xD800) * 0x400 + 0x10000 + L - 0xDC00; // 转换算法
+                                return "&#" + code + ";";
+                            } else {
+                                return char;
+                            }
+                        });
+                        var shouImg = ''
+                        var imgList = ''
+                        for(var i= 0; i<_this.imgsList.length;i++){
+                            imgList += _this.imgsList[i].img+','
+                            if(i == 0){
+                                shouImg = _this.imgsList[i].img
+                            }
+                        }
+                        var token = api.readFile({
+                                sync: true,
+                                path: api.boxDir + '/token.txt'
+                            });
+                        $http.POST(HOST +UrlRouter.qxSupplement,{
+                            body: {
+                            title:titleName,
+                            content:titleContent,
+                            mainImgs:shouImg,
+                            issueImgs:imgList
+                            }
+                        },function(ret, err) {
+                        if(ret.ok == '1'){
+                            fnToast('提交成功');
+                            $app.hideProgress();
+                            api.openWin({
+                                name:'details',
+                                url:'./details.html',
+                                slidBackEnabled:false,
+                                pageParam:{
+                                    listId:ret.data.id,
+                                    JumpPage:'supplement'
+                                }
+                            })
+                            api.closeWin({})
+                            _this.clearTimer()
+                            }else{
+                                $app.hideProgress();
+                                fnToast('保存失败，请重试');
+                                _this.clearTimer()
+                            }
+                        })
+                    }else{
+                        fnToast('网络较差，请重试');
+                        $app.hideProgress();
+                    }
+            }else{
+                var patt=/[\ud800-\udbff][\udc00-\udfff]/g; // 检测utf16字符正则
+                        var titleName = ''
+                        var titleContent = ''
+                        if(typeof(_this.textContent) == "undefined"){
+                            titleContent = ''
+                        }else{
+                            titleContent = _this.textContent.replace(patt, function(char){
+                                var H, L, code;
+                                if (char.length===2) {
+                                    H = char.charCodeAt(0); // 取出高位
+                                    L = char.charCodeAt(1); // 取出低位
+                                    code = (H - 0xD800) * 0x400 + 0x10000 + L - 0xDC00; // 转换算法
+                                    return "&#" + code + ";";
+                                } else {
+                                    return char;
+                                }
+                            });
+                        }
+                        titleName = _this.titleName.replace(patt, function(char){
+                            var H, L, code;
+                            if (char.length===2) {
+                                H = char.charCodeAt(0); // 取出高位
+                                L = char.charCodeAt(1); // 取出低位
+                                code = (H - 0xD800) * 0x400 + 0x10000 + L - 0xDC00; // 转换算法
+                                return "&#" + code + ";";
+                            } else {
+                                return char;
+                            }
+                        });
+                        var shouImg = ''
+                        var imgList = ''
+                        for(var i= 0; i<_this.imgsList.length;i++){
+                            imgList += _this.imgsList.img+','
+                            if(index == 0){
+                                shouImg = _this.imgsList.img
+                            }
+                        }
+                            // var token = api.readFile({
+                            //     sync: true,
+                            //     path: api.boxDir + '/token.txt'
+                            // });
+                            $http.POST(HOST +UrlRouter.qxSupplement,{
+                                body: {
+                                title:titleName,
+                                content:titleContent,
+                                mainImgs:shouImg,
+                                issueImgs:imgList
+                                }
+                            },function(ret, err) {
+                                if(ret.ok == '1'){
+                                    fnToast('提交成功');
+                                    $app.hideProgress();
+                                    api.openWin({
+                                        name:'details',
+                                        url:'./details.html',
+                                        slidBackEnabled:false,
+                                        pageParam:{
+                                            listId:ret.data.id,
+                                            JumpPage:'supplement'
+                                        }
+                                    })
+                                    api.closeWin({})
+                                    _this.clearTimer()
+                                }else{
+                                    $app.hideProgress();
+                                    fnToast('保存失败，请重试');
+                                    _this.clearTimer()
+                                }
+                            })
+                        // api.ajax({
+                        //     url: UrlRouter.qxSupplement,
+                        //     method: 'post',
+                        //     headers: {
+                        //         'Content-Type': 'application/json;charset=utf-8',
+                        //         'TokenAuthorization':token
+                        //     },
+                        //     data: {
+                        //         body: {
+                        //         title:titleName,
+                        //         content:titleContent,
+                        //         mainImgs:shouImg,
+                        //         issueImgs:imgList
+                        //         }
+                        //     }
+                        // }, function(ret, err) {
+                        // if(ret.ok == '1'){
+                        //     fnToast('提交成功');
+                        //     $app.hideProgress();
+                        //     api.openWin({
+                        //         name:'details',
+                        //         url:'./details.html',
+                        //         slidBackEnabled:false,
+                        //         pageParam:{
+                        //             listId:ret.data.id,
+                        //             JumpPage:'supplement'
+                        //         }
+                        //     })
+                        //     api.closeWin({})
+                        //     _this.clearTimer()
+                        // }else{
+                        //     $app.hideProgress();
+                        //     fnToast('保存失败，请重试');
+                        //     _this.clearTimer()
+                        // }
+                        // });
+            }
+        }, 3000)
+            // this.timer = setTimeout(()=>{
+            //     fnToast('请求超时');
+            // },10000)
+        },
+        opensName:function(userList){
+          this.textContent = userList
+        },
+        backHome:function(){
+          api.closeWin({})
+        },
+        tittles:function(a){
+            this.titleName = a
+        },
+        fnAppendData:function() {
+          var _this = this
+            var data = JSON.parse(api.readFile({
+                sync : true,
+                path : api.boxDir + '/selectedImgs.txt'
+            }));
+            _this.aaa = data
+            _this.transImgs = data
+            // _this.isBenS = data.length
+            api.sendEvent({
+                name: 'thumbImgs',
+                extra: {
+                    tImgs: data
+                }
+            });
+            _this.postImg()
+        },
+        postImg:function(){
+            var url = HOST + '/v3/h5/sg/upLoadCommentPicture.html';
+            var token = api.readFile({
+                sync : true,
+                path : api.boxDir + '/token.txt'
+            });
+            var files = [];
+            for (var i = 0; i < this.transImgs.length; i++) {
+                files.push(this.transImgs[i].path);
+            }
+            api.sendEvent({
+                name : 'APICloudCallNaviteMethod',
+                extra : {
+                    tag:api.winName,
+                    type : 4,
+                    canCallBack : 1,
+                    command : api.systemType === 'android' ? [url, token, 0, 0, null, files] : [url, token, 0, 0, 80, files, 1]
+                }
+            });
+        },
+      }
+    })
+  </script>
+  <script>
+    $('textarea').on( 'touchstart', function() {
+        $(this).focus();
+    });
+    $('input').on( 'touchstart', function() {
+        $(this).focus();
+    });
+    </script>
+</body>
+
+</html>

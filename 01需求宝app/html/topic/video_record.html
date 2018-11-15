@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<style>
+			body, html {
+				width: 100%;
+				height: 100%;
+				background: black;
+			}
+		</style>
+	</head>
+	<body></body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/jquery.js"></script>
+	<script type="text/javascript">
+		var time,size;
+		var recordFinish = false;
+        var videoRecorder ;
+        var recordTime ;
+        var isStartRecord = false;
+        var params;
+		apiready = function() {
+            if (api.winName == 'root' && api.systemType == 'android') {
+                fnAddNativeListener();
+                fnGetAndroidParams();
+            } else {
+                params = api.pageParam;
+                if(params.userToken){
+                    params.winName = 'community_detial';
+                    params.frameName = 'community_detial_frame';
+                    params.isRoot = 'isRoot';
+                    /*api.writeFile({
+                        path: api.boxDir + '/pageParam.txt',
+                        data: params
+                    }, function (ret, err) {
+
+                    });*/
+                    api.writeFile({
+                        path : api.boxDir + '/token.txt',
+                        data : params.userToken
+                    });
+                    api.writeFile({
+                        path : api.boxDir + '/isRoot.txt',
+                        data : params.isRoot
+                    });
+                    api.writeFile({
+                        path : api.boxDir + '/topicId.txt',
+                        data : params.topicId
+                    });
+                }
+                fnScanVideo();
+            }
+			fnInitEventListener();
+            fnBackListener(function () {
+                if (recordFinish) {
+                    api.execScript({
+                        frameName: 'video_record_frame',
+                        script: 'fnRecord()'
+                    });
+                    recordFinish = false;
+                }else {
+                    api.execScript({
+                        frameName: 'video_record_frame',
+                        script: 'fnBack()'
+                    });
+                }
+            });
+            //fnRefreshOpen();
+            videoRecorder = api.require('videoRecorder');
+		};
+        function fnAddNativeListener() {
+            api.addEventListener({
+                name : 'NaviteCallAPICloudMethod'
+            }, function(rets, err) {
+                var ret = rets.value;
+                if (ret.type == 8) {
+                    params = {
+                        userToken : ret.userToken,
+                        taskId : ret.taskId,
+                        topicId : ret.topicId,
+                        topicName : ret.topicName,
+                        topicType : ret.topicType,
+                        winName : 'community_detial',
+                        frameName : 'community_detial_frame',
+                        isRoot : 'isRoot'
+                    };
+                    if(params.userToken) {
+                        /*api.writeFile({
+                            path: api.boxDir + '/pageParam.txt',
+                            data: params
+                        }, function (ret, err) {
+
+                        });*/
+                        api.writeFile({
+                            path : api.boxDir + '/token.txt',
+                            data : params.userToken
+                        });
+                        api.writeFile({
+                            path : api.boxDir + '/isRoot.txt',
+                            data : params.isRoot
+                        });
+                        api.writeFile({
+                            path : api.boxDir + '/topicId.txt',
+                            data : params.topicId
+                        });
+                    }
+                    fnScanVideo();
+                }
+            });
+        }
+        function fnGetAndroidParams() {
+            api.sendEvent({
+                name : 'APICloudCallNaviteMethod',
+                extra : {
+                    type : 8,
+                    canCallBack : 1
+                }
+            });
+        }
+		var deviceorientation = 1;
+		// window.addEventListener("deviceorientation", orientationHandler, false);
+		function orientationHandler(event) {
+            deviceorientation = event.alpha;
+			if (event.alpha < 280 && event.alpha > 60) {
+				deviceorientation = 1;
+			} else {
+				deviceorientation = 2;
+			}
+		}
+        var first = true;
+		function fnOpenRecordFrame() {
+		    if (!first) {
+		        return;
+            }
+			api.openFrame({
+				name : 'video_record_frame',
+				url : 'video_record_frame.html?v=' + new Date().getTime(),
+				bgColor : 'rgba(0,0,0,0)',
+				pageParam : params,
+				rect:{
+				    x: 0,
+					y:api.winHeight - 120
+				}
+			});
+            api.openFrame({
+                name : 'video_record_camera_frame',
+                url : 'video_record_camera_frame.html?v=' + new Date().getTime(),
+                bgColor : 'rgba(0,0,0,0)',
+                pageParam : params,
+                rect:{
+                    x: api.winWidth - 80,
+                    y: 0,
+					h: 100
+                }
+            });
+            setTimeout(function() {
+                api.bringFrameToFront({
+                    from :'video_record_frame'
+                });
+                api.bringFrameToFront({
+                    from :'video_record_camera_frame'
+                });
+            }, 500);
+		    first = false;
+		}
+
+		var camera = 'back';
+		function fnReOpenRecord() {
+			api.closeWin({
+				name : 'select_video'
+			});
+			 fnOpenRecord();
+			 setTimeout(function() {
+			 	api.bringFrameToFront({
+			 		from : 'video_record_frame'
+			 	});
+                 api.bringFrameToFront({
+                     from : 'video_record_camera_frame'
+                 });
+			 }, 500);
+		}
+        function fnScanVideo() {
+            // api.showProgress();
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');
+            if (api.systemType === 'ios') {
+                UIAlbumBrowser.requestAlbumPermissions({}, function (ret, err) {
+                    if (ret.isAccessPermissions) {
+                        fnScanGetPictures()
+                    } else {
+                        api.alert({
+                            title: '提示',
+                            msg: '没有相机权限，请进入设置添加应用的相机/相册权限',
+                            buttons: ['确定']
+                        }, function (ret, err) {
+                            api.closeWin();
+                        });
+                    }
+                });
+            }else {
+                fnScanGetPictures()
+            }
+        }
+        function fnScanGetPictures() {
+		    setTimeout(fnOpenRecord,600);
+            // fnOpenRecord();
+        }
+		function fnOpenRecord() {
+			videoRecorder.open({
+				rect : {
+					x : 0,
+					y : 0,
+					w : api.winWidth,
+					h : api.winHeight
+				},
+				camera : camera,
+				quality : "high",
+				saveToAlbum : true,
+				save : {
+					path : api.boxDir + '/videoRecorder',
+					name : 'firstVideo'
+				}
+			}, function(ret) {
+				if (ret) {
+				    if (ret.eventType == 'show') {
+				    	if(api.systemType == 'android' && isSetCamera){
+				    		isSetCamera = false;
+				    		return;
+				    	}
+				        api.hideProgress();
+				        setTimeout(fnOpenRecordFrame,500);
+//                      fnOpenRecordFrame();
+                    }
+					if (ret.eventType == 'finished') {
+					    time = ret.duration/1000;
+					    size = ret.size;
+					    if(recordTime * 100 < 5000){
+					        return;
+                        }
+					    if (time < 5){
+                            api.hideProgress();
+                            api.toast({
+                                msg : '视频长度不能小于5秒',
+                                location : 'middle',
+                                duration : 2000
+                            });
+                            return;
+                        }
+						if (!isRecordCancel) {
+							// fnClose();
+							$api.setStorage("record_video", ret);
+							url = ret.filePath;
+							fnVideoPreview(ret.filePath);
+						}
+					} else if (ret.eventType == 'fail') {
+						// fnToast('录像打开失败，请检查权限', 'middle');
+                        api.alert({
+                            title: '提示',
+                            msg: '没有相机权限，请进入设置添加应用的相机/相册权限',
+                            buttons: ['确定']
+                        }, function (ret, err) {
+                            api.closeWin();
+                        });
+					}
+				}
+			});
+            videoRecorder.setFocusMode({
+                focusMode: 'auto'
+            });
+            videoRecorder.setFocusBox({
+                box: {
+                    width: 1,
+                    color: '#ff0',
+                    maxSize: 100,
+                    minSize: 60
+                },
+                autoHide:2
+            });
+            videoRecorder.addEventListener({
+                name: 'click'
+            }, function(ret) {
+                if (ret) {
+                    videoRecorder.setFocusRegion({
+                        region: {
+                            x: ret.x,
+                            y: ret.y,
+                            w: 60,
+                            h: 60
+                        }
+                    });
+                    videoRecorder.setFocusMode({
+		                focusMode: 'auto'
+		            });
+                }
+            });
+
+		}
+
+		function fnRecord() {
+			var videoRecorder = api.require('videoRecorder');
+			videoRecorder.show();
+            var videoPlayer = api.require('videoPlayer');
+            videoPlayer.close();
+            isPreviewing = false;
+            clearInterval(interval);
+		}
+
+		function fnReOpenPreview() {
+			api.closeWin({
+				name : 'edit_video_topic'
+			});
+			fnPreview(url);
+			setTimeout(function() {
+				api.bringFrameToFront({
+					from : 'video_preview_frame'
+				});
+			}, 500);
+		}
+
+		var url;
+		var isPreviewing = false;
+		function fnVideoPreview(url) {
+			var videoPlayer = api.require('videoPlayer');
+			videoPlayer.open({
+				rect : {
+					x : 0,
+					y : 0,
+					w : api.winWidth,
+					h : api.winHeight
+				},
+				bg:'#000',
+				path : url,
+				scalingMode : 'scaleAspectFit'
+			}, function(ret, err) {
+				if (ret && ret.status && ret.eventType == 'show') {
+					isPreviewing = true;
+					fnPlayListener();
+				    api.hideProgress();
+                    api.execScript({
+                        frameName: 'video_record_frame',
+                        script: 'api.hideProgress();'
+                    });
+					fnShowPreviewControl();
+					fnClose();
+					fnAddPlayEndListener();
+                    recordFinish = true;
+				}
+			});
+		}
+		
+		var interval;
+		var isPlayingFlag = 0;
+		//RN中，按home键退到后台，视频会自动暂停，通过该方法使应用回到前台时能够继续播放
+		function fnPlayListener() {
+			var flag = 0;
+			interval = setInterval(function(){
+				if(flag == 2){
+					isPlayingFlag = isPlaying;
+					flag = 0;
+				}else{
+					if(isPlaying == isPlayingFlag &&　isPlaying > 0){
+						var videoPlayer = api.require('videoPlayer');
+						videoPlayer.start();
+					}
+				}
+				flag++;
+			},500);
+		}
+
+		function fnShowPreviewControl() {
+			setTimeout(function() {
+				api.execScript({
+					frameName : 'video_record_frame',
+					script : 'fnPreview();'
+				});
+				api.bringFrameToFront({
+					from :'video_record_frame'
+				});
+				api.bringFrameToFront({
+					from :'video_record_camera_frame'
+				});
+			}, 500);
+		}
+
+		var isPlaying = 0;
+		function fnAddPlayEndListener() {
+			isPlaying = 0;
+			var videoPlayer = api.require('videoPlayer');
+			videoPlayer.addEventListener({
+				name : 'play'
+			}, function(ret, err) {
+				if (ret.eventType == 'complete') {
+					videoPlayer.start();
+				}
+				if (ret.eventType == 'playing') {
+					isPlaying++;
+				}
+			});
+		}
+
+		function fnClosePlayer() {
+			var videoPlayer = api.require('videoPlayer');
+			videoPlayer.stop();
+			isPreviewing = false;
+			clearInterval(interval);
+		}
+
+		function fnClose() {
+			var videoRecorder = api.require('videoRecorder');
+			videoRecorder.hide();
+		}
+
+		function fnCloseRecord() {
+			var videoRecorder = api.require('videoRecorder');
+			videoRecorder.close();
+		}
+
+		function fnStart() {
+			var videoRecorder = api.require('videoRecorder');
+            videoRecorder.getDeviceOrientation(function (ret) {
+                videoRecorder.setOrientation({
+                    orientation : ret.orientation != 'unknown'? ret.orientation:'portrait'
+                });
+                videoRecorder.start();
+            })
+			// if (deviceorientation == 1) {
+			// 	videoRecorder.setOrientation({
+			// 		orientation : 'portrait'
+			// 	});
+			// } else {
+			// 	videoRecorder.setOrientation({
+			// 		orientation : 'left'
+			// 	});
+			// }
+			// videoRecorder.start();
+		}
+
+		var isRecordCancel = false;
+		function fnStop(isCancel) {
+			isRecordCancel = isCancel;
+			var videoRecorder = api.require('videoRecorder');
+			videoRecorder.stop();
+            api.execScript({
+                frameName: 'video_record_frame',
+                script: 'isRecording = false;'
+            });
+            api.execScript({
+                frameName: 'video_record_camera_frame',
+                script: 'isRecording = false;'
+            });
+		}
+
+		
+		function fnInitEventListener() {
+			api.addEventListener({
+				name : 'setCamera'
+			}, function(ret, err) {
+				if (ret.value.isFront === 'front') {
+					fnSetCamera('front')
+				} else if (ret.value.isFront === 'back') {
+					fnSetCamera('back')
+				}
+			});
+            api.addEventListener({
+                name: 'confirm_btn'
+            }, function (ret, err) {
+                if(ret){
+                    api.sendEvent({
+                        name: 'confirm_btn_result',
+                        extra: {time: time,size:size}
+                    });
+                }
+            });
+		}
+
+		var isSetCamera = false;
+		function fnSetCamera(setCamera) {
+			// var videoRecorder = api.require('videoRecorder');
+			camera = setCamera;
+			isSetCamera = true;
+			videoRecorder.setCamera({
+				camera : setCamera,
+                animation:true
+			})
+		}
+	</script>
+</html>

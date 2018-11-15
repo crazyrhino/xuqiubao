@@ -1,0 +1,1009 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>关注主页</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/swiper.css"/>
+    <style>
+        ::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        .list_wrap {
+            background-color: #F4F4F4;
+        }
+
+        .flex_container {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+        }
+
+        .rec_wrap {
+            height: 2.2rem;
+            line-height: 2.2rem;
+            border-top: 1px solid #eee;
+        }
+
+        .rec_wrap div {
+            width: calc(100% - 1.8rem);
+        }
+
+        .rec_wrap img {
+            height: 1.2rem;
+            width: 1.2rem;
+        }
+
+        .rec_list {
+            height: 4.8rem;
+            background: #FFF;
+        }
+
+        .right_arrow img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .swiper-slide {
+            padding: 0 0.8rem 0.6rem 0.8rem;
+            width: 4.1rem;
+        }
+
+        .rec_list_img {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+        }
+
+        .rec_list_name {
+            margin-top: 0.5rem;
+            text-align: center;
+            color: #666666;
+        }
+
+        .nav_bar {
+            width: 100%;
+            height: 2.2rem;
+            text-align: center;
+            line-height: 2.2rem;
+        }
+
+        .nav_item1 {
+            width: 5rem;
+            height: 2.2rem;
+        }
+
+        .nav_item2 {
+            width: 7rem;
+            height: 2.2rem;
+            position: relative;
+        }
+
+        .nav_item3 {
+            width: 7rem;
+            height: 2.2rem;
+        }
+
+        .device_bar {
+            background-color: #EEEEEE;
+        }
+
+        .nav_item_active {
+            color: #FF6026;
+            border-bottom: 0.053333rem solid #FF6026;
+        }
+
+        .leftLine {
+            height: 1rem;
+            width: 1px;
+            background-color: #EEEEEE;
+            display: inline-block;
+            position: absolute;
+            top: 0.6rem;
+            left: 0;
+        }
+
+        .rightLine {
+            height: 1rem;
+            width: 1px;
+            background-color: #EEEEEE;
+            display: inline-block;
+            position: absolute;
+            top: 0.6rem;
+            right: 0;
+        }
+
+        .slide-box {
+            display: -webkit-box;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .refresh_header {
+            height: 1.6rem;
+            line-height: 1.7rem;
+            text-align: center;
+            color: #FFF;
+            background: #EEEEEE;
+            display: none;
+        }
+
+        .network_error {
+            display: none;
+            width: 100%;
+            color: #666;
+        }
+
+        .network_error img {
+            display: inline-block;
+            height: .9rem;
+            width: .9rem;
+            margin-right: .3rem;
+            transform: translateY(.2rem);
+        }
+
+        .data-list {
+            height: calc(100% - 7.1rem);
+        }
+
+        .progress_wrap {
+            background-color: #fff;
+            border-top: 1px solid #EEEEEE;
+            padding: .2rem 0;
+            display: none;
+        }
+
+        .topic_img {
+            height: 2rem;
+            width: 2rem;
+            margin: 0 .7rem;
+        }
+
+        .progress {
+            display: inline-block;
+            overflow: hidden;
+            height: 2rem;
+            line-height: 2rem;
+            vertical-align: top;
+            color: #999;
+            letter-spacing: 0;
+        }
+
+        .progress_g {
+            height: .1rem;
+            width: 100%;
+            background-color: #eee;
+        }
+
+        .progress_o {
+            background: #FF6026;
+            display: block;
+            height: .1rem;
+            width: 0%;
+        }
+
+        .rec_list {
+            padding-top: .2rem;
+        }
+
+        .aui-list-item {
+            background: #fff;
+            position: relative;
+        }
+
+        .item-top {
+            display: flex;
+            display: -webkit-box;
+            display: -webkit-flex;
+        }
+
+        .header-wrap {
+            width: 2rem;
+            position: relative;
+            margin-right: .4rem;
+        }
+
+        .user-header {
+            border-radius: 50%;
+            height: 2rem;
+            width: 2rem;
+        }
+
+        .red_vip, .yellow_vip, .purple_vip {
+            position: absolute;
+            top: 1.2rem;
+            left: 1.2rem;
+            height: .75rem;
+            width: .75rem;
+        }
+
+        .item-title {
+            flex: 1;
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            color: #333;
+        }
+
+        .aui-font-size-15{
+            font-size: .75rem;
+            line-height: .85rem;
+            padding-top: .25rem;
+            font-weight: bold;
+            display: block;
+            max-width: calc(100% - 2rem)
+        }
+
+        .publishTime {
+            color: rgb(126,126,126);
+            display: block;
+        }
+
+        .item-more {
+            width: 1.2rem;
+        }
+
+        .item-more img {
+            width: 1.2rem;
+            margin-top: .4rem;
+        }
+
+        .item-middle {
+            color: rgb(54,54,54);
+        }
+
+        .detail-img-wrap {
+            overflow: hidden;
+        }
+
+        .aui-flex-3 {
+            display: inline-block;
+            float: left;
+            width: calc(100% / 3 - 5px);
+        }
+
+        .detail-imgO {
+            max-height: 9rem;
+            max-width: 9rem;
+        }
+
+        .detail-imgM {
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            margin-right: 5px;
+            margin-bottom: .3rem;
+        }
+
+        .video-wrap {
+            height: 9.7rem;
+            width: calc(100% - 5px);
+            background-color: #000;
+            overflow: hidden;
+            position: relative;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .play-video {
+            position: absolute;
+            width: 2.2rem;
+            height: 2.2rem;
+            left: 50%;
+            top: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+
+        .video-time {
+            position: absolute;
+            opacity: 0.3;
+            background: #000000;
+            border-radius: 1rem;
+            color: #fff;
+            font-size: .6rem;
+            text-align: right;
+            bottom: .5rem;
+            right: .5rem;
+        }
+
+        .browserNumber, .commentNumber, .praiseNumber, .isPraiseNumber {
+            display: inline-block;
+            padding-left: 1.2rem;
+            color: #999;
+            background-size: 1.2rem;
+            background-repeat: no-repeat;
+            background-position: left;
+            margin-left: .7rem;
+        }
+
+        .browserNumber {
+            background-image: url("../../image/community/gk@3x.png");
+        }
+
+        .commentNumber {
+            background-image: url("../../image/community/Message@3x.png");
+        }
+
+        .praiseNumber {
+            background-image: url("../../image/community/zan@3x.png");
+        }
+
+        .isPraiseNumber {
+            background-image: url("../../image/mine/zans.png");
+        }
+
+        .aui-break {
+            word-break: break-all;
+        }
+        .all{
+            color: rgb(49,131,255);
+        }
+        .allSummary{
+            display: inline;
+        }
+        .no-data {
+            background: #fff;
+            text-align: center;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .no-data img {
+            height: 5rem;
+            width: 6.2rem;
+            margin: 4rem auto .6rem auto;
+        }
+
+        .no-data p {
+            font-size: .75rem;
+            color: #999;
+        }
+
+        .blank-bottom {
+            height: 54px;
+        }
+
+        .status_wrap{
+            position: absolute;
+            bottom: .55rem;
+            left: .8rem;
+        }
+
+        .fine-label {
+            width: 0.8rem;
+            height: 0.8rem;
+            background: url(../../image/rank/jx@3x.png) no-repeat;
+            background-size: contain;
+            vertical-align: sub;
+        }
+        .floatL{
+            float: left;
+            margin-left:0
+        }
+        [v-cloak] {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+<div class="refresh_header">
+    <div class="network_error">
+        <img src="../../image/home/icon_th.png" alt="">网络不给力，请检查你的网络设置。
+    </div>
+</div>
+<div class="flex_container rec_wrap" tapmode onclick="fnOpenPage()">
+    <div class="aui-padded-l-15">
+        推荐圈子
+    </div>
+    <img class="aui-margin-t-10" src="../../image/home/right_arrow.png"/>
+</div>
+<div class="progress_wrap">
+    <img class="topic_img" src="../../image/home/tmp_default_header.png" alt="">
+    <div class="progress aui-font-size-14">正在上传中（<span class="percent">0% </span>）…</div>
+    <div class="progress_g">
+        <span class="progress_o"></span>
+    </div>
+</div>
+<div class="device_bar" style="height: 1px;"></div>
+<div class="wrap">
+    <div class="rec_list">
+        <div class="slide-box">
+            <div v-for="community in list" class="swiper-slide" tapmode @click="fnOpenCommunityDetail(community.id)">
+                <img class="rec_list_img" :src="community.topicImg+'@120_120'"/>
+                <div class="rec_list_name aui-ellipsis-1 aui-font-size-12" v-text="community.topicName"></div>
+            </div>
+        </div>
+    </div>
+    <div class="device_bar" style="height: 5.5px;"></div>
+    <div class="data-list">
+        <section class="nav_wrap">
+            <div class="nav_bar aui-font-size-14 flex_container">
+                <div class="nav_item1" tapmode onclick="fnGetTopicByType(0)">
+                    <span class="nav_item_att nav_item_active">全部</span>
+                </div>
+                <div class="nav_item2" tapmode onclick="fnGetTopicByType(1)">
+                    <div class="leftLine"></div>
+                    <span class="nav_item_att">关注人动态</span>
+                    <div class="rightLine"></div>
+                </div>
+                <div class="nav_item3" tapmode onclick="fnGetTopicByType(2)">
+                    <span class="nav_item_att">关注圈子动态</span>
+                </div>
+            </div>
+        </section>
+        <div class="device_bar" style="height: 1px;"></div>
+        <div class="list_wrap">
+            <div v-if="list.length == 0" class="no-data aui-margin-t-5">
+                <img src="../../image/empty/nojz@2x.png" alt="">
+                <p>暂无动态</p>
+            </div>
+            <div v-for="(item,currentIndex) in topicList" v-if="list.length != 0"
+                 class="aui-list-item aui-padded-10 aui-padded-b-10 aui-margin-t-5" tapmode
+                 @click="fnOpenDetails(item.dataTypeNew,item.id)" v-cloak>
+                <div class="item-top aui-padded-r-5 aui-padded-l-5">
+                    <div class="header-wrap" tapmode @click.stop="fnOpenUser(item)">
+                        <img class="user-header" src="../../image/home/tmp_default_header.png" :src="item.userHead"/>
+                        <img v-if="item.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png" alt=""/>
+                        <img v-if="item.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png"
+                             alt=""/>
+                        <img v-if="item.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png"
+                             alt=""/>
+                    </div>
+                    <div class="item-title aui-ellipsis-1">
+                        <span tapmode @click="fnOpenUser(item)"
+                            class="aui-font-size-15 aui-ellipsis-1" tapmode @click.stop="fnOpenUser(item)">
+                            {{item.userName}}</span>
+                        <span class="aui-font-size-12 publishTime" v-text="formatDateTime(item.publishTime)"></span>
+                    </div>
+                    <div class="item-more" tapmode @click.stop="fnShare(item)">
+                        <img src="../../image/mine/more@2x.png" alt="">
+                    </div>
+                </div>
+                <div class="item-middle aui-margin-t-10 aui-font-size-16 aui-padded-l-5">
+                    <div class="aui-padded-r-5 aui-break" v-text="item.title"></div>
+                    <div class="aui-margin-b-10 aui-padded-r-5 aui-break summary" v-if="item.summary.length < 80" v-text="item.summary"></div>
+                    <div class="aui-margin-b-10 aui-padded-r-5 aui-break summary" v-else><span class="allSummary" v-text="item.summary.substring(0,80) + '...'"></span><span class="all">全文</span></div>
+                    <div v-if="item.dataTypeNew == 3" class="video-wrap"
+                         :style="{'background-image':'url('+item.storyMediaList[0].url+'?x-oss-process=video/snapshot,t_3000,f_jpg )'}">
+                        <img class="play-video" src="../../image/edit_topic/play.png" alt="">
+                        <div class="video-time aui-padded-l-10 aui-padded-r-10" v-text="item.duration"></div>
+                    </div>
+                    <div v-if="item.storyImgs && item.storyImgs.length != 0 && item.dataTypeNew != 3"
+                         class="detail-img-wrap">
+                        <div v-if="item.storyImgs.length == 1" class="detail-imgO">
+                            <img :src="item.storyImgs[0]" alt="" tapmode @click.stop="fnPreviewPicture(item,0)">
+                        </div>
+                        <div v-else-if="item.storyImgs.length != 1 && item.dataTypeNew == 1" class="detail-imgM aui-flex-3"
+                             v-for="(image,index) in item.storyImgs"
+                             :style="{'background-image':'url('+fnAppendUrl(image)+')','margin-right': item.storyImgs.length == 4 && index == 1?'7px':''}"
+                             tapmode @click.stop="fnPreviewPicture(item,index)"></div>
+                        <div v-else-if="item.storyImgs.length != 1 && item.dataTypeNew == 2" class="detail-imgM aui-flex-3"
+                             v-for="(image,index) in item.storyImgs.slice(0,3)"
+                             :style="{'background-image':'url('+fnAppendUrl(image)+')'}"
+                             tapmode @click.stop="fnPreviewPicture(item,index)"></div>
+                    </div>
+                </div>
+                <div class="item-bottom aui-margin-t-10 aui-padded-r-5 aui-font-size-12 aui-text-right">
+                    <div class="browserNumber" :class="{'floatL':item.isChoice == 0}" v-text="fnShowCount(item.browserNumber)"></div>
+                    <div class="commentNumber" v-text="fnShowCount(item.commentNumber)"></div>
+                    <div :class="item.userPraiseFlag == 0 ? 'praiseNumber' : 'isPraiseNumber'"
+                         v-text="fnShowCount(item.praiseNumber)"
+                         @click.stop="fnPraise(item,currentIndex)"></div>
+                </div>
+                <div class="status_wrap"><span v-if="item.isChoice != 0" class="fine-label"></span></div>
+            </div>
+        </div>
+    </div>
+    <div class="blank-bottom"></div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript" src="../../script/swiper.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/service.js"></script>
+<script type="text/javascript" src="../../script/signature.js"></script>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript">
+    var concernVue;
+    var attentionIndex = 1;
+    var attentionType = 0;
+    var isShare = false;
+    apiready = function () {
+        $api.css($api.dom('.wrap'), 'padding-bottom:' + (api.safeArea.bottom + 54) + 'px');
+        concernVue.fnGetTopicAttentionStoryIndex(false, true);
+        concernVue.fnGetRecommend();
+        $app.fnSetRefresh(fnRefresh);
+        fnScrollListener();
+        fnInitListener();
+    };
+    concernVue = new Vue({
+        el: '.wrap',
+        data: {
+            list: [],
+            topicList: []
+        },
+        methods: {
+            fnGetRecommend: function () {
+                $http.GET(UrlRouter.getRecommend, {//圈子
+                    values: {
+                        pageNo: 1,
+                        pageSize: 20
+                    }
+                }, function (ret, err) {
+                    api.hideProgress();
+                    concernVue.list = [];
+                    fnAppendTopicData(concernVue.list, ret.data);
+                    $api.css($api.dom('.slide'), 'visibility:visible')
+                }, function () {
+                    concernVue.list = [];
+                    $app.toast(ret.msg, 'middle');
+                });
+            },
+            fnGetTopicAttentionStoryIndex: function (isLoadMore, isRefresh) {//话题
+                $http.GET(UrlRouter.getTopicAttentionStoryIndex, {
+                    values: {
+                        attentionType: attentionType,
+                        pageIndex: attentionIndex,
+                        pageSize: 10
+                    }
+                }, function (ret, err) {
+                    $app.hideProgress();
+                    api.refreshHeaderLoadDone();
+                    if (ret.data.list && ret.data.list.length === 0) {
+                        if (attentionIndex === 1) {
+                            $api.css($api.dom('.no-data'), 'display:block')
+                        }
+                        if (attentionType === 1) {
+                            $api.text($api.dom('.no-data p'), '快来关注感兴趣的牛人吧');
+                        } else {
+                            $api.text($api.dom('.no-data p'), '小主，稍等呢');
+                        }
+                    }
+                    if (ret.data.list && ret.data.list.length > 0) {
+                        $api.css($api.dom('.no-data'), 'display:none');
+                        if (isRefresh) {
+                            concernVue.topicList = [];
+                        }
+                        concernVue.fnAppendData(concernVue.topicList, ret.data.list);
+                    } else {
+                        if (isLoadMore) {
+                            $app.toast("没有更多");
+                        }
+                    }
+                }, function () {
+                    concernVue.topicList = [];
+                    $api.css($api.dom('.refresh_header'),'display:block');
+                    $api.css($api.dom('.network_error'),'display:block');
+                    setTimeout(fnRefreshFinish, 2000);
+                });
+            },
+            fnOpenDetails: function (dataTypeNew, id) {
+                $app.openWin('topic_details', {
+                    type: dataTypeNew,
+                    id: id
+                }, {
+                    url: '../topic/topic_details.html?v='+new Date().getTime()
+                });
+                fnHideTabBar()
+            },
+            fnOpenUser: function (item) {
+                api.readFile({
+                    path: api.boxDir + '/userid.txt'
+                }, function (ret, err) {
+                    if (ret) {
+                        var _userid = ret.data;
+                        if (_userid === '') {
+                            concernVue.fnOpenLogin();
+                            return;
+                        }
+                        fnHideTabBar();
+                        if (item.userId == _userid) {
+                            $app.openWin('mine', null, {
+                                url: 'widget://html/mine/mine.html'
+                            })
+                        } else {
+                            $app.openWin('ta_page', {
+                                userId: item.userId
+                            }, {
+                                url: 'widget://html/ta_page/ta_page.html'
+                            })
+                        }
+                    }
+                });
+            },
+            fnShare: function (item) {
+                api.readFile({
+                    path: api.boxDir + '/userid.txt'
+                }, function (ret, err) {
+                    if (ret) {
+                        var _userid = ret.data;
+                        if (_userid === '') {
+                            concernVue.fnOpenLogin();
+                            return;
+                        }
+                        api.setFrameAttr({
+                            name: 'edit_btn_frame',
+                            hidden: true
+                        });
+                        api.setFrameAttr({
+                            name: 'scroll_top_btn_frame',
+                            hidden: true
+                        });
+                        fnHideTabBar();
+                        shareTopicInfo = item;
+                        isShare = true;
+                        $app.openFrame('list_share_frame', null, null, {
+                            frameName: api.frameName
+                        }, {
+                            bounces: false
+                        })
+                    }
+                });
+            },
+            fnAppendData: function (oldArr, data) {
+                for (var i = 0; i < data.length; i++) {
+                    if (!$app.isEmpty(data[i].storyImgs)) {
+                        data[i].storyImgs = data[i].storyImgs.split(",");
+                        var lengths = data[i].storyImgs.length;
+                        if (data[i].storyImgs[lengths - 1] == '') {
+                            data[i].storyImgs.splice(-1);
+                        }
+                    }
+                    if ($app.isEmpty(data[i].userName)) {
+                        data[i].userName = data[i].userId;
+                    }
+                    if (data[i].userName.length > 10) {
+                        data[i].userName = data[i].userName.substring(0, 10) + '...';
+                    }
+                    if ($app.isEmpty(data[i].userHead)) {
+                        data[i].userHead = '../../image/home/tmp_default_header.png';
+                    }else if (data[i].userHead.indexOf('ehaier') !== -1) {
+                        data[i].userHead = data[i].userHead + '@120_120';
+                    }
+                    var ext;
+                    if (data[i].storyMediaList) {
+                        ext = data[i].storyMediaList[0].ext;
+                    }
+                    var duration = 0;
+                    if (ext) {
+                        duration = JSON.parse(ext).duration;
+                    }
+                    data[i].durationTime = fnDuration(duration);
+                    data[i].duration = data[i].durationTime;
+                    oldArr.push(data[i]);
+                }
+                return oldArr;
+            },
+            fnPraise: function (item, index) {
+                $http.GET(UrlRouter.getPraiseStory, {
+                    values: {
+                        storyId: item.id,
+                        userCode: item.userId
+                    }
+                }, function (ret, err) {
+                    if (item.userPraiseFlag == 0) {
+                        concernVue.$set(concernVue.$data.topicList[index], 'userPraiseFlag', 1);
+                        concernVue.$set(concernVue.$data.topicList[index], 'praiseNumber', item.praiseNumber + 1);
+                    } else {
+                        concernVue.$set(concernVue.$data.topicList[index], 'userPraiseFlag', 0);
+                        concernVue.$set(concernVue.$data.topicList[index], 'praiseNumber', item.praiseNumber - 1);
+                    }
+                })
+            },
+            formatDateTime: function (datetime) {
+                if (!datetime)
+                    return "";
+                var tempDate;
+                tempDate = datetime.replace(/-/g, ':').replace(' ', ':');
+                tempDate = tempDate.split(':');
+                tempDate = new Date(tempDate[0], (tempDate[1] - 1), tempDate[2], tempDate[3], tempDate[4], tempDate[5]);
+                var current_date = new Date().getTime();
+                var mul = current_date - tempDate;
+                var time = parseInt(mul / 1000);
+                if (time < 60) {
+                    return "刚刚";
+                } else if (time < 3600) {
+                    return parseInt(time / 60) + " 分钟前";
+                } else if (time < 86400) {
+                    return parseInt(time / 3600) + " 小时前";
+                }
+                return datetime.split(' ')[0];
+            },
+            fnOpenLogin: function () {
+                $event.callRNEvent(1, 1, {
+                    toPageName: 'Login'
+                });
+            },
+            fnReplaceComment: function (comment) {
+                if (!$app.isEmpty(comment)) {
+                    comment = comment.replace(/<br\s*\/?>/gi, "\r\n");
+                    comment = comment.replace(/<br\/>/g, "\r\n");
+                    comment = comment.replace(/<br>/g, "\r\n");
+                    comment = comment.replace(/<[^>]+>/g, "");
+                    return comment;
+                }
+                return '';
+            },
+            fnOpenCommunityDetail: function (id) {
+                api.writeFile({
+                    path: api.boxDir + '/isRoot.txt',
+                    data: ''
+                });
+                api.writeFile({
+                    path: api.boxDir + '/topicId.txt',
+                    data: ''
+                });
+                $app.openWin('community_detial', {
+                    id: id
+                }, {
+                    url: 'widget://html/community/community_detial.html'
+                });
+                fnHideTabBar();
+            },
+            fnPreviewPicture: function (item, index) {
+                $event.isShowHomeTab(false);
+                var arr = item.storyImgs;
+                $app.openWin('preview_picture', {
+                    urlArr: arr,
+                    activeIndex: index
+                }, {
+                    url: '../topic/preview_picture.html'
+                })
+            },
+            fnShowCount: function (count) {
+                if (count >= 10000) {
+                    return (count / 10000).toFixed(1) + '万';
+                }
+                return count;
+            },
+            fnAppendUrl:function (image) {
+                if(image.indexOf('ehaier') !== -1){
+                    return image + '@300_300';
+                }
+                return image;
+            }
+        },
+        updated: function () {
+            var imgList = $api.domAll('.aui-flex-3');
+            var imgW = parseInt(api.frameWidth) / 3 - 5;
+            for (var i = 0; i < imgList.length; i++) {
+                $api.css(imgList[i], 'height:' + imgW + 'px');
+            }
+        }
+    });
+
+    function fnGetShareUrl() {
+        var memberId = api.readFile({
+            sync: true,
+            path: api.boxDir + '/userid.txt'
+        });
+        if ($app.isEmpty(memberId)) {
+            memberId = shareTopicInfo.userCode;
+        }
+        var params = {
+            type: shareTopicInfo.dataTypeNew,
+            id: shareTopicInfo.id,
+            memberId: memberId
+        };
+        return new Base64().encode(JSON.stringify(params));
+    }
+
+    function fnShareNative(platformType) {
+        var storyContent = concernVue.fnReplaceComment(shareTopicInfo.summary);
+        var url = SHARE_HOST + '/topic_details_frame.html?' + fnGetShareUrl();
+        var title = shareTopicInfo.title ? shareTopicInfo.title + '-顺逛微社区' : shareTopicInfo.userName + '的话题-顺逛微社区'; //分享标题
+        var content = storyContent ? storyContent.substr(0, 30) : '马上进入，参与话题讨论吧...';
+        var pic = shareTopicInfo.mainImg && shareTopicInfo.mainImg.indexOf('../') == '-1' ? shareTopicInfo.mainImg : 'http://www.ehaier.com/mstatic/wd/v2/img/sg.png';//分享图片，写绝对路径  是否后台获取
+        if ($app.isEmpty(pic)) {
+            pic = 'http://www.ehaier.com/mstatic/wd/v2/img/sg.png';
+        }
+        $app.showProgress();
+        $event.callRNEvent(3,1,{
+            command : [title, content, pic, url, 0, platformType]
+        });
+    }
+
+    function fnHideTabBar() {
+        $event.isShowHomeTab(false)
+    }
+
+    function fnAppendTopicData(oldArr, data) {
+        for (var i = 0; i < data.length; i++) {
+            if ($app.isEmpty(data[i].topicImg)) {
+                data[i].topicImg = '../../image/home/tmp_default_header.png';
+            }
+            oldArr.push(data[i]);
+        }
+        return oldArr;
+    }
+
+    function fnCopy() {
+        var clipBoard = api.require('clipBoard');
+        clipBoard.set({
+            value: SHARE_HOST + '/topic_details_frame.html?' + fnGetShareUrl()
+        }, function (ret, err) {
+            if (ret && ret.status) {
+                $app.toast('复制成功');
+                fnSuccess()
+            } else {
+                $app.toast('复制失败');
+            }
+        });
+    }
+
+    function fnSuccess() {
+        api.setFrameAttr({
+            name: 'edit_btn_frame',
+            hidden: false
+        });
+        api.setFrameAttr({
+            name: 'scroll_top_btn_frame',
+            hidden: false
+        });
+        api.closeFrame({
+            name: 'list_share_frame'
+        });
+        if (isShare) {
+            $event.isShowHomeTab(true);
+            isShare = false
+        }
+    }
+
+    function fnRefresh() {
+        attentionIndex = 1;
+        concernVue.fnGetRecommend();
+        concernVue.fnGetTopicAttentionStoryIndex(false, true);
+    }
+
+    function fnGetTopicByType(type) {
+        var items = $api.domAll(".nav_item_att");
+        for (var i = 0; i < items.length; i++) {
+            $api.removeCls(items[i], 'nav_item_active');
+            if (i == type) {
+                $api.addCls(items[i], 'nav_item_active');
+            }
+        }
+        attentionType = type;
+        attentionIndex = 1;
+        concernVue.topicList = [];
+        concernVue.fnGetTopicAttentionStoryIndex(false, false);
+    }
+
+
+    function fnDuration(duration) {
+        if (duration) {
+            duration = parseInt(duration);
+            var second = parseInt(duration) % 60;
+            var min = parseInt(duration / 60);
+            if (min < 10) {
+                min = '0' + min;
+            }
+            if (second < 10) {
+                second = '0' + second;
+            }
+            return min + ":" + second;
+        }
+        return '00:00';
+    }
+
+    function fnOpenPage() {
+        $app.openWin('all_community', null, {
+            url: 'widget://html/community/all_community.html'
+        });
+        fnHideTabBar();
+    }
+
+    var isOpen = false;
+
+    function fnScrollListener() {
+        $(document).scroll(function (e) {
+            var scrollTop = $(this).scrollTop();
+            if (scrollTop > api.winHeight * 3) {
+                if (!isOpen) {
+                    api.execScript({
+                        name: 'root',
+                        script: 'fnOpenScrollTopBtnFrame();'
+                    });
+                    api.setPrefs({
+                        key: 'scroll_frame_name',
+                        value: api.frameName
+                    });
+                }
+                isOpen = true;
+            } else {
+                if (isOpen) {
+                    api.execScript({
+                        name: 'root',
+                        script: 'fnCloseScrollTopBtnFrame();'
+                    });
+                }
+                isOpen = false;
+            }
+        });
+    }
+
+    function fnScrollTop() {
+        document.body.scrollTop = document.documentElement.scrollTop = 0;
+    }
+
+    function fnInitListener() {
+        $event.addEventListener('select_frame_event_' + 0, function (){
+            fnSwitchScrollTopBtn()
+        });
+        $event.scrollBottomListener(function () {
+            $app.showProgress();
+            attentionIndex++;
+            concernVue.fnGetTopicAttentionStoryIndex(true, false);
+        });
+        $event.addEventListener('NaviteCallAPICloudMethod', function (rets) {
+            api.hideProgress();
+            var ret = rets.value;
+            if (ret.type == 3 && ret.tag == api.frameName) {
+                api.hideProgress();
+                if (ret.success == 1) {
+                    isShare = true;
+                    fnSuccess();
+                    $app.toast('分享成功');
+                } else {
+                    $app.toast('分享失败');
+                }
+            } else if (ret.type == 13) {
+                if (ret.tag == 'resume') {
+                    fnSuccess();
+                }
+            }
+        });
+    }
+
+    function fnRefreshFinish() {
+        $api.css($api.dom('.refresh_header'),'display:none');
+        $api.css($api.dom('.network_error'),'display:none');
+    }
+
+    function fnSwitchScrollTopBtn() {
+        var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        if (scrollTop > api.winHeight * 3) {
+            api.execScript({
+                name: 'root',
+                script: 'fnOpenScrollTopBtnFrame();'
+            });
+            api.setPrefs({
+                key: 'scroll_frame_name',
+                value: api.frameName
+            });
+        } else {
+            api.execScript({
+                name: 'root',
+                script: 'fnCloseScrollTopBtnFrame();'
+            });
+        }
+    }
+
+    function publishProgress(percent) {
+        console.log(percent)
+        if (percent != '100.00' || percent != '100') {
+            fnSetDisplay('.progress_wrap', true);
+            $api.text($api.dom('.percent'), percent + '%');
+            $api.css($api.dom('.progress_o'), 'width:' + percent + '%');
+        } else {
+            fnSetDisplay('.progress_wrap', false);
+        }
+    }
+</script>
+</html>

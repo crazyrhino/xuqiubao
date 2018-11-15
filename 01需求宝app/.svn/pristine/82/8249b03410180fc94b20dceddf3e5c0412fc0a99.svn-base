@@ -1,0 +1,109 @@
+.labelList_header{
+  height: 44px;
+  line-height: 44px;
+}
+.user-header{
+  margin-left: 16px;
+	margin-top: 7px;
+	width: 30px;
+	height: 30px;
+	border-radius: 30px;
+}
+.labelList_header .header{
+  height: 100%;
+}
+.labelList_header .msg-btn{
+  width:40px;
+  height: 100%;
+  line-height: 44px;
+  background: #fff;
+  margin-top: 0;
+  color: #FF6026;
+  font-size: 14px;
+  text-align: right;
+  cursor: pointer;
+  margin-right: 16px;
+}
+.labelList_header .msg-btn.modify{
+  color: #666;
+}
+.labelList_header .search-btn{
+  height: 100%;
+  font-size: 17px;
+  background: #fff;
+  text-align: center;
+  justify-content: center;
+  margin-top: 0;
+}
+.section_labellist{
+  box-sizing: border-box;
+  padding-left: 16px;
+  padding-top: 16px;
+}
+.section_labellist .name{
+  font-size: 16px;
+  color: #666666;
+  margin-right: 8px;
+}
+.section_labellist .sub_header img{
+  width: 22px;
+  vertical-align: bottom;
+}
+.section_labellist .name_alert{
+  font-size: 10px;
+  color: #999999;
+}
+.section_labellist .sub_header{
+  margin-bottom: 15px;
+}
+.section_labellist .recommendLabel{
+  margin-top: 5px;
+}
+.section_labellist .item{
+  display: inline-block;
+  font-size: 14px;
+  color: #666;
+  width:108px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding: 7px 0px;
+  text-align: center;
+  background: #EEEEEE;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  margin-right: 8px;
+  position: relative;
+}
+.section_labellist .item.bgFFF{
+  background: #fff;
+  border: 1px solid #eee;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.section_labellist .item.bgFFF.selected{
+  background: #FF6026;
+  color: #fff;
+  border-color: #FF6026;
+}
+.section_labellist .item .deleteBtn{
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 16px;
+  height: 16px;
+  z-index: 5;
+}
+.section_labellist .item .addBtn{
+  position: absolute;
+  top: 3px;
+  left: 13px;
+  font-size: 17px;
+  height: 34px;
+  line-height: 24px;
+  color: #666;
+  z-index: 5;
+}
+[v-cloak]{
+  display: none;
+}

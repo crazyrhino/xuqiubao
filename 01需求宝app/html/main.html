@@ -1,0 +1,763 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/aui.css?v=1"/>
+    <style type="text/css">
+        .vue-content {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .workErr {
+            padding-top: 7rem;
+        }
+
+        .aui-bar-nav {
+            background-color: white;
+            display: flex;
+            display: -webkit-box;
+            display: -webkit-flex;
+        }
+
+        .aui-bar-nav .aui-pull-left {
+            padding: 0 .5rem 0 .8rem;
+        }
+
+        .user-header {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 15px;
+        }
+
+        .red_vip, .yellow_vip, .purple_vip {
+            position: absolute;
+            right: 6px;
+            bottom: 8px;
+            width: 12px;
+            height: 12px;
+        }
+
+        .search-btn {
+            height: 28px;
+            margin-top: 8px;
+            background: #F4F4F4;
+            border-radius: 28px;
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            flex: 1;
+        }
+
+        .search-icon {
+            float: left;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            margin-left: 8px;
+            margin-right: 4px;
+            margin-top: 2px;
+            background-image: url(../image/home/search_icon.png);
+            background-size: 24px;
+        }
+
+        .search-txt {
+            float: left;
+            height: 28px;
+            line-height: 28px;
+            color: #666;
+            font-size: .7rem;
+        }
+
+        .msg-btn {
+            width: 24px;
+            height: 24px;
+            margin-left: 6px;
+            margin-right: 16px;
+            margin-top: 10px;
+            background-image: url(../image/home/home_msg.png);
+            background-size: 24px;
+        }
+
+        .new_msg_num {
+            position: absolute;
+            right: 10px;
+            top: 5px;
+            width: .7rem;
+            height: .7rem;
+            border-radius: 10px;
+            background: red;
+            text-align: center;
+            line-height: .7rem;
+            font-size: 8px;
+            color: #FFF;
+        }
+
+        .more-type {
+            width: 50px;
+            height: 44px;
+            background: url(../image/home/more_type.png) no-repeat center;
+            background-size: 24px;
+        }
+
+        .nvbar {
+            display: flex;
+            display: -webkit-box;
+            display: -webkit-flex;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        .slide-box {
+            display: -webkit-box;
+            flex: 1;
+            -webkit-box-flex: 1;
+            padding-left: .225rem;
+            overflow-x: scroll;
+        }
+
+        .slide-item {
+            padding-left: .575rem;
+            padding-right: .575rem;
+            line-height: 44px;
+            font-size: .7rem;
+            text-align: center;
+            color: #666666;
+            position: relative;
+            /*min-width: 2rem;*/
+        }
+
+        .slide-item.active {
+            font-weight: bold;
+            font-size: .8rem;
+            color: #333333;
+        }
+
+        .select-line {
+            display: inline-block;
+            position: absolute;
+            bottom: 0;
+            width: 1rem;
+            height: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            -webkit-transform: translateX(-50%);
+            background: #333333;
+            border-radius: 1.5px;
+        }
+
+        .workErr img {
+            height: 6rem;
+            margin: 0 auto;
+            margin-bottom: 2rem;
+        }
+
+        .workErr p {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .main_color {
+            color: #FF6026;
+            font-size: 14px;
+        }
+
+        .filter {
+            width: 60px;
+            height: 28px;
+            margin-top: 9px;
+            margin-left: 9px;
+            line-height: 28px;
+            border-radius: 14px;
+            text-align: center;
+            background: #FF6026;
+            display: none;
+        }
+
+        .filter_txt {
+            height: 16px;
+            margin-top: 7px;
+            margin-left: 6px;
+            line-height: 16px;
+            color: #FFF;
+            font-size: 14px;
+        }
+
+        .filter_img {
+            margin-top: 6px;
+            width: 16px;
+            height: 16px;
+        }
+    </style>
+</head>
+<body>
+<div class="vue-content" v-cloak>
+    <header class="aui-bar aui-bar-nav">
+        <a class="aui-pull-left aui-btn" tapmode onclick="fnOpenMine()">
+            <div>
+                <img class="user-header" :src="userInfo.userImg || '../image/home/tmp_default_header.png'" alt=""/>
+            </div>
+            <img class="red_vip" v-show="userInfo.talentFlag == 1" src="../image/mine/red_vip.png" alt=""/>
+            <img class="yellow_vip" v-show="userInfo.talentFlag == 2" src="../image/mine/yellow_vip.png" alt=""/>
+            <img class="purple_vip" v-show="userInfo.talentFlag == 3" src="../image/mine/purple_vip.png" alt=""/>
+        </a>
+        <div class="search-btn" tapmode onclick="fnOpenSearch()">
+            <div class="search-icon"></div>
+            <div class="search-txt">
+                搜索
+            </div>
+        </div>
+        <div class="filter">
+            <div class="filter_txt" tapmode="meui_click" onclick="vm.fnOpenFilter()">
+                筛选
+            </div>
+            <div class="filter_img_div">
+                <img class="filter_img" src="../image/home/filter.png" alt="" tapmode="meui_click"
+                     onclick="vm.fnOpenFilter()"/>
+            </div>
+        </div>
+        <div tapmode onclick="fnOpenMsg()" style="position:relative;">
+            <div class="msg-btn"></div>
+            <div class="new_msg_num" v-show="messageCount!=0" v-text="messageCount"></div>
+        </div>
+    </header>
+    <div class="nvbar">
+        <div class="slide-box">
+            <div v-for="(item,index) in list" class="slide-item" :class="{active:index==selectTabIndex}">
+                <span v-if="index < 3" class="item_txt" v-text="item.name" tapmode
+                      @click="fnSetGroupIndex(index)"></span>
+                <span v-else class="item_txt" v-text="item.name" tapmode @click="fnSetGroupIndex(index)"></span>
+                <span class="select-line" v-show="selectTabIndex === index"></span>
+            </div>
+        </div>
+        <!--<div class="more-type" tapmode onclick="fnOpenLabelList()"></div>-->
+    </div>
+</div>
+<div class="workErr" onclick="fnRefresh()">
+    <img src="../image/workErr.jpg" alt="">
+    <p>哎呀~网络不给力啦</p>
+    <p>轻触屏幕，<span class="main_color">重新加载</span></p>
+</div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/fastclick.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/common.js?v=0"></script>
+<script type="text/javascript">
+    var vm;
+    apiready = function () {
+        $app.fixStatusBar('header');
+        fnInitVue();
+        fnInitListener();
+        initView();
+    };
+    function initView() {
+        vm.fnOpenEditBtnFrame();
+        vm.fnGetTokenFromRN();
+        fnRemoveToken();
+        vm.fnInitVisitorUserCode();
+        $api.rmStorage('isVideoListOpen');
+    }
+
+    function fnRefresh() {
+        $app.showProgress();
+        vm.fnAfterGetToken()
+    }
+
+    function fnInitVue() {
+        vm = $app.MyVue({
+            el: '.vue-content',
+            data: {
+                list: [{
+                    name: '关注'
+                }, {
+                    name: '推荐'
+                }, {
+                    name: '视频'
+                },{
+                    name: '需求宝'
+                },{
+                    name: '生活+'
+                }],
+                selectTabIndex: 1,
+                messageCount: 0,
+                userInfo: {
+                    userImg: '',
+                    talentFlag: 0
+                },
+                isLogin: false
+            },
+            methods: {
+                fnSetGroupIndex: function (index) {
+                    switch (index) {
+                        case 0:
+                            if (!vm.isLogin) {
+                                fnOpenLogin();
+                                return;
+                            }
+                            break;
+                        case 1:
+                            $event.sendEvent('refreshRecommend_data');
+                            break;
+                    }
+                    this.selectTabIndex = index;
+                    api.setFrameGroupIndex({
+                        name: 'main_group',
+                        index: index,
+                        scroll: true
+                    });
+
+                },
+                fnSetCommonGroupIndex: function (index, id) {
+
+                },
+                fnOpenMainGroup: function () {
+                    var frames = [];
+                    frames.push({
+                        name: 'concern_frame',
+                        url: 'main_frames/concern_frame.html?v=' + new Date().getTime(),
+                        bounces: true
+                    });
+                    frames.push({
+                        name: 'recommend_frame',
+                        url: 'main_frames/recommend_frame.html?v=' + new Date().getTime(),
+                        bounces: true
+                    });
+                    frames.push({
+                        name: 'video_frame',
+                        url: 'main_frames/videoList_frame.html?v=' + new Date().getTime(),
+                        bounces: true,
+                        useWKWebView: true
+                    });
+                    frames.push({
+                        name: 'need1',
+                        url: 'xuqiubao/need.html?v=' + new Date().getTime(),
+                        bounces: true,
+                        useWKWebView: true
+                    });
+                    frames.push({
+                        name: 'life',
+                        url: 'main_frames/life_frame.html?v=' + new Date().getTime(),
+                        bounces: true,
+                        pageParam: {commonId: 492}
+                    });
+                    /*其他标签
+                    for (var i = 5; i < this.list.length; i++) {
+                        frames.push({
+                            name: 'common_frame_'+i,
+                            url: 'main_frames/common_frame.html?v=' + new Date().getTime(),
+                            bounces: true,
+                            pageParam: {commonId: this.list[i].id}
+                        });
+                    }*/
+                    var nvbarH = $api.offset($api.dom(".nvbar")).h;
+                    var headerH = $api.offset($api.dom("header")).h;
+                    var offsetY = nvbarH + headerH;
+                    api.closeFrameGroup({
+                        name: 'main_group'
+                    });
+                    api.openFrameGroup({
+                        name: 'main_group',
+                        scrollEnabled: false,
+                        rect: {
+                            marginLeft: 0,
+                            marginTop: offsetY,
+                            marginBottom: 0,
+                            marginRight: 0
+                        },
+                        bgColor: '#fff',
+                        index: 1,
+                        frames: frames,
+                        preload: 0
+                    }, function (ret, err) {
+                        vm.selectTabIndex = ret.index;
+                        $event.sendEvent('change_frame_event');
+                        $event.sendEvent('select_frame_event_' + ret.index);
+                        if (ret.index === 2) {
+                            $api.css($api.dom('.filter'), 'display: flex');
+                        } else {
+                            $api.css($api.dom('.filter'), 'display: none');
+                        }
+                    });
+                    api.bringFrameToFront({
+                        from: 'edit_btn_frame'
+                    });
+                },
+                fnMessageCount: function () {
+                    $http.GET(UrlRouter.getMessageCount, null, function (ret) {
+                        if (ret.data > 0) {
+                            vm.messageCount = ret.data > 99 ? '99+' : ret.data;
+                        } else {
+                            vm.messageCount = 0;
+                        }
+                        setTimeout(function () {
+                            vm.$forceUpdate();
+                        },3000)
+                    })
+                },
+                fnGetTokenFromRN: function () {
+                    $event.callRNEvent(2, 1,{subType: ''})
+                },
+                fnRefreshToken: function (token) {
+                    api.writeFile({
+                        path: api.boxDir + '/token.txt',
+                        data: token
+                    }, function (ret, err) {
+                        if (token.indexOf('#') != -1) {
+                            vm.isLogin = true;
+                            vm.fnAfterGetToken();
+                        } else {
+                            vm.fnOpenMainGroup();
+                        }
+                    });
+                },
+                fnAfterGetToken: function () {
+                    vm.fnMessageCount();
+                    vm.fnGetUserInfo();
+                    vm.fnGetUserType();
+                    vm.fnOpenMainGroup();
+                    setTimeout(function () {
+                        $app.hideProgress()
+                    },3000);
+                    // vm.fnGetUserCollectionTags();
+                    // vm.fnIsFirstIn();
+                },
+                fnGetUserInfo: function () {
+                    $http.GET(UrlRouter.getUserInfo, null, function (ret) {
+                        vm.userInfo = ret.data;
+                        vm.fnGetUserIsBlackAndFocus(ret.data.userInfoCount.userId);
+                        api.writeFile({
+                            path: api.boxDir + '/userid.txt',
+                            data: ret.data.userInfoCount.userId
+                        });
+                    })
+                },
+                fnGetUserType: function () {
+                    $http.GET(UrlRouter.getUserType, null, function (ret) {
+                        api.writeFile({
+                            path: api.boxDir + '/userType.txt',
+                            data: ret.data
+                        });
+                        api.setPrefs({
+                            key: 'userType',
+                            value: ret.data
+                        });
+                    }, function () {
+                        api.writeFile({
+                            path: api.boxDir + '/userType.txt',
+                            data: ''
+                        });
+                        api.setPrefs({
+                            key: 'userType',
+                            value: ''
+                        });
+                        $app.toast('获取身份信息失败', 'middle');
+                    })
+                },
+                fnGetUserCollectionTags: function () {
+                    $http.GET(UrlRouter.getUserCollectionTags, null, function (ret) {
+                        vm.list = [{
+                            name: '关注'
+                        }, {
+                            name: '推荐'
+                        }, {
+                            name: '视频'
+                        },{
+                            name:'需求宝'
+                        },{
+                            name:'生活+'
+                        }];
+                        vm.list = vm.list.concat(ret.data.reverse());
+                        $app.hideProgress();
+                        vm.fnOpenMainGroup();
+                    })
+                },
+                fnIsFirstIn: function () {
+                    $http.GET(UrlRouter.getFirstSignAdd, null, function (ret) {
+                        if (ret.data) {
+                            api.closeToWin({
+                                name: api.winName
+                            });
+                            setTimeout(function () {
+                                $app.openFrame('selection_label', null, null, null, {
+                                    url: 'label/selection_label.html'
+                                });
+                            }, 300);
+                        }
+                    })
+                },
+                fnGetUserIsBlackAndFocus: function (userId) {
+                    $http.GET(UrlRouter.getUserIsBlackAncFocus, {
+                        values: {
+                            memberId: userId
+                        }
+                    }, null, function () {
+                        api.writeFile({
+                            path: api.boxDir + '/isBlackAndFocus.txt',
+                            data: '-200'
+                        });
+                    })
+                },
+                fnInitVisitorUserCode: function () {
+                    var visitorCode = $api.getStorage("visitorCode");
+                    if ($app.isEmpty(visitorCode)) {
+                        visitorCode = $app.guid();
+                        $api.setStorage('visitorCode', visitorCode);
+                    }
+                },
+                fnOpenEditBtnFrame: function () {
+                    $app.openFrame('edit_btn_frame', null, null, null, {
+                        url: 'topic/edit_btn_frame.html?v=' + new Date().getTime(),
+                        rect: {
+                            w: 48,
+                            h: 48,
+                            marginLeft: api.winWidth - 64,
+                            marginTop: api.winHeight - 150
+                        },
+                        bounces: false,
+                        bgColor: 'rgba(0,0,0,0)'
+                    })
+                },
+                fnOpenFilter: function () {
+                    $event.isShowHomeTab(false);
+                    api.execScript({
+                        name: 'root',
+                        script: 'fnCloseScrollTopBtnFrame();'
+                    });
+                    $app.openWin('my_label_list', {
+                        winName: api.winName,
+                        type: currentVideoType
+                    }, {
+                        url: 'mine/my_label_list.html'
+                    })
+                }
+            }
+        })
+    }
+
+    var currentVideoType;
+    
+   //跳转到需求宝
+  function funcGoto(){  
+  	vm.fnSetGroupIndex(3) 
+  };
+
+    function fnCurrentVideoType(type) {
+        currentVideoType = type;
+    }
+
+    function fnInitListener() {
+        $event.getRNCallback(function (ret) {
+            if (ret.type == 1) {
+                if (ret.success == 1) {
+                    // 登录成功的时候也会发送type2的事件，所以这个地方不用刷新token了。
+                    // vm.fnRefreshToken(ret.token);
+                } else {
+                    fnToast('登录失败', 'middle');
+                }
+            } else if (ret.type == 2) {
+                if(!ret.subType){
+                  vm.fnRefreshToken(ret.token);
+                }
+
+            } else if (ret.type == 13 && ret.tag === 'refresh_header') {
+                fnGetUserInfo();
+            } else if (ret.type == 13 && ret.tag === 'refresh_token') {
+                fnGetTokenFromNative();
+            } else if (ret.type == 7) {
+                api.sendEvent({
+                    name: 'change_frame_event'
+                });
+            }
+        });
+
+        $event.addEventListener('viewappear', function () {
+            $event.isShowHomeTab(true);
+            fnShowEditBtn();
+            vm.fnMessageCount();
+            api.setFullScreen({
+                fullScreen: false
+            });
+            $event.addEventListener('NaviteCallBack', function () {
+                if (api.winName === 'root') {
+                    $event.callRNEvent(6)
+                }
+            });
+            fnSaveBackWinName();
+            $event.sendEvent('change_frame_event_back')
+        });
+
+        $event.addEventListener('viewdisappear', function () {
+            api.removeEventListener({
+                name: 'NaviteCallBack'
+            });
+            api.writeFile({
+                path: api.boxDir + '/isVideoShowTab.txt',
+                data: 'false'
+            });
+            $event.sendEvent('change_frame_event')
+        });
+
+        $event.addEventListener('refresh_message_num', function () {
+            vm.fnMessageCount();
+            currentVideoType = undefined;
+        });
+
+    }
+
+    function fnSaveBackWinName() {
+        api.writeFile({
+            path: api.boxDir + '/backWinName.txt',
+            data: api.winName
+        });
+        api.writeFile({
+            path: api.boxDir + '/isVideoShowTab.txt',
+            data: 'true'
+        });
+    }
+
+    function fnRemoveToken() {
+        var token = api.readFile({
+            sync: true,
+            path: api.boxDir + '/token.txt'
+        });
+        if (token.indexOf('#') === -1) {
+            api.writeFile({
+                path: api.boxDir + '/userid.txt',
+                data: ''
+            });
+        }
+    }
+
+    function fnOpenLogin() {
+        $event.sendEvent('change_frame_event');
+        $event.callRNEvent(1, 1, {toPageName: 'Login'});
+    }
+
+    function fnOpenLabelList() {
+        if (!vm.isLogin) {
+            fnOpenLogin();
+            return;
+        }
+        $app.openWin('label_list', null, {
+            url: 'label/label_list.html'
+        });
+        $event.isShowHomeTab(false)
+    }
+
+    function fnOpenMine() {
+        if (!vm.isLogin) {
+            fnOpenLogin();
+            return;
+        }
+        $app.openWin('mine', null, {
+            url: 'mine/mine.html'
+        });
+        $event.isShowHomeTab(false)
+    }
+
+    function fnOpenSearch() {
+        if (!vm.isLogin) {
+            fnOpenLogin();
+            return;
+        }
+        $app.openWin('search_list', null, {
+            url: 'search/search_list.html',
+            softInputBarEnabled:true,
+            softInputDismissMode:['tap','drag']
+        });
+        $event.isShowHomeTab(false)
+    }
+
+    function fnOpenMsg() {
+        if (!vm.isLogin) {
+            fnOpenLogin();
+            return;
+        }
+        $event.callRNEvent(1, 0, {
+            toPageName: 'MessageDetail'
+        });
+        api.execScript({
+            frameName: 'video_frame',
+            script: 'fnPauseOnDisappear();'
+        });
+    }
+
+
+    function fnReGetTags() {
+        vm.list = [{
+            name: '关注'
+        }, {
+            name: '推荐'
+        }, {
+            name: '视频'
+        },{
+            name: '需求宝'
+        }];
+        vm.fnGetUserCollectionTags();
+        api.closeWin({
+            name: 'label_list'
+        });
+        api.closeFrame({
+            name: 'selection_label'
+        });
+        api.sendEvent({
+            name: 'refresh_mine'
+        });
+    }
+
+    function fnHideScrollTopBtnFrame() {
+        api.closeFrame({
+            name: 'scroll_top_btn_frame',
+        });
+    }
+
+    function fnCloseScrollTopBtnFrame() {
+        isScrollBtnShow = false;
+        api.closeFrame({
+            name: 'scroll_top_btn_frame',
+        });
+    }
+
+    function fnShowEditBtn() {
+        api.setFrameAttr({
+            name: 'edit_btn_frame',
+            hidden: false
+        });
+        api.closeFrame({
+            name: 'select_topic_type'
+        });
+        api.closeToWin({
+            name: api.winName
+        });
+        if (isScrollBtnShow) {
+            fnOpenScrollTopBtnFrame();
+        }
+    }
+
+    var isScrollBtnShow = false;
+
+    function fnOpenScrollTopBtnFrame() {
+        isScrollBtnShow = true;
+        $app.openFrame('scroll_top_btn_frame', null, null, null, {
+            url: 'topic/scroll_top_btn_frame.html',
+            rect: {
+                w: 48,
+                h: 48,
+                marginLeft: api.winWidth - 64,
+                marginTop: api.winHeight - 214
+            },
+            bgColor: 'rgba(0,0,0,0)'
+        })
+    }
+</script>
+</html>

@@ -1,0 +1,574 @@
+.flex_container {
+	display: -webkit-flex;
+	display: flex;
+}
+
+.line2 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	word-wrap:break-word;
+}
+
+.line1 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 1;
+	word-wrap:break-word;
+}
+
+.line3 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-height: 60px
+}
+
+.title_wrap {
+	padding: 10px 16px 2px 16px;
+	font-size: 20px;
+	color: #333333;
+	font-family: PingFangSC-Medium;
+}
+
+.img_wrap {
+	padding: 16px;
+	border-bottom: 1px solid #EEEEEE;
+	position: relative;
+}
+
+.img_wrap .bacImg {
+	width: 343px;
+	height: 192px;
+	border-radius: 4px;
+}
+
+.status_wrap {
+	position: relative;
+}
+
+.status {
+	width: 77px;
+	height: 24px;
+	position: absolute;
+	right: 0;
+	top: 11px;
+}
+
+.status img {
+	width: 77px;
+	height: 24px;
+}
+
+.statusText {
+	color: white;
+	font-size: 12px;
+	position: absolute;
+	top: 3px;
+	left: 26px;
+}
+
+.title {
+	padding: 0 16px;
+}
+
+.title .wrap {
+	font-family: PingFangSC-Medium;
+	width: 343px;
+	height: 40px;
+	line-height: 40px;
+	text-align: left;
+	font-size: 16px;
+	color: #333333;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	border-bottom: 1px solid #EEEEEE;
+}
+
+.bottom_bar {
+	align-items: center;
+	padding: 13px 16px;
+}
+
+.left_bar {
+	margin-right: auto;
+}
+
+.time {
+	font-family: PingFangSC-Regular;
+	font-size: 12px;
+	color: #999999;
+}
+
+.endTime {
+	height: 16px;
+	font-size: 12px;
+	color: #999999;
+}
+
+.right_bar {
+	align-items: center;
+}
+
+.headIdcon_wrap img {
+	width: 20px;
+	height: 20px;
+	border: 1px solid white;
+	border-radius: 20px;
+	display: inline-block;
+	position: relative;
+}
+
+.personNum {
+	font-family: PingFangSC-Regular;
+	font-size: 12px;
+	color: #999999;
+	margin-left: 6px;
+}
+
+.nameList {
+	padding: 5px 0;
+	width: 77px;
+	background-color: #FF6026;
+	border-radius: 100px;
+	text-align: center;
+	color: white;
+	font-size: 14px;
+}
+
+.bottom_icon {
+	width: 24px;
+	height: 24px;
+	margin-left: 12px;
+	background-size: cover;
+}
+
+.bottom_num {
+	font-size: 12px;
+	color: #999999;
+	margin-left: 5px;
+}
+
+.congradulate {
+	margin: 0px 16px;
+	padding: 12px 0;
+	border-top: 1px solid #EEEEEE;
+	font-family: PingFangSC-Regular;
+	font-size: 14px;
+	color: #666666;
+}
+
+.reward {
+	margin: 5px 16px 15px 16px;
+	background-color: #EEEEEE;
+	height: 98px;
+	position: relative;
+}
+
+.gift {
+	width: 80px;
+	height: 80px;
+	background-color: white;
+	position: absolute;
+	top: 9px;
+	left: 10px;
+}
+
+.gift img {
+	width: 100%;
+	height: auto;
+	max-height: 80px;
+}
+
+.name {
+	position: absolute;
+	top: 10px;
+	left: 98px;
+	width: 236px;
+	font-family: PingFangSC-Regular;
+	font-size: 16px;
+	color: #333333;
+}
+
+.desc {
+	position: absolute;
+	left: 98px;
+	top: 33px;
+	font-size: 14px;
+	color: #666666;
+}
+
+.cheapPrice {
+	position: absolute;
+	top: 65px;
+	left: 99px;
+	font-size: 17px;
+	color: #FF4400;
+}
+
+.price {
+	position: absolute;
+	top: 67px;
+	left: 182px;
+	font-size: 14px;
+	color: #999999;
+	text-decoration: line-through;
+}
+
+.artical {
+	padding: 16px 16px 4px 16px;
+	font-size: 14px;
+	color: #333333;
+	text-indent: 28px;
+}
+
+.readMore {
+	width: 100%;
+	height: 40px;
+	position: relative;
+}
+
+.readAll {
+	position: absolute;
+	top: 10px;
+	left: 145px;
+	height: 20px;
+	font-size: 14px;
+	color: #999999;
+}
+
+.arrowDown {
+	width: 24px;
+	height: 24px;
+	position: absolute;
+	top: 8px;
+	left: 206px;
+}
+
+.arrowDown img {
+	width: 24px;
+	height: 24px;
+}
+.else{
+	background-color: white;
+}
+.nav {
+	width:100%;
+	/*margin: 0 5px;*/
+	z-index: 100000;
+	background-color: white;
+}
+
+.all {
+	width: 50%;
+	padding-top: 15px;
+	padding-bottom: 11px;
+	text-align: center;
+	font-size: 16px;
+	float: left;
+	background-color: white;
+}
+
+.new {
+	width: 50%;
+	padding-top: 15px;
+	padding-bottom: 11px;
+	text-align: center;
+	font-size: 16px;
+	float: right;
+	background-color: white;
+}
+
+.tab_active {
+	color: #FF6026;
+	border-bottom: 2px solid #FF6026;
+}
+
+.content {
+	padding-top: 5px;
+	background-color: #EEEEEE;
+}
+
+.footer_no {
+	width: 100%;
+	height: 48px;
+	background: #FF6026;
+	box-shadow: 0 1px 2px 0 rgba(143, 51, 0, 0.50);
+	position: fixed;
+	bottom: 0;
+}
+
+.footer_no img {
+	width: 48px;
+	height: 48px;
+	position: absolute;
+	left: 129px;
+}
+
+.footer_no span {
+	display: inline-block;
+	width: 684px;
+	height: 24px;
+	color: white;
+	font-size: 17px;
+	position: absolute;
+	top: 12px;
+	left: 178px;
+}
+
+.twoRankedBox {
+	overflow: hidden;
+	background-color: #EEEEEE;
+	padding-top: 5px;
+}
+
+.twoRankedBox ul {
+	width: 180px;
+	float: left;
+}
+
+.twoRankedBox ul {
+	margin-left: 5px;
+}
+
+.twoRankedBox ul li {
+	margin-bottom: 5px;
+	background-color: #FFFFFF;
+}
+
+.product_picture img {
+	display: block;
+	width: 100%;
+}
+
+.product_np a {
+	display: block;
+	font-size: 16px;
+	color: #333333;
+	display: block;
+	width: 160px;
+	margin-left: 10px;
+	margin-top: 5px;
+}
+
+.bottom_bar {
+	margin-top: 7px;
+	align-items: center;
+}
+
+.left_bar {
+	margin-right: auto;
+}
+
+.right_bar {
+	align-items: center;
+}
+
+.writer_headIcon {
+	width: 16px;
+	height: 16px;
+	border-radius: 16px;
+	background: url(../icon/icon150x150.png) no-repeat left center;
+	background-size: 100% 100%;
+}
+
+.writer_name {
+	height: 16px;
+	font-size: 12px;
+	color: #999999;
+	margin-left: 6px;
+	margin-right: auto;
+}
+
+.bottom_icon {
+	width: 24px;
+	height: 24px;
+	margin-left: 12px;
+	background-size: cover;
+	background-position: center;
+}
+
+.icon2 {
+	background-image: url(../image/community/Message@3x.png);
+}
+
+.icon3 {
+	background-image: url(../image/community/zan@3x.png);
+}
+
+.bottom_num {
+	font-size: 12px;
+	color: #999999;
+}
+
+.replaceFooter {
+	height: 48px;
+}
+
+.footer_one {
+	width: 100%;
+	height: 48px;
+	position: fixed;
+	bottom: 0;
+}
+
+.footer_one_left {
+	width: 100px;
+	height: 48px;
+	position: relative;
+	background: #FF6026;
+	align-items: center;
+}
+
+.comeOn {
+	width: 42px;
+	color: white;
+	position: absolute;
+	top: 7px;
+	left: 14px;
+	text-align: center;
+}
+
+.persons {
+	color: white;
+	font-size: 10px;
+	position: absolute;
+	top: 27px;
+	left: 16px;
+	text-align: center;
+}
+
+.share_icon {
+	width: 24px;
+	height: 24px;
+	position: absolute;
+	top: 12px;
+	left: 61px;
+}
+
+.footer_one_right {
+	width: 275px;
+	height: 48px;
+	background-color: white;
+	align-items: center;
+	padding-right: 15px;
+}
+
+#edit {
+	width: 48px;
+	height: 48px;
+	border-radius: 48px;
+	background-color: red;
+	background-image: url(../image/edit_topic_btn.png);
+	background-position: center;
+	background-size: cover;
+	position: fixed;
+	bottom: 66px;
+	right: 12px;
+}
+
+.footer_oneMore {
+	width: 100%;
+	height: 48px;
+	background: #FFFFFF;
+	box-shadow: 0 1px 2px 0 rgba(143, 51, 0, 0.50);
+	position: fixed;
+	bottom: 0;
+	align-items: center;
+}
+
+.mine {
+	position: absolute;
+	top: 12px;
+	left: 131px;
+	font-family: PingFangSC-Regular;
+	font-size: 17px;
+	color: #333333;
+}
+
+.confirm-btn {
+	margin: 0 auto;
+	font-family: PingFangSC-Regular;
+	font-size: 17px;
+	color: #FF6026;
+}
+
+.over_footer_one {
+	width: 100%;
+	height: 48px;
+	position: fixed;
+	bottom: 0;
+	background-color: white;
+	align-items: center;
+}
+
+.over_writer_name {
+	font-family: PingFangSC-Regular;
+	font-size: 14px;
+	color: #333333;
+	height: 16px;
+	margin-left: 12px;
+	margin-right: 42px;
+}
+
+.jiangbei {
+	width: 21px;
+	height: 21px;
+	margin-left: 16px;
+}
+
+.rightNum {
+	margin-right: 15px;
+}
+
+.reward1 {
+	background-color: #EEEEEE;
+	border-radius: 4px;
+	margin: 5px 16px 15px 16px;
+	height: 44px;
+	align-items: center;
+}
+
+.reward1Icon1 {
+	width: 26px;
+	height: 26px;
+	background-image: url(../image/community/zypl8@2x.png);
+	background-position: center;
+	background-size: cover;
+	margin-left: 10px;
+	margin-right: 12px;
+}
+
+.reward1Icon2 {
+	width: 26px;
+	height: 26px;
+	background-image: url(../image/community/zypl9@2x.png);
+	background-position: center;
+	background-size: cover;
+	margin-left: 10px;
+	margin-right: 12px;
+}
+
+.reward1_reward {
+	font-family: PingFangSC-Regular;
+	font-size: 14px;
+	color: #FF6026;
+}
+
+.leftBox,
+.rightBox {
+	position: absolute;
+	top: 61px;
+	left: 0;
+	/*transition: left 0.1s;
+	-moz-transition: left 0.1s;
+	-webkit-transition: left 0.1s;
+	-o-transition: left 0.1s;*/
+}

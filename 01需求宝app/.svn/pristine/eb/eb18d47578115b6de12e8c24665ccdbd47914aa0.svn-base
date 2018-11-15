@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>图片预览</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../script/swiper/swiper-4.2.2.min.css"/>
+    <style>
+        body, html {
+            background: #000;
+        }
+
+        body, html, .wrap, .swiper-container {
+            height: 100%;
+        }
+
+        .img_index_div {
+            position: absolute;
+            bottom: 10px;
+            color: #fff;
+            text-align: center;
+            width: 100%;
+            z-index: 999;
+        }
+        .icon_close{
+            height: 20px;
+            width: 20px;
+            position: absolute;
+            right: 20px;
+            top: 40px;
+            z-index: 999;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+        }
+        .btn{
+            display: none;
+            position: absolute;
+            bottom: 60px;
+            border-radius: 4px;
+            text-align: center;
+            color: #FF6026;
+            font-size: 17px;
+            line-height: 50px;
+            background-color: #fff;
+            width: 90%;
+            left: 50%;
+            transform: translateX(-50%);
+            -webkit-transform: translateX(-50%);
+            z-index: 999;
+        }
+        .btn div{
+            height: 48px;
+        }
+        .cancle{
+            color: #999;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+<img class="icon_close" src="../../image/close.png" tapmode onclick="api.closeFrame('preview_picture_frame')" alt="">
+<div class="wrap">
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide">
+                <div class="swiper-zoom-container">
+                    <img src="../../image/business.jpg">
+                </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="swiper-zoom-container">
+                    <img src="../../image/business.jpg">
+                </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="swiper-zoom-container">
+                    <img src="../../image/business.jpg">
+                </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="swiper-zoom-container">
+                    <img src="../../image/business.jpg">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="img_index_div">
+    <span class="img_index">1</span>
+    / <span class="total">4</span>
+</div>
+<div class="btn">
+    <div tapmode onclick="savePicture()">保存图片</div>
+    <div class="cancle" tapmode onclick="cancle()">取消</div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/swiper/swiper-4.2.2.min.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+    	//fnRefreshOpen();
+        var mySwiper = new Swiper('.swiper-container', {
+            zoom: true,
+            maxRatio: 2,
+            on: {
+                doubleTap: function (event) {
+
+                },
+                slideChangeTransitionStart: function () {
+                    var currentIndex = this.activeIndex + 1;
+                    $api.text($api.dom('.img_index'), currentIndex);
+                    var num = $api.domAll('.swiper-slide').length;
+                    $api.text($api.dom('.total'), num);
+                }
+
+            }
+        });
+        addEvent();
+
+        function addEvent() {
+            api.addEventListener({
+                name: 'longpress'
+            }, function (ret, err) {
+                $api.css($api.dom('.btn'),'display:block')
+            });
+        }
+    };
+    function savePicture() {
+        api.saveMediaToAlbum({
+            path: api.boxDir + '/1.png'
+        }, function (ret, err) {
+            if (ret && ret.status) {
+                alert('保存成功');
+            } else {
+                alert('保存失败');
+            }
+        });
+    }
+    function cancle() {
+        $api.css($api.dom('.btn'),'display:none')
+    }
+</script>
+</html>

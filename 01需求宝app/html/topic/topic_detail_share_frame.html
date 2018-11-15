@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>选择精华位置-弹窗</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/topic_details.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/select_best_position.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+			body, html {
+				background: rgba(0,0,0,0);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="share_div" style="display: block">
+			<div class="share_dialog">
+				<div class="share_title meui_flex_wrap">
+					<div class="share_title_line meui_flex_con"></div>
+					<div class="share_title_label">
+						分享
+					</div>
+					<div class="share_title_line meui_flex_con"></div>
+				</div>
+				<div class="share_operation_list">
+					<div class="share_operation_item" tapmode="meui_click" onclick="fnShareNative(1)">
+						<div class="share_operation_item_icon share_wx_timeline"></div>
+						<div class="share_operation_item_txt">
+							朋友圈
+						</div>
+					</div>
+					<div class="share_operation_item" tapmode="meui_click" onclick="fnShareNative(0)">
+						<div class="share_operation_item_icon share_wx_friends"></div>
+						<div class="share_operation_item_txt">
+							微信
+						</div>
+					</div>
+					<div class="share_operation_item" tapmode="meui_click" onclick="fnShareNative(3)">
+						<div class="share_operation_item_icon share_qq"></div>
+						<div class="share_operation_item_txt">
+							QQ
+						</div>
+					</div>
+					<div class="share_operation_item" tapmode="meui_click" onclick="fnShareNative(4)">
+						<div class="share_operation_item_icon share_qq_timeline"></div>
+						<div class="share_operation_item_txt">
+							QQ空间
+						</div>
+					</div>
+					<div class="share_operation_item" tapmode="meui_click" onclick="fnShareNative(2)">
+						<div class="share_operation_item_icon share_wb"></div>
+						<div class="share_operation_item_txt">
+							微博
+						</div>
+					</div>
+					<div class="share_operation_item" onclick="fnCopy()">
+						<div class="share_operation_item_icon share_opercopy"></div>
+						<div class="share_operation_item_txt">
+							复制
+						</div>
+					</div>
+					<footer></footer>
+				</div>
+				<div class="share_operation_div" v-if="fnIsShowOperation()">
+					<div class="share_title no_margin_top meui_flex_wrap">
+						<div class="share_title_line meui_flex_con"></div>
+						<div class="share_title_label">
+							操作
+						</div>
+						<div class="share_title_line meui_flex_con"></div>
+					</div>
+					<div class="share_operation_bottom_list">
+						<div class="share_operation_item" v-if="fnIsManager()" onclick="fnIsHide()">
+							<div class="share_operation_item_icon operation_hide" v-bind:class="{ active : fnIsHide() }"></div>
+							<div class="share_operation_item_txt">
+								<span v-if="fnIsHide() == 1">取消隐藏</span>
+								<span v-else>隐藏</span>
+							</div>
+						</div>
+						<div class="share_operation_item" v-if="fnIsManager()" onclick="fnTop()">
+							<div class="share_operation_item_icon operation_top" v-bind:class="{ active : fnIsTop() }"></div>
+							<div class="share_operation_item_txt">
+								<span v-if="fnIsTop() == 1">取消置顶</span>
+								<span v-else>置顶</span>
+							</div>
+						</div>
+						<div class="share_operation_item" v-if="fnIsManager()" onclick="fnChoice()">
+							<div class="share_operation_item_icon operation_choice"
+								 v-bind:class="{ active : fnIsChoice() }"></div>
+							<div class="share_operation_item_txt">
+								<span v-if="fnIsChoice() == 1">取消精华</span>
+								<span v-else>精华</span>
+							</div>
+						</div>
+						<div class="share_operation_item" tapmode="meui_click" onclick="fnIsDelete()">
+							<div class="share_operation_item_icon operation_delete"></div>
+							<div class="share_operation_item_txt">
+								删除
+							</div>
+						</div>
+						<div class="share_operation_item" v-if="fnMine()" tapmode="meui_click" onclick="fnEdit()">
+							<div class="share_operation_item_icon operation_edit"></div>
+							<div class="share_operation_item_txt">
+								编辑
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="share_title_line no_margin_top"></div>
+				<div class="share_cancel" tapmode="meui_click" onclick="api.closeFrame()">
+					取消
+				</div>
+				<footer></footer>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script>
+        var storageUserId;
+        var type;
+		apiready = function() {
+            shareVue.shareInfo = api.pageParam.shareInfo;
+            type = api.pageParam.type;
+            storageUserId = api.readFile({
+                sync : true,
+                path : api.boxDir + '/userid.txt'
+            });
+		};
+        //分享操作vue
+        var shareVue = new Vue({
+            el : '.share_dialog',
+            data : {
+                shareInfo : {}
+            },
+            methods : {
+                fnIsShowOperation : function() {
+                    return (this.shareInfo.userCode == storageUserId || this.shareInfo.isManager != 0) && type != 4;
+                },
+                fnIsManager : function() {
+                    return this.shareInfo.isManager != 0;
+                },
+                fnMine : function() {
+                    return this.shareInfo.userCode == storageUserId;
+                },
+                fnIsHide : function() {
+                    return this.shareInfo.isHidden != 0;
+                },
+                fnIsTop : function() {
+                    return this.shareInfo.isTopicTop != 0 || this.shareInfo.isTop != 0;
+                },
+                fnIsChoice : function() {
+                    return this.shareInfo.isChoice != 0;
+                }
+            }
+        });
+        function fnShareNative(platformType) {
+            api.execScript({
+                name: api.winName,
+                frameName: api.pageParam.frameName,
+                script: 'fnShareNative("'+ platformType +'")'
+            });
+        }
+
+        function fnCopy() {
+            api.execScript({
+                name: api.winName,
+                frameName: api.pageParam.frameName,
+                script: 'fnCopy()'
+            });
+        }
+        function fnIsHide() {
+            api.execScript({
+                name: api.winName,
+                frameName: api.pageParam.frameName,
+                script: 'fnIsHide()'
+            });
+        }
+        function fnTop() {
+            api.execScript({
+                name: api.winName,
+                frameName: api.pageParam.frameName,
+                script: 'fnTop()'
+            });
+        }
+        function fnChoice() {
+            api.execScript({
+                name: api.winName,
+                frameName: api.pageParam.frameName,
+                script: 'fnChoice()'
+            });
+        }
+        function fnEdit() {
+            api.execScript({
+                name: api.winName,
+                frameName: api.pageParam.frameName,
+                script: 'fnEdit()'
+            });
+        }
+        function fnIsDelete() {
+            api.execScript({
+                name: api.winName,
+                frameName: api.pageParam.frameName,
+                script: 'fnIsDelete()'
+            });
+        }
+	</script>
+</html>

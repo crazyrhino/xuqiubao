@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>选择精华位置-弹窗</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/address_confirm.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+			body,html{
+				background: rgba(0,0,0,0);
+			}
+		</style>
+	</head>
+	<body>
+		<div id="warp">
+			<div class="popup_position">
+				<div class="popup_content">
+					<p class="cont_tit">
+						确认退出圈子？
+					</p>
+					<div class="hold"></div>
+					<div class="btns">
+						<a class="btn btn_left" tapmode onclick="api.closeFrame();">取消</a>
+						<a tapmode onclick="fnConfirm()" class="btn btn_right">确定</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+            fnBackListener(fnBack)
+		};
+		function fnConfirm() {
+			api.execScript({
+				name : api.winName,
+				script : 'fnUnjoinCircleServer()'
+			});
+		}
+	</script>
+</html>

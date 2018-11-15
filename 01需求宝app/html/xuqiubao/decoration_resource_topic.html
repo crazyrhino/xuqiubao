@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta content="telephone=no,email=no" name="format-detection">
+    <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <title>我要装修和推荐资源</title>
+    <!--//公共样式-->
+    <link rel="stylesheet" type="text/css" href="../../css/base.css"/>
+    <script type="text/javascript" src="../../script/rem.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/decoration_resource_topic.css?v=1">
+</head>
+
+<body>
+<header class="box" id="header">
+    <!-- 标题 -->
+    <div class="titleBox">
+        <div class="clearfix title">
+            <span onclick="api.closeWin()" class="titleImgBox"><img src="images/icon_arrow@2x.png" alt=""></span>
+            <div class="tab">
+                <span class="selectActive">我要装修<i></i></span>
+                <span class="">推荐资源<i></i></span>
+            </div>
+        </div>
+    </div>
+</header>
+</body>
+<script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+
+<script>
+
+    apiready = function () {
+        FastClick.attach(document.body)
+        $event.isShowHomeTab(false);//隐藏底部导航
+        $app.fixStatusBar("#header"); //兼容ios刘海
+      var o = $api.dom('#header');
+      var titleTop = $api.offset(o).h;
+        // var headerH;
+      // if ($app.SYSTEM_TYPE() === 'ios') {
+      //     headerH = $("#header").height() + 20;
+      // } else {
+      //     headerH = $("#header").height()
+      // }
+        api.openFrame({
+        name: 'decoration_resource_frame',
+        url: 'decoration_resource_form.html',
+        rect: {
+          x: "0",
+          y: titleTop,
+          w: 'auto',
+          h: 'auto'
+        },
+        // pageParam: api.pageParam,  //下拉刷新
+        // bounces: true,
+        softInputBarEnabled:true  //可以设置是否去掉键盘上的工具条
+      });
+    }
+    $(".tab span").on('touchstart',function () {
+      var index = $(".tab span").index(this)
+      if (0 === index) {
+        api.sendEvent({  //发出广播换到装修
+
+          name: "tableClick1",
+          extra: {
+            tableClickBlool: "0",
+          }
+        })
+      } else if (1 === index) {
+        api.sendEvent({  //发出广播切换到推荐资源
+          name: "tableClick1",
+          extra: {
+            tableClickBlool: "1",
+          }
+        })
+      }
+      $(this).addClass("selectActive").siblings().removeClass("selectActive")
+
+    })
+</script>
+</html>

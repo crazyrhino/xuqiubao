@@ -1,0 +1,143 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+<title>我的征集多个作品弹窗展示</title>
+<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+<link rel="stylesheet" type="text/css" href="../../css/flex-layout.css" />
+<link rel="stylesheet" type="text/css" href="../../css/collect_detail_frame2.css" />
+<style>
+html,body {
+	background: transparent;
+}
+.hidden{
+	display: none;
+}
+</style>
+</head>
+<body>
+<div class="overlay"></div>
+<div class="pop">
+	<div class="popHeader border-b">我的作品<div class="close" tapmode onClick="api.closeFrame();"></div></div>
+	<div class="scrollBox" id="data-wrap">
+
+	</div>
+	<script type="text/tpl" id="data-tpl">
+	{{for(var i in it){}}
+	<div class="btmBar flex-column flex-middle flex-between flex-none border-b">
+		{{? __STATUS__ == 2}}
+			<!--结束-->
+			{{? it[i].isAwardOk == 1}}
+				{{? __REWARDTYPE__ == 3}}
+					{{? lockingReward == 1 || __TYPE__ == 3}}
+					{{? !it[i].provinceId}}
+					<div class="btmBarInfo flex-row flex-center flex-middle bg-orange color-white" tapmode onclick="openAddress('{{=it[i].id}}','{{= i }}')">
+						{{??}}
+							<div class="btmBarInfo flex-row flex-center flex-middle bg-orange color-white" tapmode onclick="">
+						
+						{{?}}
+						<div class="text-center">
+							
+								<img class="jb {{? !it[i].provinceId}}hidden{{?}}" src="../../image/community/zypl7@2x.png"/ width="20px" height="20px">
+								<div class="winAddress {{? it[i].provinceId}}hidden{{?}}">中奖地址</div>
+							
+							{{? it[i].rank && __TYPE__ == 1}}
+								<div class="fs10">第{{=it[i].rank||''}}名</div>
+							{{?}}
+						</div>
+					</div>
+					{{?}}
+				{{??}}
+				{{?it[i].isAwardOk == 1}}
+				<img class="jiangbei ml15" src="../../image/mine/zy04@2x.png" width="21" />
+				{{?}}
+				{{?}}
+			{{?}}
+
+		{{?}}
+		{{? __REWARDTYPE__ != 3 && lockingReward == 1 && __TYPE__ == 1}}
+		<div class="px-10 color-999 fs12">
+			第{{=it[i].rank||''}}名
+		</div>
+		<div class="color-999">
+			|
+		</div>
+		{{?}}
+		<div class="flex-auto aui-ellipsis-1 px-10"  tapmode onclick="openDetail('{{=it[i].id}}','{{=it[i].dataTypeNew}}')">{{=it[i].storyName}}</div>
+		<div class="flex-column flex-middle fs12 color-999 pr-15">
+			<img src="../../image/community/Message@3x.png" height="24" alt="">
+			<div class="mr10">{{=it[i].commentNumber||'0'}}</div>
+			<div class="laud">{{=it[i].praiseNumber||'0'}}</div>
+		</div>
+	</div>
+	{{ } }}
+	</script>
+	<div class="btmBtn color-orange bg-white border-t" tapmode onClick="api.closeFrame();">确定</div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/doT.min.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/service.js"></script>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript">
+	var __DATA__,__TYPE__,__STATUS__,__REWARDTYPE__;
+	var lockingReward;
+	apiready = function(){
+		api.parseTapmode();
+		lockingReward = api.pageParam.lockingReward;
+
+		__REWARDTYPE__ = api.pageParam.rewardType;//奖励类型 1：金币 2：钻石 3：实品
+		__TYPE__ = api.pageParam.rulesType;//0：无 1：竞争 2：幸运 3：自定义
+		__DATA__ = api.pageParam.data;
+		__STATUS__ = parseInt(api.pageParam.recruitStatus);//0 未开始 1 进行中 2 已结束
+		var tpl = document.getElementById("data-tpl").innerHTML;
+		var fn = doT.template(tpl);
+		document.getElementById("data-wrap").innerHTML = fn(__DATA__);
+		api.parseTapmode();
+		//添加监听，当地址保存成功的时候，将中奖地址隐藏，显示奖杯
+		api.addEventListener({
+            name: 'showJB'
+        }, function (ret, err) {
+            if (ret) {
+            	if(ret.value.index){
+            		var index = ret.value.index;
+            		__DATA__[index].provinceId = true;
+            		var tpl = document.getElementById("data-tpl").innerHTML;
+					var fn = doT.template(tpl);
+					document.getElementById("data-wrap").innerHTML = fn(__DATA__);
+            	}
+            }
+        });
+	}
+	function openDetail(id,dataTypeNew){
+		setTimeout(function(){
+			api.closeFrame({
+			    // name: 'page2'
+			});
+
+		},500)
+		fnOpenWin('topic_details', '../topic/', {
+			type: dataTypeNew,
+			id: id
+		});
+	}
+	function openAddress(id_,index_){
+		api.openWin({
+		    name: 'address',
+		    url: 'address.html?v=' + new Date().getTime(),
+		    pageParam: {
+		        storyId:id_,
+		        index:index_
+		    }
+		});
+
+	}
+function fnRefreshData(_index){//地址保存成功之后，将中奖地址去掉
+	$(".winAddress").eq(_index).hide()
+	$(".jb").eq(_index).show()
+}
+</script>
+</html>

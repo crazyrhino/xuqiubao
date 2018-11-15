@@ -1,0 +1,122 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>Hello APP</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/select_best_position.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+			input {
+				outline: none;
+				border: none;
+			}
+			body, html {
+				background: rgba(0,0,0,0);
+			}
+		</style>
+	</head>
+	<body>
+		<div id="warp">
+			<div class="popup_position">
+				<div class="popup_content popup_height">
+					<div class="popup_content_title">
+						选择打赏金币数 <span class="float_r" tapmode onclick="api.closeFrame()"></span>
+					</div>
+					<div class="select_lists">
+						<div class="list">
+							<span data-value='1' class="every_one every_one_active">1个</span>
+							<span data-value='5' class="every_one">5个</span>
+							<span data-value='10' class="every_one">10个</span>
+						</div>
+						<div class="list">
+							<span data-value='30' class="every_one">30个</span>
+							<span data-value='50' class="every_one">50个</span>
+							<span data-value='100' class="every_one">100个</span>
+						</div>
+					</div>
+					<div class="please_enter">
+						<span class="other">其他数量</span>
+						<label class="other_input" for="">
+							<input id='num' type="number" name="num" value="" placeholder="您可打赏币数为1725">
+						</label>
+					</div>
+					<div class="submits">
+						<a tapmode onclick="tip()" class="sure">确定打赏</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/jquery.js"></script>
+	<script type="text/javascript">
+		var storyId;
+		apiready = function() {
+			//fnRefreshOpen();
+			api.parseTapmode();
+			storyId = api.pageParam.storyId;
+//			fnSetPostion();
+		}
+		
+		function fnSetPostion(){
+			var winWidth = api.winWidth;
+			var winHeight = api.winHeight;
+			var dom = $api.dom('.popup_content')
+			var width = parseInt(dom.style.width);
+			var height = parseInt(dom.style.height);
+			dom.style.bottom = winHeight/2 + 'px';
+			dom.style.left = winWidth/2 + 'px';
+			dom.style.marginLeft = -width/2 + 'px';
+			dom.style.marginBottom = -height/2 + 'px';
+		}
+		
+		function tip() {
+			var choseNum = $('.every_one_active').attr('data-value');
+			var inputNum = $('#num').val();
+			var num = inputNum ? inputNum : choseNum;
+			if (num == '' || num == null || num == 'undefine') {
+				return false;
+			}
+			$service.get('story/tipStory.ajax', {
+				amount : num,
+				storyId : storyId,
+				userId : api.pageParam.userId
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						fnToast('打赏成功');
+						setTimeout(function() {
+							api.execScript({
+								name : api.winName,
+								script : 'fnRefreshReward();'
+							});
+						}, 500);
+					} else {
+					}
+				} else {
+					fnToast(err.msg, 'middle')
+				}
+			}, true)
+		}
+
+		$(function() {
+			$('.list span').on('click', function() {
+				$('.list span').removeClass('every_one_active')
+				$(this).addClass('every_one_active');
+				$('#num').val('')
+			})
+			$("#num").on('input propertychange', function() {
+				$('.list span').removeClass('every_one_active');
+				if ($(this).val() == '') {
+					$('.list span').first().addClass('every_one_active')
+				}
+			});
+		})
+	</script>
+</html>

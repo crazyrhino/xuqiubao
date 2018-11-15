@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>搜索列表页面</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/search_list.css"/>
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style type="text/css">
+			#search-wrap .header #input{
+				position: relative;
+				height: 28px;
+				line-height: 28px;
+				background: #EEEEEE;
+				border-radius: 14px;
+				background-image: url(../../image/home/search_icon.png);
+				background-position: 5px center;
+				background-repeat: no-repeat;
+				background-size: 24px;
+				padding-left: 35px;
+			}
+			#header .clear{
+				position: absolute;
+				top:0;
+				right: 0;
+				height:30px;
+				width: 30px;
+				z-index: 999;
+				background: url("../../image/label/delete.png") no-repeat center;
+				background-size: 17px;
+				display: none;
+			}
+            .input_search{
+            	width : 100%;
+            	height: 20px;
+            	padding-right : 24px;
+            	margin-top : 4px;
+				line-height: 20px;
+				font-size : 14px;
+                outline: none;
+            }
+            input[type="search"]::-webkit-search-cancel-button {
+                display: none;
+            }
+		</style>
+	</head>
+	<body>
+		<div id="search-wrap">
+			<div id="header" class="header list-flex list-flex-h list-flex-center">
+				<span class="back" tapmode onclick="fnBack()"></span>
+				<div id="input" class="input-wrap list-flex-flex1">
+                    <form action="javascript:fnSearch();">
+					    <input class="input_search" type="search" placeholder="搜索" oninput="fnIsShow()">
+                    </form>
+					<div class="clear" tapmode onclick="fnClearContent()"></div>
+				</div>
+				<span class="search-btn" tapmode onclick="fnSearch()">搜索</span>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript">
+        var input = document.getElementById('input'), UIInput;
+        apiready = function() {
+        	//fnRefreshOpen();
+            fnBackListener(fnBack)
+        	fnSysHeaderStyleById();
+			// fnInit();
+            fnOpenSearchFrame();
+		};
+        function fnBack(){
+            if (api.winName == 'root') {
+                api.sendEvent({
+                    name : 'APICloudCallNaviteMethod',
+                    extra : {
+                        type : 6
+                    }
+                });
+            }else{
+                api.closeWin()
+            }
+        }
+		function fnOpenSearchFrame() {
+			api.openFrame({
+				name : 'search_list_frame',
+				url : './search_list_frame.html?'+new Date().getTime(),
+				bounces : true,
+				rect : {
+					x : 0,
+					y : api.systemType ==='android'?44: $api.offset($api.dom('#search-wrap')).h,
+					w : 'auto',
+					h : 'auto'
+				},
+                softInputDismissMode:['tap','drag']
+			});
+		}
+
+		function fnOpenSearchResult(keyword) {
+			api.execScript({
+				frameName : 'search_list_frame',
+				script : 'fnSaveStorage("' + keyword + '");'
+			});
+			api.openWin({
+	            name: 'search',
+	            url: './search.html?v=' + new Date().getTime(),
+	            // url: 'http://million-magic.com/sgtest1/html/search/search.html?v=' + new Date().getTime(),
+	            pageParam : {
+	            	keyword : keyword
+	            },
+                softInputBarEnabled:true,
+                softInputDismissMode:['tap','drag'],
+                allowEdit:true
+            });
+//			fnOpenWin('search', null, {
+//				keyword : keyword
+//			});
+		}
+
+		function fnSetInputValue(value) {
+            $api.val($api.dom('.input_search'),value);
+            if(value){
+                $api.css($api.dom('.clear'), 'display:block');
+            }else{
+                $api.css($api.dom('.clear'), 'display:none');
+            }
+            fnOpenSearchResult(value);
+        }
+
+		function fnInit() {
+			var offset = $api.offset($api.byId('input'));
+			UIInput = api.require('UIInput');
+			UIInput.open({
+				rect : {
+					x : offset.l + 30,
+					y : offset.t + 5,
+					w : offset.w - 80,
+					h : offset.h - 10
+				},
+				styles : {
+					bgColor : '#eee',
+					size : 14,
+					color : '#333',
+					placeholder : {
+						color : '#999',
+						size : 14
+					}
+				},
+				autoFocus : false,
+				placeholder : '搜索',
+				keyboardType : 'search',
+			}, function(ret) {
+				if (ret.eventType == 'show') {
+					inputId = ret.id;
+				} else if (ret.eventType == 'search') {
+					fnSearch();
+				}else if(ret.eventType == 'change'){
+                    fnIsShow()
+                }else {
+					console.log(JSON.stringify(ret));
+				}
+			});
+		}
+
+        function fnIsShow() {
+            if (fnIsEmpty($api.dom('.input_search').value)) {
+                $api.css($api.dom('.clear'), 'display:none');
+            } else {
+                $api.css($api.dom('.clear'), 'display:block');
+            }
+        }
+
+        function fnClearContent() {
+            $api.dom('.input_search').value = "";
+            $api.css($api.dom('.clear'), 'display:none');
+        }
+
+        var inputId;
+
+        function fnSearch() {
+            var value =$api.dom('.input_search').value;
+            if (fnIsEmpty(value)) {
+                fnToast('关键字不能为空');
+            } else {
+                fnOpenSearchResult(value);
+            }
+        }
+	</script>
+</html>

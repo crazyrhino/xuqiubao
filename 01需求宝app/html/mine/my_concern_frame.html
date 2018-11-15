@@ -1,0 +1,300 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>我的关注</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/my_fans_frame.css" />
+		<style>
+			.img_relactive{
+				width: 44px;
+				height: 44px;
+				position: relative;
+			}
+			.red_vip,.yellow_vip,.purple_vip{
+				position: absolute;
+				right: 2px;
+				top: 28px;
+				width: 12px !important;
+				height: 12px !important;
+			}
+			.no-data{
+				text-align: center;
+				height: 100%;
+				overflow: hidden;
+			}
+			.no-data img{
+				height:97px;
+				width: 124px;
+				margin:64px 0 12px 0;
+			}
+			.no-data p{
+				font-size: 14px;
+				color: #999;
+				margin-bottom:24px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="fan_list">
+			<div class="recommendations">
+				<div class="recommendation_tit" onclick="fnOpenRecomment();">
+					<span>你可能感兴趣的人</span><img class="right_arrow" src="../../image/rank/right_arrow.png">
+				</div>
+				<div class="recommendation_conts">
+					<div v-for="(item,index) in recommentList" class="recommendation_list" tapmode="meui_click" v-on:click="fnOpenUserCenter(item)">
+						<div class="img_relactive">
+							<div class="list_header">
+								<img v-bind:src="item.userImg">
+							</div>
+							<img v-show="item.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png" alt=""/>
+							<img v-show="item.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png" alt=""/>
+							<img v-show="item.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png" alt=""/>
+						</div>
+						<div class="list_cont">
+							<p class="cont_name" v-text="item.userName"></p>
+							<p class="cont_num">
+								粉丝：{{item.followedCount}}
+							</p>
+						</div>
+						<div class="list_follow" tapmode="meui_click" v-on:click="fnFollow(item,index)">
+							<img v-if="item.isFollow == 0" src="../../image/rank/follow.png">
+							<img v-else src="../../image/rank/cancel_follow.png">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="list">
+			<div class="recommendations">
+				<div v-show="list.length != 0" class="recommendation_tit">
+					<span>我的关注</span>
+				</div>
+				<div v-for="(item,index) in list" class="recommendation_conts" v-on:click="fnOpenUser(item)">
+					<div class="recommendation_list">
+						<div class="img_relactive">
+							<div class="list_header">
+								<img v-bind:src="item.userImg" onerror="fnImgError(this)">
+								<img v-show="item.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png" alt=""/>
+								<img v-show="item.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png" alt=""/>
+								<img v-show="item.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png" alt=""/>
+							</div>
+						</div>
+						<div class="list_cont">
+							<p class="cont_name" v-text="item.userName"></p>
+							<p class="cont_num">
+								粉丝：{{item.followedCount}}
+							</p>
+						</div>
+						<div class="list_follow" tapmode="meui_click" v-on:click="fnFollow(item,index)">
+							<img v-if="item.isFollow == 0" src="../../image/rank/follow.png">
+							<img v-else src="../../image/rank/cancel_follow.png">
+						</div>
+					</div>
+				</div>
+				<div v-if="list.length == 0" class="no-data">
+					<img src="../../image/empty/nogz@2x.png" alt="">
+					<p>快来关注你感兴趣的牛人吧</p>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript">
+		var pageIndex = 1;
+		apiready = function() {
+			//fnRefreshOpen();
+			var header = $api.byId('header');
+			fnSysHeaderStyle()
+			fnGetMyfollows();
+			fnRankRecommend();
+			fnSetRefresh(function(){
+				pageIndex = 1;
+				fnGetMyfollows(false, true);
+				fnRankRecommend(false, true);
+			});
+			addBottomListener(function() {
+				pageIndex++;
+				fnGetMyfollows(true, false);
+			});
+		};
+		var vue = new Vue({
+			el : '.list',
+			data : {
+				list : []
+			},
+			methods : {
+				fnFollow : function(item, index) {
+                    window.event.stopPropagation();
+                    var follow;
+					if (item.isFollow == 0) {
+						follow = 'Follow';
+					} else {
+						follow = 'UnFollow';
+					}
+					$service.get('user/follow.ajax', {
+						followId : item.memberId,
+						type : follow
+					}, function(ret, err) {
+						if (ret) {
+							if (ret.ok == 1) {
+								if (item.isFollow == 0) {
+									vue.$set(vue.$data.list[index], 'isFollow', 1);
+								} else {
+									vue.$set(vue.$data.list[index], 'isFollow', 0);
+								}
+							}
+						} else {
+							fnToast(err.msg);
+						}
+					});
+				},
+                fnOpenUser : function(item) {
+                    api.readFile({
+                        path: api.boxDir + '/userid.txt'
+                    }, function (ret, err) {
+                        if (ret) {
+                            var _userid = ret.data;
+                            if (item.memberId == _userid) {
+                                fnOpenWin('mine', '../mine/');
+                            } else {
+                                fnOpenWin('ta_page', '../ta_page/', {
+                                    userId : item.memberId
+                                });
+                            }
+                        }
+                    })
+                }
+			}
+		});
+
+		var recommentVue = new Vue({
+			el : '.recommendation_conts',
+			data : {
+				recommentList : []
+			},
+			methods : {
+				fnFollow : function(item, index) {
+                    window.event.stopPropagation();
+                    var follow;
+					if (item.isFollow == 0) {
+						follow = 'Follow';
+					} else {
+						follow = 'UnFollow';
+					}
+					$service.get('user/follow.ajax', {
+						followId : item.userId,
+						type : follow
+					}, function(ret, err) {
+						if (ret) {
+							if (ret.ok == 1) {
+								if (item.isFollow == 0) {
+									recommentVue.$set(recommentVue.$data.recommentList[index], 'isFollow', 1);
+								} else {
+									recommentVue.$set(recommentVue.$data.recommentList[index], 'isFollow', 0);
+								}
+							}
+						} else {
+							fnToast(err.msg);
+						}
+					});
+				},
+                fnOpenUserCenter : function(item) {
+                    if (item.userId == $api.getStorage('userId')) {
+                        fnOpenWin('mine', '../mine/');
+                    } else {
+                        fnOpenWin('ta_page', '../ta_page/', {
+                            userId : item.userId
+                        });
+                    }
+                }
+			}
+		});
+		function fnGetMyfollows(isLoadMore, isRefresh) {
+			$service.get('user/getMyfollows.ajax', {
+				pageIndex : pageIndex,
+				pageSize : 20
+			}, function(ret, err) {
+				api.refreshHeaderLoadDone();
+				if (ret) {
+					if (ret.data.list && ret.data.list.length > 0) {
+						if (isRefresh) {
+							vue.list = [];
+						}
+						fnAppendData(vue.list, ret.data.list);
+					} else {
+						if (isLoadMore) {
+							fnToast('没有更多');
+						} else {
+//							fnToast('获取数据失败');
+						}
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		function fnAppendData(oldArr, data) {
+			for (var i = 0; i < data.length; i++) {
+                if (fnIsEmpty(data[i].userImg) ) {
+					data[i].userImg = '../../image/home/tmp_default_header.png';
+				}
+				oldArr.push(data[i]);
+			}
+			return oldArr;
+		}
+
+		function fnRankRecommend(isLoadMore, isRefresh) {
+			$service.get('rank/recommend.ajax', {
+				pageNo : 1,
+				pageSize : 2
+			}, function(ret, err) {
+				api.refreshHeaderLoadDone();
+				if (ret && ret.ok == 1) {
+					if (ret.data && ret.data.length > 0) {
+						if (isRefresh) {
+							recommentVue.recommentList = [];
+						}
+						fnAppendUserImgData(recommentVue.recommentList, ret.data);
+					} else {
+						if (isLoadMore) {
+							fnToast('没有更多');
+						} else {
+//							fnToast('获取数据失败');
+						}
+						if (isRefresh) {
+							recommentVue.recommentList = [];
+						}
+					}
+				} else {
+					fnToast('获取感兴趣的人失败');
+				}
+			});
+		}
+
+		function fnAppendUserImgData(oldArr, data) {
+			for (var i = 0; i < data.length; i++) {
+				if (fnIsEmpty(data[i].userImg) || data[i].userImg) {
+					data[i].userImg = '../../image/home/tmp_default_header.png';
+				}
+				data[i].isFollow = 0;
+				oldArr.push(data[i]);
+			}
+			return oldArr;
+		}
+
+		function fnOpenRecomment() {
+			fnOpenWin('recommendation_page_win', '../rank/');
+		}
+		function fnImgError(el){
+			el.src = '../../image/home/tmp_default_header.png';
+		}
+	</script>
+</html>

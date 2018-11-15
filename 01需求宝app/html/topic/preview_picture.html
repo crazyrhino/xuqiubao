@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>图片预览</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../script/swiper/swiper-4.2.2.min.css"/>
+    <style>
+        body, html {
+            background: #000;
+        }
+
+        body, html {
+            min-height: 100%;
+        }
+        .swiper-container{
+            height: auto;
+            overflow: auto;
+        }
+        .img_index_div {
+            position: fixed;
+            bottom: 10px;
+            color: #fff;
+            text-align: center;
+            width: 100%;
+            z-index: 999;
+        }
+        .icon_close{
+            height: 20px;
+            width: 20px;
+        }
+        .btn{
+            display: none;
+            position: absolute;
+            bottom: 60px;
+            border-radius: 4px;
+            text-align: center;
+            color: #FF6026;
+            font-size: 17px;
+            line-height: 50px;
+            background-color: #fff;
+            width: 90%;
+            left: 50%;
+            transform: translateX(-50%);
+            -webkit-transform: translateX(-50%);
+            z-index: 999;
+        }
+        .btn div{
+            height: 48px;
+        }
+        .cancle{
+            color: #999;
+            border-top: 1px solid #ddd;
+        }
+        .swiper-zoom-container{
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript">
+    var currentImgUrl;
+    var saveStatus = false;
+    apiready = function () {
+        fnOpenViewer();
+    };
+    var UIPhotoViewer;
+    function fnOpenViewer() {
+        var arr = api.pageParam.urlArr;
+        currentImgUrl = api.pageParam.urlArr[api.pageParam.activeIndex];
+        UIPhotoViewer = api.require('UIPhotoViewer');
+        for (var key in arr) {
+            if (arr[key].indexOf('ehaier') !== -1 && arr[key].indexOf('.gif') < 0) {
+                arr[key] += '@700_700';
+            }
+        }
+        UIPhotoViewer.open({
+            images :arr,
+            bgColor : '#000',
+            activeIndex : api.pageParam.activeIndex
+        }, function(ret, err) {
+            if (ret) {
+                if(ret.eventType == 'show'){
+                    api.openFrame({
+                        name: 'picture_num_btn',
+                        url: 'picture_num_btn.html',
+                        rect: {
+                            marginTop : api.frameHeight - 40,
+                            h: 22
+                        },
+                        bgColor:'rgba(0,0,0,0)',
+                        reload:true,
+                        pageParam: {
+                            current:api.pageParam.activeIndex,
+                            length:api.pageParam.urlArr.length
+                        },
+                        bounces: false
+                    });
+                    api.bringFrameToFront({
+                        from: 'picture_num_btn'
+                    });
+                }else if(ret.eventType == 'longPress'){
+                    saveStatus = true;
+                    api.openFrame({
+                        name: 'picture_save_btn',
+                        url: 'picture_save_btn.html',
+                        rect: {
+                            x : 0,
+                            y: 0,
+                        },
+                        reload:true,
+                        bgColor:'rgba(0,0,0,0)',
+                        pageParam: {
+                            currentIndex:ret.index
+                        },
+                        bounces: false
+                    });
+                }else if(ret.eventType == 'change'){
+                    api.sendEvent({
+                        name: 'changeIndex',
+                        extra: {
+                            current: ret.index
+                        }
+                    });
+                }else if(ret.eventType == 'click'){
+                    if(saveStatus){
+                        api.closeFrame({
+                            name: 'picture_save_btn'
+                        });
+                        saveStatus = false;
+                    }else{
+                        api.closeWin()
+                    }
+                }
+            } else {
+
+            }
+        });
+    }
+    function changeStatus() {
+        saveStatus = false;
+    }
+    function savePicture(currentIndex) {
+        saveStatus = false;
+        currentImgUrl = api.pageParam.urlArr[currentIndex];
+        var boxDir = api.boxDir;
+        var picName = currentImgUrl.split('/')[currentImgUrl.split('/').length -1];
+        var index1 = picName.lastIndexOf(".");
+        var index2 = picName.length;
+        var postf=picName.substring(index1,index2);//后缀名
+        api.download({
+            url: currentImgUrl,
+            savePath: boxDir + '/pic/'+ new Date().getTime() + postf,
+            cache: true,
+            allowResume: true
+        }, function (ret, err) {
+            if (ret.state == 1) {
+                //下载成功,保存到相册
+                api.saveMediaToAlbum({
+                    path: ret.savePath
+                }, function (ret, err) {
+                    if (ret && ret.status) {
+                        fnToast('保存成功', 'middle');
+                    } else {
+                        fnToast('保存失败', 'middle');
+                    }
+                });
+            } else {
+
+            }
+        });
+    }
+
+</script>
+</html>

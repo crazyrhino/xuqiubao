@@ -1,0 +1,632 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>关注主页</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/swiper.css" />
+		<link rel="stylesheet" href="../../css/aliPlayer.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+			body, html ,.list{
+                height: 100%;
+				background: #EEE;
+			}
+			[v-cloak] {
+				display: none;
+			}
+			.video_item {
+				margin-bottom: 4px;
+				background: #FFF;
+			}
+			.video_top {
+				position: relative;
+				width: 100%;
+				height: 194px;
+			}
+			.video_inner {
+				position: relative;
+				width: 100%;
+				height: 194px;
+			}
+			.video_bottom {
+				height: 52px;
+			}
+			.video_title {
+				position: absolute;
+				width: 84%;
+				left: 8%;
+				right: 8%;
+				top: 16px;
+				color: #FFF;
+				font-size: 16px;
+				line-height: 22px;
+				z-index: 99;
+				text-shadow: #000 0 1px 2px;
+			}
+			.video_cover_img {
+				position: absolute;
+				width: 100%;
+				height: 194px;
+				left: 0;
+				top: 0;
+				z-index: 1;
+			}
+			.video_play_btn {
+				position: absolute;
+				width: 40px;
+				height: 40px;
+				left: 50%;
+				top: 50%;
+				transform: translate(-50%, -50%);
+				background: url(../../image/edit_topic/play.png) no-repeat;
+				background-size: 40px 40px;
+				z-index: 99;
+			}
+			.video_duration {
+				position: absolute;
+				height: 12px;
+				line-height: 12px;
+				right: 19px;
+				bottom: 17px;
+				color: #FFF;
+				font-size: 12px;
+				z-index: 10000;
+			}
+			.video_user_info {
+				height: 40px;
+				margin-left: 15px;
+			}
+			.user_head {
+				width: 16px;
+				height: 16px;
+				margin-top: 18px;
+				border-radius: 16px;
+				background: url(../../image/home/tmp_default_header.png) no-repeat;
+				background-size: 16px;
+			}
+			.user_name {
+				height: 52px;
+				margin-left: 6px;
+				line-height: 52px;
+				font-size: 12px;
+				color: #999;
+			}
+			.num_img {
+				width: 24px;
+				height: 24px;
+				margin-top: 14px;
+				margin-left: 13px;
+			}
+			.share_img {
+				margin-right: 11px;
+			}
+			.num_txt {
+				height: 52px;
+				margin-left: 6px;
+				line-height: 52px;
+				font-size: 12px;
+				color: #999;
+			}
+			.fine-label {
+				width: 18px;
+				height: 18px;
+				background-image: url(../../image/rank/jx@3x.png);
+				background-repeat: no-repeat;
+				background-size: contain;
+				vertical-align: sub;
+				margin-right: 8px;
+			}
+			.no_wifi_div{
+				position :fixed;
+				width: 304px;
+				height: 80px;
+				left : 50%;
+				top : 164px;
+				margin-left : -152px;
+				padding-top : 18px;
+				border-radius: 8px;
+				font-size: 16px;
+				line-height: 22px;
+				color : #FFF;
+				text-align: center;
+				background: rgba(0,0,0,0.70);
+				box-sizing: border-box;
+				display: none;
+				z-index: 100;
+			}
+            .refresh_header {
+                height: 32px;
+                /*margin-bottom: 5px;*/
+                line-height: 34px;
+                text-align: center;
+                color: #FFF;
+                font-size: 14px;
+                background: #EEEEEE;
+                display: none;
+            }
+
+            .network_error{
+                display: none;
+                width: 100%;
+                color: #666;
+            }
+            .network_error img{
+                display: inline-block;
+                height: 18px;
+                width: 18px;
+                margin-right: 6px;
+                transform: translateY(4px);
+            }
+            .no-data{
+                 text-align: center;
+                 overflow: hidden;
+                 height: 100%;
+                 background: #fff;
+             }
+            .no-data img{
+                height:97px;
+                width: 124px;
+                margin:156px 0 12px 0;
+            }
+            .no-data p{
+                font-size: 15px;
+                color: #999;
+            }
+		</style>
+	</head>
+	<body>
+		<div class="no_wifi_div">
+			<div>当前已处于2G/3G/4G网络</div>
+			<div>自动播放已暂停</div>
+		</div>
+        <div class="refresh_header">
+            <div class="network_error">
+                <img src="../../image/home/icon_th.png" alt="">网络不给力，请检查你的网络设置。
+            </div>
+        </div>
+		<div class="list">
+            <div v-if="list.length == 0" class="no-data">
+                <img src="../../image/empty/nojz@2x.png" alt="">
+                <p>暂无动态</p>
+            </div>
+			<div v-for="(item,index) in list" v-cloak class="video_item" tapmode="meui_click" v-on:click="fnOpenDetails(item.id)">
+				<div class="video_top" v-bind:id="'id_'+item.time_id">
+					<div class="video_title meui_2_line">
+						<span v-if="item.isChoice != 0" class="fine-label"></span>
+						{{item.title}}
+					</div>
+					<div class="video_inner" v-bind:id="'inner_id_'+item.time_id">
+						<img class="video_cover_img" v-bind:src="item.mainImg" alt="" />
+						<div class="video_play_btn"></div>
+					</div>
+					<div class="video_duration" v-text="item.duration"></div>
+				</div>
+				<div class="video_bottom meui_flex_wrap">
+					<div class="video_user_info meui_flex_wrap meui_flex_con" tapmode="meui_click" v-on:click.stop="fnOpenUser(item)">
+						<img class="user_head" v-bind:src="item.userHead" alt="" />
+						<div class="user_name" v-text="item.userName"></div>
+					</div>
+					<div class="video_nums meui_flex_wrap">
+						<img class="num_img" src="../../image/community/gk@3x.png" alt="" />
+						<div class="num_txt" v-text="item.browserNumber"></div>
+						<img class="num_img" src="../../image/community/Message@3x.png" alt="" />
+						<div class="num_txt" v-text="item.commentNumber"></div>
+						<img v-if="item.userPraiseFlag == 0" class="num_img" src="../../image/community/zan@3x.png" alt="" v-on:click.stop="fnPraise(item,index)"/>
+						<img v-else class="num_img" src="../../image/mine/zans.png" alt="" v-on:click.stop="fnPraise(item,index)"/>
+						<div class="num_txt" v-text="item.praiseNumber"></div>
+						<img class="num_img share_img" src="../../image/community/share@2x.png" alt="" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.min.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/jquery.js"></script>
+	<script type="text/javascript" src="../../script/aliPlayer.js"></script>
+	<script type="text/javascript">
+		var pageIndex = 1;
+		var currentPlayingId;
+		var isCreate = true;
+		apiready = function() {
+            $api.css($api.dom('.list'),'padding-bottom:' + (api.safeArea.bottom + 54) + 'px');
+            fnGetVideoList();
+			fnSetRefresh(function() {
+				pageIndex = 1;
+				videoType = null;
+				fnPauseOnDisappear();
+				currentPlayingId = null;
+				playerArr = [];
+				vue.list = [];
+				fnGetVideoList(false, true);
+			});
+			addBottomListener(function() {
+				pageIndex++;
+				fnGetVideoList(true, false);
+			});
+			fnScrollListener();
+			fnAddEventListener();
+			fnAddDisappearListener();
+			$api.setStorage('isVideoListOpen',true);
+		};
+		function fnAddDisappearListener() {
+			api.addEventListener({
+				name : 'viewdisappear'
+			}, function(ret, err) {
+				setTimeout(fnPauseOnDisappear, 1000);
+			});
+		}
+
+		var vue = new Vue({
+			el : ".list",
+			data : {
+				list : []
+			},
+			methods : {
+				fnOpenDetails : function(id) {
+					fnPauseOnDisappear();
+					fnOpenWin('topic_details', '../topic/', {
+						type : 3,
+						id : id,
+						preWinName : api.winName,
+						preFrameName : api.frameName
+					});
+				},
+				fnPraise : function(item, index) {
+					fnPraise(item, index);
+				},
+				fnOpenUser : function(item) {
+					fnPauseOnDisappear();
+                    api.readFile({
+                        path: api.boxDir + '/userid.txt'
+                    }, function (ret, err) {
+                        if (ret) {
+                            var _userid = ret.data;
+                            if (_userid === ''){
+                                fnOpenLogin();
+                                return
+                            }
+                            if (item.userId == _userid) {
+                                fnOpenWin('mine', '../mine/');
+                            } else {
+                                fnOpenWin('ta_page', '../ta_page/', {
+                                    userId : item.userId
+                                });
+                            }
+                        }
+                    });
+				}
+			}
+		});
+
+        function fnOpenLogin() {
+            api.sendEvent({
+                name : 'APICloudCallNaviteMethod',
+                extra : {
+                    type : 1,
+                    canCallBack : 1,
+                    toPageName : 'Login'
+                }
+            });
+        }
+		function fnFilterVideoList(_videoType) {
+			videoType = _videoType;
+			pageIndex = 1;
+			fnPauseOnDisappear();
+			currentPlayingId = null;
+			playerArr = [];
+			vue.list = [];
+			fnGetVideoList(false, true);
+			api.closeWin({
+				name : 'my_label_list'
+			});
+		}
+
+		var videoType;
+		function fnGetVideoList(isLoadMore, isRefresh) {
+			var params = {
+				searchType : 6,
+				pageIndex : pageIndex,
+				pageSize : 10,
+			};
+			if (videoType) {
+				params.videoType = videoType;
+			}
+			$service.get('story/getStoryIndexByCondition.ajax', params, function(ret, err) {
+				if (ret.ok == 1) {
+					if (ret.data.list && ret.data.list.length > 0) {
+						if (isCreate) {
+							timeout = setTimeout(function() {
+								fnPlayCurrentVideo();
+							}, 1000);
+							isCreate = false;
+						}
+						fnAppendData(vue.list, ret.data.list);
+					} else {
+						if (isLoadMore) {
+							fnToast('没有更多');
+						} else {
+							vue.list = [];
+							// fnToast('获取数据失败');
+						}
+					}
+				} else {
+					fnToast(ret.data.content,'middle');
+				}
+			}, isRefresh, true, null, api.winName);
+		}
+
+		function fnAppendData(oldArr, data) {
+			for (var i = 0; i < data.length; i++) {
+				if (fnIsEmpty(data[i].mainImg)) {
+					data[i].mainImg = '../../image/tmp.jpg';
+				}
+				if (fnIsEmpty(data[i].userHead)) {
+					data[i].userHead = '../../image/home/tmp_default_header.png';
+				}
+				if (fnIsEmpty(data[i].userName)) {
+					data[i].userName = data[i].userId;
+				}
+				data[i].time_id = new Date().getTime() + '_' + data[i].id;
+				data[i].durationTime = fnDuration(0);
+				data[i].duration = data[i].durationTime;
+				oldArr.push(data[i]);
+			}
+		}
+
+		var playerArr = [];
+		function fnIsPlayerExist(id) {
+			for (var i = 0; i < playerArr.length; i++) {
+				if (id == playerArr[i].el().id) {
+					return playerArr[i];
+				}
+			}
+			return null;
+		}
+
+		function fnPause(id) {
+			for (var i = 0; i < playerArr.length; i++) {
+				if ('id_' + id == playerArr[i].el().id) {
+					(playerArr[i]).pause();
+					(playerArr[i]).off('timeupdate');
+					fnResetVideoDuration();
+					break;
+				}
+			}
+		}
+
+		function fnResetVideoDuration() {
+			var videoItem = vue.$data.list[currentPalyIndex];
+			vue.$set(videoItem, 'duration', videoItem.durationTime);
+		}
+
+		var isDesappearPause = false;
+		function fnPauseOnDisappear() {
+			if (currentPlayingId) {
+				isDesappearPause = true;
+				fnPause(currentPlayingId);
+				fnSetDisplay('inner_id_' + currentPlayingId, true);
+			}
+		}
+
+		function fnPlay(item, index) {
+			if (currentPlayingId) {
+				fnPause(currentPlayingId);
+				fnSetDisplay('inner_id_' + currentPlayingId, true);
+			}
+			var player = fnIsPlayerExist('id_' + item.time_id);
+			if (player) {
+				player.replay();
+				fnTimeupdateListener(player, item, index);
+				currentPlayingId = item.time_id;
+				fnSetDisplay('inner_id_' + item.time_id, false);
+			} else {
+				fnNewPlayer(item, index);
+			}
+		}
+
+		function fnNewPlayer(item, index) {
+			var videoPlayer = new Aliplayer({
+				id : 'id_' + item.time_id,
+				width : '100%',
+				height : '194px',
+				autoplay : true,
+				showBuffer : true,
+				useH5Prism : true,
+				playsinline : true,
+				x5_video_position : 'center',
+				source : fnGetVideoUrl(item),
+				preload : true,
+				skinLayout : false
+			}, function(player) {
+				currentPlayingId = item.time_id;
+				player.play();
+				fnTimeupdateListener(player, item, index);
+				player.on('ended', function() {
+					fnSetDisplay('inner_id_' + item.time_id, true);
+					fnResetVideoDuration();
+				})
+			});
+			playerArr.push(videoPlayer);
+		}
+
+		function fnTimeupdateListener(player, item, index) {
+			player.on('timeupdate', function(e) {
+				var connectionType = api.connectionType;
+				if (connectionType != 'wifi') {
+					fnPauseOnDisappear();
+//					alert(connectionType);
+					fnSetDisplay('.no_wifi_div',true);
+					setTimeout(function(){
+						fnSetDisplay('.no_wifi_div',false);
+					},2000);
+					return;
+				}
+				var time = parseInt(e.paramData);
+				vue.$set(vue.$data.list[index], 'duration', fnDuration(player.getCurrentTime()));
+				if (time > 1000) {
+					fnSetDisplay('inner_id_' + item.time_id, false);
+				}
+			});
+		}
+
+		function fnDuration(duration) {
+			if (duration) {
+				duration = parseInt(duration);
+				var second = parseInt(duration) % 60;
+				var min = parseInt(duration / 60);
+				if (min < 10) {
+					min = '0' + min;
+				}
+				if (second < 10) {
+					second = '0' + second;
+				}
+				return min + ":" + second;
+			}
+			return '00:00';
+		}
+
+		function fnGetVideoUrl(item) {
+			if (item.storyMediaList) {
+				return 'https://sg-video-test.oss-cn-beijing.aliyuncs.com/story/video/2018/05/20dbb017-864a-8dd1-6514-8e5e74e5ec22.mp4';
+			} else {
+				return 'https://sg-video-test.oss-cn-beijing.aliyuncs.com/story/video/2018/05/20dbb017-864a-8dd1-6514-8e5e74e5ec22.mp4'
+			}
+		}
+
+		var timeout;
+		var isOpen = false;
+		function fnScrollListener() {
+			$(document).scroll(function(e) {
+				clearTimeout(timeout);
+				var scrollTop = $(this).scrollTop();
+				// timeout = setTimeout(function() {
+					fnPlayCurrentVideo(scrollTop);
+				// }, 1000);
+				if (scrollTop > api.winHeight * 3) {
+					if (!isOpen) {
+						api.execScript({
+							name : 'root',
+							script : 'fnOpenScrollTopBtnFrame();'
+						});
+						api.setPrefs({
+						    key: 'scroll_frame_name',
+						    value: api.frameName
+						});
+					}
+					isOpen = true;
+				} else {
+					if (isOpen) {
+						api.execScript({
+							name : 'root',
+							script : 'fnCloseScrollTopBtnFrame();'
+						});
+					}
+					isOpen = false;
+				}
+			});
+		}
+
+		function fnScrollTop() {
+			document.body.scrollTop = document.documentElement.scrollTop = 0;
+		}
+
+		var currentPalyIndex;
+		function fnPlayCurrentVideo(scrollTop) {
+			if (!scrollTop) {
+				scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+			}
+			var videoDoms = $api.domAll('.video_item');
+			if (videoDoms && videoDoms.length > 0) {
+				for (var i = 0; i < videoDoms.length; i++) {
+					var videoDomTop = $api.offset(videoDoms[i]).t;
+					var itemScrollTop = videoDomTop - scrollTop;
+					if (itemScrollTop >= 0 && itemScrollTop <= 250) {
+						if (currentPalyIndex != i || isDesappearPause) {
+							fnPlay(vue.list[i], i);
+							currentPalyIndex = i;
+						}
+						break;
+					}
+				}
+			}
+		}
+
+		function fnPraise(item, index) {
+            var visitorCode = $api.getStorage("visitorCode");
+            if (fnIsEmpty(visitorCode)) {
+                visitorCode = guid();
+                $api.setStorage('visitorCode', visitorCode);
+            }
+			$service.get('story/praiseStory.ajax', {
+				storyId : item.id,
+				userCode : item.userId,
+                visitorCode:visitorCode
+            }, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						if (item.userPraiseFlag == 0) {
+							vue.$set(vue.$data.list[index], 'userPraiseFlag', 1);
+							vue.$set(vue.$data.list[index], 'praiseNumber', item.praiseNumber + 1);
+						} else {
+							vue.$set(vue.$data.list[index], 'userPraiseFlag', 0);
+							vue.$set(vue.$data.list[index], 'praiseNumber', item.praiseNumber - 1);
+						}
+					} else {
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			}, true)
+		}
+
+		function fnAddEventListener() {
+			api.addEventListener({
+				name : 'change_frame_event'
+			}, function(ret, err) {
+				fnPauseOnDisappear();
+			});
+//			api.addEventListener({
+//				name : 'select_frame_event_' + 2
+//			}, function(ret, err) {
+//				fnSwitchScrollTopBtn();
+//			});
+            api.addEventListener({
+                name : 'showErr'
+            }, function(ret, err) {
+                fnSetDisplay('.refresh_header', true);
+                fnSetDisplay('.network_error', true);
+                setTimeout(fnRefreshFinish, 2000);
+            });
+        }
+        function fnRefreshFinish() {
+            fnSetDisplay('.refresh_header', false);
+            fnSetDisplay('.network_error', false);
+        }
+
+		function fnSwitchScrollTopBtn() {
+			var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+			if (scrollTop > api.winHeight * 3) {
+				api.execScript({
+					name : 'root',
+					script : 'fnOpenScrollTopBtnFrame();'
+				});
+				api.setPrefs({
+						    key: 'scroll_frame_name',
+						    value: api.frameName
+						});
+			} else {
+				api.execScript({
+					name : 'root',
+					script : 'fnCloseScrollTopBtnFrame();'
+				});
+			}
+		}
+	</script>
+</html>

@@ -1,0 +1,91 @@
+/*选择标签 selectionLabel.html*/
+header.selection_label{
+  height: 1.680000rem;
+  line-height: 1.680000rem;
+  text-align: right;
+}
+.selection_label .msg-btn{
+  width: 0.560000rem;
+  height: 0.560000rem;
+  margin-right: 0.453333rem;
+  margin-top: 0.560000rem;
+  background-image: url(../image/closeWin.png);
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.selection_content{
+  text-align: center;
+  padding-left: 0.453333rem;
+  padding-right: 0.426667rem;
+  padding-top: 0.106667rem;
+}
+.selection_content ._total{
+  font-size: 0.586667rem;
+  color: #000;
+  line-height: 0.800000rem;
+}
+.selection_content .subtotal{
+  font-size: 0.320000rem;
+  color: #999;
+  line-height: 0.453333rem;
+  margin-top: 0.133333rem;
+}
+.selection_content ._slide{
+  margin-top: 1.173333rem;
+}
+.selection_content .swiper-container{
+  padding-bottom: 0.506667rem;
+}
+.selection_content ._slide .term{
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  display: inline-block;
+  font-size: 0.373333rem;
+  color: #666;
+  padding: 0.186667rem 0.746667rem;
+  padding-right: 0.640000rem;
+  border-radius: 0.533333rem;
+  border:1px solid  #eee;
+  margin-bottom: 0.346667rem;
+  margin-right: 0.266667rem;
+}
+.selection_content ._slide .term.active{
+  background: #2979FF;
+  color: #fff;
+  border-color: #2979FF;
+}
+.selection_content ._slide .term.selected{
+  background: #FF6026;
+  color: #fff;
+  border-color: #FF6026;
+}
+
+.selection_content .swiper-slide,
+.swiper-wrapper{
+  padding: 0;
+}
+.selection_content .swiper-pagination{
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+}
+.selection_content .btn_alert{
+  font-size: 0.320000rem;
+  color: #999999;
+  margin-bottom: 0.240000rem;
+  margin-top: 1.066667rem;
+}
+.selection_content .btn{
+  background: #FF6026;
+  border-radius: 2.666667rem;
+  padding-top: 0.266667rem;
+  padding-bottom: 0.266667rem;
+  color: #fff;
+  font-size: 0.453333rem;
+}
+
+[v-cloak]{
+  display: none;
+}

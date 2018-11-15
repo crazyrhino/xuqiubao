@@ -1,0 +1,39 @@
+
+body, html {
+	background: #FFF;
+}
+header {
+	width: 100%;
+	height: 1.173333rem;
+	background: #FFF;
+}
+.rank_content{
+	position: relative;
+	width: 100%;
+	height: 1.173333rem;
+	font-size: 0.453333rem;
+	text-align: center;
+	border-bottom: 1px solid #EEE;
+}
+.rank_back{
+	position: absolute;
+	left: 0.426667rem;
+	top: 0.266667rem;
+	width: 0.640000rem;
+	height: 0.640000rem
+}
+.right{
+	position: absolute;
+	right: 0.426667rem;
+	top: 0.293333rem;
+	width: 1.333333rem;
+	height: 0.586667rem;
+	font-size: 0.426667rem;
+	color: #666666;
+	text-align: center;
+}
+#title{
+	position: absolute;
+	left: 4.106667rem;
+	top: 0.266667rem;
+}

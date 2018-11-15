@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <style>
+    </style>
+</head>
+<body></body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript">
+    var isFullscreen = false;
+    apiready = function () {
+        //fnRefreshOpen();
+        fnAddNormalNativeListener();
+        if (api.winName == 'root' && api.systemType == 'android') {
+            // fnAddNativeListener();
+            fnGetAndroidParams();
+        } else {
+            var params = api.pageParam;
+            params.backWinName = api.readFile({
+                sync: true,
+                path: api.boxDir + '/publish_back_winname.txt'
+            });
+            if (params.token) {
+                api.writeFile({
+                    path: api.boxDir + '/token.txt',
+                    data: params.token
+                });
+            }
+            api.openFrame({
+                name: api.winName + '_frame',
+                url: 'topic_details_frame1.html?v=' + new Date().getTime(),
+                useWKWebView: true,
+                pageParam: params,
+                softInputMode: 'pan',
+                softInputBarEnabled: false,
+                reload: true,
+                allowEdit: true,
+                softInputDismissMode: ['tap', 'drag']
+            });
+        }
+        $event.addEventListener("getHeight", function (ret) {
+            api.setFrameAttr({
+                name: api.winName + '_frame',
+                rect: {
+                    x: 0,
+                    y: ret.value.height,
+                    w: "auto",
+                    h: "auto"
+                }
+            });
+        })
+
+        api.addEventListener({
+            name: 'keyback'
+        }, function (ret, err) {
+            if (isFullscreen) {
+                api.execScript({
+                    frameName: api.winName + '_frame',
+                    script: 'fnFullscreen();'
+                });
+            } else {
+                api.execScript({
+                    frameName: api.winName + '_frame',
+                    script: 'fnBack();'
+                });
+            }
+        });
+        setTimeout(function () {
+            api.closeWin({
+                name: 'edit_topic'
+            });
+            api.closeWin({
+                name: 'edit_video_topic'
+            });
+            if (api.pageParam.closeWinName) {
+                api.closeWin({
+                    name: api.pageParam.closeWinName
+                });
+            }
+        }, 1000)
+    };
+
+    function fnChangeFullscreen(fullscreen) {
+        isFullscreen = fullscreen;
+    }
+
+    function fnGetAndroidParams() {
+        api.sendEvent({
+            name: 'APICloudCallNaviteMethod',
+            extra: {
+                type: 8,
+                canCallBack: 1
+            }
+        });
+    }
+
+    var isExec;
+
+    function fnAddNormalNativeListener() {
+        isExec = true;
+        api.addEventListener({
+            name: 'viewappear'
+        }, function (ret, err) {
+            isExec = true;
+            api.sendEvent({
+                name: 'viewappear_event_' + api.winName
+            });
+        });
+        api.addEventListener({
+            name: 'viewdisappear'
+        }, function (ret, err) {
+            api.sendEvent({
+                name: 'viewdisappear_event_' + api.winName
+            });
+            isExec = false;
+            if (api.pageParam.type == 3) {
+                api.setFullScreen({
+                    fullScreen: false
+                });
+            }
+        });
+        api.addEventListener({
+            name: 'NaviteCallAPICloudMethod'
+        }, function (rets, err) {
+            var ret = rets.value;
+            if (ret.type == 13) {
+                if (isExec) {
+                    if (ret.tag == 'pause') {
+                        api.execScript({
+                            frameName: api.winName + '_frame',
+                            script: 'fnSetVideoStatus(false);'
+                        });
+                    } else {
+                        api.execScript({
+                            frameName: api.winName + '_frame',
+                            script: 'fnContinuePlay();'
+                        });
+                    }
+                }
+            } else if (ret.type == 8) {
+                var params = {
+                    type: ret.mtype,
+                    id: ret.id,
+                    token: ret.token
+                };
+                if (params.token) {
+                    api.writeFile({
+                        path: api.boxDir + '/token.txt',
+                        data: params.token
+                    });
+                }
+                api.openFrame({
+                    name: api.winName + '_frame',
+                    url: 'topic_details_frame1.html?v=' + new Date().getTime(),
+                    useWKWebView: true,
+                    pageParam: params,
+                    softInputMode: 'pan',
+                    softInputBarEnabled: false,
+                    reload: true,
+                    allowEdit: true,
+                    softInputDismissMode: ['tap', 'drag']
+                });
+            }
+        });
+    }
+
+</script>
+</html>

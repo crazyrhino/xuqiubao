@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="yes" name="apple-touch-fullscreen" />
+    <meta content="telephone=no,email=no" name="format-detection" />
+    <meta
+      name="App-Config"
+      content="fullscreen=yes,useHistoryState=yes,transition=yes"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
+    <title>我的需求宝</title>
+    <link rel="stylesheet" href="css/thought.css" />
+    <style>
+      .mx_top {
+        height: 5rem;
+        position: relative;
+        display: flex;
+      }
+      .mx_left {
+        width: 3rem;
+        height: 5rem;
+        padding: 1rem;
+      }
+      .mx_left img {
+        width: 0.8rem;
+      }
+      .mx_right {
+        width: 80%;
+        margin: 0 auto;
+        height: 5rem;
+        line-height: 3rem;
+        margin-left: 2rem;
+      }
+      .mx_right li {
+        float: left;
+        width: 40%;
+        text-align: center;
+        font-size: 1.1rem;
+      }
+      .mx_right li {
+        position: relative;
+      }
+
+      .select {
+        color: #f63;
+        font-size: 1.1rem;
+      }
+      .select i {
+        position: absolute;
+        bottom: 0rem;
+        left: 2.5rem;
+        display: block;
+        background-color: #f60;
+        height: 0.2rem;
+        width: 40%;
+      }
+    </style>
+  </head>
+  <body>
+    <div v-cloak class="box">
+      <div class="mx_top" id="titless">
+        <div class="mx_left" @click="backHome()">
+          <img src="images/icon_arrow@2x.png" alt="" />
+        </div>
+        <div class="mx_right">
+          <ul>
+            <li :class="{'select':isA}" @click="goVal()">我的提问 <i></i></li>
+            <li :class="{'select':!isA}" @click="goAnswer()">
+              我的回答 <i></i>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 标题 -->
+      <!--
+        <div id="titless" class="title">
+            <span   @click="backHome()" style="background-color: #f30;  display: block;"><img src="images/icon_arrow@2x.png" alt=""></span>
+            <div class="tab">
+                <p >我的提问222<i></i> </p>
+                <p >我的回答<i></i></p>
+            </div>
+        </div>
+      -->
+    </div>
+  </body>
+  <script src="./js/jquery-1.11.1.min.js"></script>
+  <script src="./js/js.js"></script>
+  <script type="text/javascript" src="../../script/vue.js"></script>
+  <script type="text/javascript" src="../../script/api.js"></script>
+  <script type="text/javascript" src="../../script/fastclick.js"></script>
+  <script type="text/javascript" src="../../script/common.js?v=0"></script>
+  <script>
+    apiready = function() {
+      $app.fixStatusBar("#titless");
+      var o = $api.dom("#titless");
+      var titleTop = $api.offset(o).h;
+      // var titleTop = $api.offset(o).h;
+      api.openFrame({
+        name: "thought_frame",
+        url: "./thought_frame.html",
+        rect: {
+          x: 0,
+          y: titleTop,
+          w: "auto",
+          h: "auto"
+        }
+      });
+      fnAddNormalNativeListener();
+      if (api.winName == "root" && api.systemType == "android") {
+        fnGetAndroidParams();
+      } else {
+        var params = api.pageParam;
+      }
+    };
+
+    // 金币跳转RN
+    function fnGetAndroidParams() {
+      api.sendEvent({
+        name: "APICloudCallNaviteMethod",
+        extra: {
+          type: 8,
+          canCallBack: 1
+        }
+      });
+    }
+    function fnAddNormalNativeListener() {
+      api.addEventListener(
+        {
+          name: "NaviteCallAPICloudMethod"
+        },
+        function(rets, err) {
+          var ret = rets.value;
+          if (ret.type == 13) {
+            // api.toast({
+            //     msg: '分享成功',
+            //     duration: 2000,
+            //     location: 'middle'
+            // });
+            $event.isShowHomeTab(false);
+            api.closeFrame({
+              name: "list_share_frame"
+            });
+          }
+        }
+      );
+    }
+
+    var box = new Vue({
+      el: ".box",
+      data: {
+        message: [],
+        isShow: false,
+        ans: [],
+        isA: true,
+        picture: [],
+        img2: "./images/zan@3x.png",
+        img3: "./images/zang@3x.png",
+        msg: []
+      },
+      computed: {},
+      methods: {
+        backHome: function() {
+          api.closeWin({});
+        },
+        opens: function(id) {
+          api.openWin({
+            name: "details",
+            url: "./details.html",
+            slidBackEnabled: false,
+            pageParam: {
+              listId: id
+            }
+          });
+        },
+        openAnswer: function(ids, issueId, uName, uCode) {
+          api.openWin({
+            name: "contentTitle",
+            url: "./contentTitle.html",
+            slidBackEnabled: false,
+            pageParam: {
+              id: ids,
+              issueId: issueId,
+              userName: uName,
+              userCode: uCode
+            }
+          });
+        },
+        goVal: function() {
+          this.isA = true;
+          var jsfun = "box.getVal()";
+          api.execScript({
+            frameName: "thought_frame",
+            script: jsfun
+          });
+        },
+        goAnswer: function() {
+          this.isA = false;
+          // ?pageIndex=1&pageSize=11
+          function send() {
+            var jsfun = "box.getAnswer()";
+            api.execScript({
+              frameName: "thought_frame",
+              script: jsfun
+            });
+          }
+          setTimeout(send, 100);
+        },
+        fnGetStoryIndexByCondition: function(Id) {
+          var token = api.readFile({
+            sync: true,
+            path: api.boxDir + "/token.txt"
+          });
+          var _this = this;
+          var js = {
+            pageIndex: _this.msg.length,
+            pageSize: "1000",
+            TokenAuthorization: token
+          };
+
+          $http.GET(
+            "http://mobiletest.ehaier.com:38080/v5/sgcommunity/issue/getIssueList.ajax",
+            {
+              values: {
+                pageIndex: _this.msg.length,
+                pageSize: "1000",
+                TokenAuthorization: token
+              }
+            },
+            function(ret, err) {
+              $app.hideProgress();
+              var b = ret.data;
+
+              if (b == null) {
+                _this.inners == "没有更多了...";
+              } else {
+                for (var i = 0; i < ret.data.length; i++) {
+                  _this.msg.push(ret.data[i].imgArray);
+                }
+              }
+            }
+          );
+        },
+        clickAdds: function(item) {
+          this.praiseIssue(item);
+        },
+        collectIssue: function() {
+          //需求点赞
+          var _this = this;
+          $http.GET(
+            "http://mobiletest.ehaier.com:38080/v5/sgcommunity/issue/praiseIssue.ajax",
+            {
+              values: {
+                issueId: this.accept.answersCommentToCode
+              }
+            },
+            function(ret, err) {}
+          );
+        },
+        openPersonal: function(a) {
+          //跳转个人中心
+          api.readFile(
+            {
+              path: api.boxDir + "/userid.txt"
+            },
+            function(ret, err) {
+              if (ret) {
+                var _userid = ret.data;
+                if (_userid === "") {
+                  $event.callRNEvent(1, 1, {
+                    toPageName: "Login"
+                  });
+                  return;
+                }
+                // this.fnHideTabBar();
+                if (a === _userid) {
+                  //item.userId
+                  $app.openWin("mine", null, {
+                    url: "./../mine/mine.html"
+                  });
+                } else {
+                  $app.openWin(
+                    "ta_page",
+                    {
+                      userId: a
+                    },
+                    {
+                      url: "./../ta_page/ta_page.html"
+                    }
+                  );
+                }
+              }
+            }
+          );
+        },
+        praiseIssue: function(a) {
+          //方案点赞接口
+          var _this = this;
+          $http.GET(
+            "http://mobiletest.ehaier.com:38080/v5/sgcommunity/issueAnswers/praiseIssueAnswers.ajax",
+            {
+              values: {
+                issueAnswersId: a.id
+              }
+            },
+            function(ret, err) {
+              if (ret.data == "点赞成功") {
+                a.praiseNumber++;
+                a.isAnswersPraise = 1;
+              } else {
+                a.praiseNumber--;
+                a.isAnswersPraise = 0;
+              }
+            }
+          );
+        }
+      }
+    });
+  </script>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>热搜列表页</title>
+    <meta name="viewport"
+          content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+    <style type="text/css">
+        html,body{
+
+        }
+        header{
+            height:5.2rem;
+            background: url("../../image/top@2x.png") no-repeat center;
+            background-size: 100% 5.2rem;
+            position: relative;
+            z-index:1;
+        }
+        header .title{
+            position: absolute;
+            left:50%;
+            top:50%;
+            transform: translateX(-50%) translateY(-50%);
+            -webkit-transform: translateX(-50%) translateY(-50%);
+            height:1.85rem;
+            background: url("../../image/group@2x.png") no-repeat;
+            background-size: cover;
+            /*background-size: 100% 10.4rem;*/
+            z-index: 2;
+            width:7.55rem;
+        }
+        header .back{
+            position: absolute;
+            left:1.6rem;
+            top:50%;
+            -webkit-transform: translateY(-50%);
+            transform: translateY(-50%);
+            background:url("../../image/back@2x.png")no-repeat center;
+            background-size: 0.45rem 0.8rem;
+            z-index:999;
+            width:0.9rem;
+            height:1.6rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="title"></div>
+        <div class="back" onClick="fnBack()"></div>
+    </header>
+
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+
+<script type="text/javascript" src="../../script/common.js"></script>
+
+<script type="text/javascript">
+
+    apiready = function () {
+        $app.fixStatusBar();
+        $app.openFrame("hot_search_list_frame","header")
+    };
+
+    function fnBack() {
+        api.closeWin();
+    }
+
+</script>
+</html>

@@ -1,0 +1,228 @@
+body, html {
+	background: #EEE;
+	height: 100%;
+}
+.c_edit_layout {
+	width: 100%;
+	padding-left: 0.426667rem;
+	padding-right: 0.426667rem;
+	padding-bottom: 0.400000rem;
+	-webkit-box-sizing: border-box;
+	        box-sizing: border-box;
+	background: #FFF;
+}
+.c_title_input {
+	width: 100%;
+	height: 1.066667rem;
+	border-bottom: 1px dashed #EEE;
+	line-height: 1.066667rem;
+	font-size: 0.426667rem;
+	color: #333;
+}
+.c_content_area {
+	width: 100%;
+	height: 3.200000rem;
+	margin-top: 0.160000rem;
+	line-height: 0.533333rem;
+	font-size: 0.373333rem;
+	color: #333;
+	outline: none;
+	resize: none;
+}
+.slide-box {
+	width: 100%;
+	display: -webkit-box;
+	overflow-x: scroll;
+	-webkit-overflow-scrolling: touch;
+}
+.slide-item {
+	position : relative;
+	width: 2.400000rem;
+	height: 2.400000rem;
+	margin-right: 0.346667rem;
+	overflow: hidden;
+}
+.c_add_img {
+	width: 2.400000rem;
+	height: 2.400000rem;
+	background: url(../image/edit_topic/add_img.png) no-repeat center;
+	background-size: 2.400000rem;
+}
+.c_upload_img_layout {
+	position: relative;
+	width: 2.400000rem;
+	height: 2.400000rem;
+}
+.c_upload_img {
+	width: 2.400000rem;
+	height: 2.400000rem;
+	border-radius: 0.080000rem;
+}
+.video_item_play_btn{
+	position: absolute;
+	width: 1.066667rem;
+	height: 1.066667rem;
+	top: 0.666667rem;
+	left: 0.666667rem;
+}
+.c_cover {
+	position: absolute;
+	width: 2.400000rem;
+	height: 0.586667rem;
+	top: 1.040000rem;
+	left: 0;
+	background: rgba(0,0,0,0.39);
+	line-height: 0.586667rem;
+	font-size: 0.320000rem;
+	text-align: center;
+	color: #FFF;
+}
+.c_upload_progress_layout{
+	position: absolute;
+	top: 0px;
+	left: 0;
+	width: 2.400000rem;
+	height: 2.400000rem;
+	background: rgba(0,0,0,0.6);
+	border-radius: 0.080000rem;
+}
+.c_upload_progress{
+	width: 2.400000rem;
+	margin-top: 0.720000rem;
+	color : #FFF;
+	text-align: center;
+}
+.c_upload_label{
+	height: 0.480000rem;
+	line-height: 0.480000rem;
+	font-size: 0.373333rem;
+}
+.c_delete {
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 0.533333rem;
+	height: 0.533333rem;
+	background: url(../image/edit_topic/delete_img.png) no-repeat center;
+	background-size: 0.533333rem;
+}
+.hidden {
+	display: none;
+}
+.c_share_layout {
+	margin-top: 0.373333rem;
+	margin-left: 0.426667rem;
+}
+.c_share_label {
+	height: 0.533333rem;
+	line-height: 0.533333rem;
+	font-size: 0.373333rem;
+	color: #999;
+}
+.c_share_item {
+	width: 0.533333rem;
+	height: 0.533333rem;
+	margin-right: 0.186667rem;
+}
+.space{
+	height: 2.080000rem;
+}
+.c_footer {
+	position: fixed;
+	left: 0px;
+	bottom: 0px;
+	width: 100%;
+	height: 2.080000rem;
+}
+.c_footer_top {
+	height: 0.933333rem;
+	background: #FFF;
+}
+.c_footer_bottom {
+	height: 1.173333rem;
+	background: #F6F6F6;
+}
+.c_circle {
+	height: 0.586667rem;
+	margin-left: 0.400000rem;
+	margin-top: 0.186667rem;
+	padding: 0.106667rem 0.373333rem;
+	background: #F6F6F6;
+	border-radius: 0.586667rem;
+	-webkit-box-sizing: border-box;
+	        box-sizing: border-box;
+}
+.c_circle_icon {
+	width: 0.373333rem;
+	height: 0.373333rem;
+}
+.c_circle_txt {
+	height: 0.373333rem;
+	max-width: 2.933333rem;
+	margin-left: 0.106667rem;
+	line-height: 0.373333rem;
+	font-size: 0.320000rem;
+	color : #999;
+}
+
+.c_label {
+	height: 0.586667rem;
+	margin-left: 0.400000rem;
+	margin-top: 0.186667rem;
+	padding: 0.106667rem 0.373333rem;
+	background: #F6F6F6;
+	border-radius: 0.586667rem;
+	-webkit-box-sizing: border-box;
+	        box-sizing: border-box;
+	visibility: hidden;
+}
+.c_label_icon {
+	width: 0.373333rem;
+	height: 0.373333rem;
+}
+.c_label_txt {
+	height: 0.373333rem;
+	max-width: 2.933333rem;
+	margin-left: 0.106667rem;
+	line-height: 0.373333rem;
+	font-size: 0.320000rem;
+	color: #333;
+}
+.c_add_imgs {
+	float: left;
+	width: 1.173333rem;
+	height: 1.173333rem;
+	background: url(../image/edit_topic/add_picture.png) no-repeat center;
+	background-size: 0.480000rem;
+}
+.c_add_link {
+	float: left;
+	width: 1.173333rem;
+	height: 1.173333rem;
+	background: url(../image/edit_topic/add_link.png) no-repeat center;
+	background-size: 0.480000rem;
+}
+.c_add_goods {
+	float: left;
+	width: 1.173333rem;
+	height: 1.173333rem;
+	background: url(../image/edit_topic/add_goods.png) no-repeat center;
+	background-size: 0.480000rem;
+}
+.c_hide_keyboard{
+	float: right;
+	width: 1.173333rem;
+	height: 1.173333rem;
+	background: url(../image/edit_topic/hide_keyboard.png) no-repeat center;
+	background-size: 0.640000rem;
+	display: none;
+}
+.c_delete_goods {
+	position: absolute;
+	right: 0;
+	top: 0.266667rem;
+	width: 0.533333rem;
+	height: 0.533333rem;
+	background: url(../image/edit_topic/delete_img.png) no-repeat center;
+	background-size: 0.533333rem;
+}

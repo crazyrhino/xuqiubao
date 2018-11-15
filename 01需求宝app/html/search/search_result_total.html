@@ -1,0 +1,662 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>搜索-社区首页搜索结果页面</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/search_result_total.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/search_list.css"/>
+		<style>
+			[v-cloak] {
+				display: none;
+			}
+			.key{
+				color: #FF6026;
+				font-style: normal;
+			}
+			html,body,.details_conts,.no-data{
+				height: 100%;
+			}
+			.no-data{
+				background-color: #fff;
+				text-align: center;
+				height: 100%;
+				overflow: hidden;
+			}
+			.no-data img{
+				height:97px;
+				width: 124px;
+				margin:156px 0 12px 0;
+			}
+			.no-data p{
+				font-size: 14px;
+				color: #999;
+				margin-bottom:24px;
+			}
+			.no-data div{
+				height: 38px;
+				width: 126px;
+				margin:0 auto;
+				border-radius: 100px;
+				border:1px solid #FF6026;
+				color: #FF6026;
+				font: 16px/38px '';
+			}
+			.one_img{
+				background: none;
+			}
+			.container_title{
+				display: inline-block;
+			}
+			.fine-label {
+				width: 0.480000rem;
+				height: 0.480000rem;
+				background-image: url(../../image/rank/jx@3x.png);
+				background-repeat: no-repeat;
+				background-size: contain;
+				vertical-align: sub;
+				margin-right: 0.213333rem;
+			}
+			.wrap {
+				position: relative;
+				width: 1.173333rem;
+				height: 1.173333rem;
+			}
+			.left-img-wrap{
+				margin-right: 0.613333rem;
+			}
+			.wrap img.red_vip,.wrap img.yellow_vip,.wrap img.purple_vip {
+				position :absolute;
+				right: 0;
+				bottom : 0;
+				width : 12px;
+				height : 12px;
+			}
+		   .list{ background-color: #fff;}
+		  .list li { border-bottom: 1px solid #eee; padding: 5px ;}
+		  .list h4{ font-size: 16px; font-weight: normal;   padding: 3px 0; }
+		  .list a{ color: #333;}
+		  .list p{ color: #555;  padding:0 0 5px 0; }		 
+		  .list span{clear:both;display:block;color:#0e4e96;font-size:14px; padding-top:5px;}
+		  .list em{color:#0e4e96}
+		  .list img{float:left;margin:0 5px;width:30%}		 
+		</style>
+	</head>
+	<body>
+		<div class="details_conts" v-cloak>
+			<div v-if="userList.length == 0 && communityList.length == 0 && topicList.length == 0 && videoList.length == 0" class="no-data">
+				<img src="../../image/empty/no_search_results.png" alt="">
+				<p>换个词试一下</p>
+			</div>
+			<!-- 账号 -->
+			<div v-show="userList.length > 0" class="recommendations">
+				<div class="comment_sum">
+					<div class="padd_lr">
+						<span class="span_borleft">账号</span>
+					</div>
+				</div>
+				<div class="recommendation_conts">
+					<div v-for="(item,index) in userList" class="recommendation_list" tapmode="meui_click" v-on:click.stop="fnOpenUser(item)">
+						<div class="wrap">
+							<div class="list_header">
+								<img v-bind:src="item.userImg">
+							</div>
+							<img v-if="item.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png">
+							<img v-if="item.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png">
+							<img v-if="item.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png">
+						</div>
+						<div class="list_cont">
+							<p class="cont_name" v-html="fnChangeKeyColor(item.userName)"></p>
+							<p class="cont_num">
+								粉丝：{{item.followedCount}}
+							</p>
+						</div>
+						<div v-show="item.userId != item.selfId" class="list_follow" tapmode="meui_click" v-on:click.stop="fnFollow(item,index)">
+							<img v-if="item.isFollow == 0" src="../../image/rank/follow.png">
+							<img v-else src="../../image/rank/cancel_follow.png">
+						</div>
+					</div>
+				</div>
+				<div v-show="userList.length > 2" class="item_more" v-on:click="fnOpenMoreReuslt('user')">
+					更多<img src="../../image/rank/right_arrow.png" alt="">
+				</div>
+			</div>
+			<!-- 圈子 -->
+			<div v-show="communityList.length > 0" id="search_community_warp">
+				<div class="community-title">
+					<div class="community-title-circle">
+						圈子
+					</div>
+				</div>
+				<div class="community-content-list">
+					<div v-for="(item,index) in communityList" class="community-item" @click="fnOpenCommunityDetail(item.id)">
+						<div class="community-item-top list-flex list-flex-h">
+							<div class="wrap left-img-wrap">
+								<div class="left-img">
+									<img v-bind:src="item.topicImg" alt="">
+								</div>
+								<img v-if="item.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png">
+								<img v-if="item.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png">
+								<img v-if="item.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png">
+							</div>
+							<div class="right-content list-flex-flex1">
+								<div class="title-right" v-html="fnChangeKeyColor(item.topicName)"></div>
+								<div class="subtitle-right list-flex line1" v-html="fnChangeKeyColor(item.topicDescription)"></div>
+							</div>
+							<div class="add-community">
+								<div v-if="item.isJoin == 0" class="add-community-btn" v-on:click.stop="fnJoin(item,index)">
+									加入
+								</div>
+								<span v-else class="add-community-jump"></span>
+							</div>
+						</div>
+						<div class="community-item-bottom list-flex list-flex-center">
+							<span class="view">{{item.storyCount}}个话题</span><span class="circle-community"></span><span class="view">{{item.followCount}}个成员</span>
+						</div>
+					</div>
+				</div>
+				<div v-show="communityList.length > 2" class="item_more item_more_top" v-on:click="fnOpenMoreReuslt('community')">
+					更多<img src="../../image/rank/right_arrow.png" alt="">
+				</div>
+			</div>
+			<!-- 需求宝 -->			 
+			<div v-show="xqblist.length > 0" class="comment_sum" style="border-bottom:5px solid #eee;border-top:5px solid #eee;">
+				<div class="padd_lr">
+					<span class="span_borleft">需求宝</span>
+				</div>
+				 <ul v-for="(val,index) in xqblist" class="list">
+						 <li>						  
+						 	 <div href="#" @click="opens(val.id)" >						 	  
+						 	 	  <h4 v-html="fnChangeKeyColor(val.title)"></h4>
+						 	 	  <p  v-html="fnChangeKeyColor(val.content)" style="max-height:28px;overflow : hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp:2;-webkit-box-orient: vertical;">
+						 	 	   </p>
+						 	 </div>							 	   
+						 <!--	  <span>有{{val.commentNumber}}个回答</span>        -->             
+                            <!-- <span>{{val.praiseNumber}}赞同</span>--> 
+						 </li>
+              </ul> 	
+			<!--	v-show="userList.length > 0"-->
+			 <div v-show="xqblist.length > 2"  class="item_more" v-on:click="fnOpenXqb('xqb')">
+					更多<img src="../../image/rank/right_arrow.png" alt="">
+			 </div>
+			 </div>
+			 
+			 
+			  
+			 
+			<!-- 话题 -->
+			<div v-show="topicList.length > 0" class="comment_sum">
+				<div class="padd_lr">
+					<span class="span_borleft">话题</span>
+				</div>
+			</div>
+			<div v-for="(item,index) in topicList" class="recommend_list" @click="openDetails(item.dataTypeNew,item.id)">
+				<div class="flex_container con_bot">
+					<div class="container_text meui_flex_con_no_w">
+						<span v-show="item.isChoice != 0" class="fine-label"></span>
+						<div class="container_title" v-html="fnChangeKeyColor(item.title)"></div>
+						<div class="container_describe" :style="{'maxWidth':item.mainImg ?'5.546667rem':'100%'}" v-html="fnChangeKeyColor(item.summary)"></div>
+					</div>
+					<div class="one_img" v-show="item.mainImg" >
+						<img class="main_img" v-bind:src="item.mainImg"/>
+						<img v-show="item.dataTypeNew == 3" class="play_btn" src="../../image/edit_topic/play.png" alt="" />
+					</div>
+				</div>
+				<div class="flex_container bottom_bar">
+					<div class="flex_container left_bar" tapmode="meui_click" v-on:click.stop="fnOpenUser(item)">
+						<div class="writer_headIcon">
+							<img v-bind:src="item.userHead" alt="">
+						</div>
+						<div class="writer_name" v-text="item.userName"></div>
+					</div>
+					<div class="right_bar flex_container">
+						<div class="bottom_icon icon1"></div>
+						<div class="bottom_num" v-text="item.browserNumber"></div>
+						<div class="bottom_icon icon2"></div>
+						<div class="bottom_num" v-text="item.commentNumber"></div>
+						<div v-if="item.userPraiseFlag == 0" class="bottom_icon icon3" tapmode="meui_click" v-on:click.stop="fnPraise(item,index)"></div>
+						<div v-else class="bottom_icon icon4" tapmode="meui_click" v-on:click.stop="fnPraise(item,index)"></div>
+						<div class="bottom_num" v-text="item.praiseNumber"></div>
+					</div>
+				</div>
+			</div>
+			<div v-show="topicList.length > 2" class="item_more item_more_top" v-on:click="fnOpenMoreReuslt('topic')">
+				更多<img src="../../image/rank/right_arrow.png" alt="">
+			</div>
+		 
+			
+			<!-- 视频话题 -->
+			<div v-show="videoList.length > 0" class="comment_sum">
+				<div class="padd_lr">
+					<span class="span_borleft">视频</span>
+				</div>
+			</div>
+			<div v-for="(item,index) in videoList" class="recommend_list" @click="openDetails(item.dataTypeNew,item.id)">
+				<div class="flex_container con_bot">
+					<div class="container_text">
+                        <span v-show="item.isChoice != 0" class="fine-label"></span>
+                        <div class="container_title" v-html="fnChangeKeyColor(item.title)"></div>
+						<div class="container_describe" style="max-width: 5.546667rem;" v-html="fnChangeKeyColor(item.summary)"></div>
+					</div>
+					<div class="one_img"><img class="video_img" v-bind:src="item.mainImg" />
+						<img class="play_btn" src="../../image/edit_topic/play.png" alt="" />
+					</div>
+				</div>
+				<div class="flex_container bottom_bar">
+					<div class="flex_container left_bar" tapmode="meui_click" v-on:click.stop="fnOpenUser(item)">
+						<div class="writer_headIcon"><img v-bind:src="item.userHead" alt="">
+						</div>
+						<div class="writer_name" v-text="item.userName"></div>
+					</div>
+					<div class="right_bar flex_container">
+						<div class="bottom_icon icon1"></div>
+						<div class="bottom_num" v-text="item.browserNumber"></div>
+						<div class="bottom_icon icon2"></div>
+						<div class="bottom_num" v-text="item.commentNumber"></div>
+						<div v-if="item.userPraiseFlag == 0" class="bottom_icon icon3" tapmode="meui_click" v-on:click.stop="fnPraiseVideo(item,index)"></div>
+						<div v-else class="bottom_icon icon4" tapmode="meui_click" v-on:click.stop="fnPraiseVideo(item,index)"></div>
+						<div class="bottom_num" v-text="item.praiseNumber"></div>
+					</div>
+				</div>
+			</div>
+			<div v-show="videoList.length > 2" class="item_more item_more_top" v-on:click="fnOpenMoreReuslt('video')">
+				更多<img src="../../image/rank/right_arrow.png" alt="">
+			</div>
+			<footer></footer>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript">
+		var currentKeyword;
+		apiready = function() {
+			//fnRefreshOpen();
+			currentKeyword = api.pageParam.keyword;
+			fnSearch(currentKeyword);
+			fnRefreshJoinStatusListener();
+            $api.css($api.dom('footer'),'height:' + api.safeArea.bottom + 'px');
+            userId = api.readFile({//获取当前用户信息，作为分享使用
+                sync : true,
+                path : api.boxDir + '/userid.txt'
+            })
+        };
+		var vue = new Vue({
+			el : '.details_conts',
+			data : {
+				userList : [],
+				communityList : [],
+				topicList : [],
+				videoList : [],
+				xqblist:[]
+			},
+			methods : {
+				fnTopicUnfocus : function(id) {
+					fnTopicUnfocus(id);
+				},
+				opens:function(id){ //打开需求宝
+                api.openWin({
+                    name:'details',
+                    url:'../xuqiubao/details.html',
+                    slidBackEnabled:false,
+                    pageParam:{
+                        listId:id
+                    }
+                })
+            },
+				fnOpenMoreReuslt : function(searchType) {
+					fnOpenMoreReuslt(searchType);
+				},
+				fnOpenXqb : function(search_xqb) {//搜索需求宝
+					fnOpenXqb(search_xqb);
+				},
+				
+				fnFollow : function(item, index) {
+					var follow;
+					if (item.isFollow == 0) {
+						follow = 'Follow';
+					} else {
+						follow = 'UnFollow';
+					}
+					$service.get('user/follow.ajax', {
+						followId : item.userId,
+						type : follow
+					}, function(ret, err) {
+						if (ret) {
+							if (ret.ok == 1) {
+								if (item.isFollow == 0) {
+									vue.$set(vue.$data.userList[index], 'isFollow', 1);
+								} else {
+									vue.$set(vue.$data.userList[index], 'isFollow', 0);
+								}
+							}
+						} else {
+							fnToast(err.msg);
+						}
+					});
+				},
+				fnOpenUser : function(item) {
+                    api.readFile({
+                        path: api.boxDir + '/userid.txt'
+                    }, function (ret, err) {
+                        if (ret) {
+                            var _userid = ret.data;
+                            if (_userid === ''){
+                                fnOpenLogin();
+                                return
+                            }
+                            if (item.userId == _userid) {
+                                fnOpenWin('mine', '../mine/');
+                            } else {
+                                fnOpenWin('ta_page', '../ta_page/', {
+                                    userId : item.userId
+                                });
+                            }
+                        }
+                    });
+					// if (item.userId == $api.getStorage('userId')) {
+					// 	fnOpenWin('mine', '../mine/');
+					// } else {
+					// 	fnOpenWin('ta_page', '../ta_page/', {
+					// 		userId : item.userId
+					// 	});
+					// }
+				},
+				fnOpenCommunityDetail : function(id) {
+                    api.writeFile({
+                        path: api.boxDir + '/isRoot.txt',
+                        data: ''
+                    });
+                    api.writeFile({
+                        path : api.boxDir + '/topicId.txt',
+                        data : ''
+                    });
+					fnOpenWin('community_detial', '../community/', {
+						id : id,
+						needRefreshJoin : true
+					});
+				},
+				fnJoin : function(item, index) {
+					fnJoinInTopic(item, index);
+				},
+				fnPraise : function(item, index) {
+					fnPraise(item, index);
+				},
+				fnPraiseVideo : function(item, index) {
+					fnPraise(item, index, true);
+				},
+				openDetails : function(_dataTypeNew, _id) {
+					fnOpenWin('topic_details', '../topic/', {
+						type : _dataTypeNew,
+						id : _id
+					});
+				},
+                fnChangeKeyColor: function (content) {
+                    var resultHtml = content.replace(new RegExp("(" + currentKeyword + ")", "g"), '<i class="key">' + currentKeyword + '</i>');
+                    return resultHtml;
+                }
+			}
+		});
+        function fnOpenLogin() {
+            api.sendEvent({
+                name : 'APICloudCallNaviteMethod',
+                extra : {
+                    type : 1,
+                    canCallBack : 1,
+                    toPageName : 'Login'
+                }
+            });
+        }
+
+		function fnSearch(keyword) {
+			currentKeyword = keyword;
+			fnSearchTopic(keyword);
+			fnSearchUser(keyword);
+			fnSearchCommunity(keyword);
+			fnSearchVideoTopic(keyword);
+			fnSearchXqb(keyword);
+		}
+
+		function fnSearchCommunity(keyword) {
+			$service.get('topic/listByCondition.ajax', {
+				keywords : keyword,
+				pageIndex : 1,
+				pageSize : 3
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						vue.communityList = [];
+						fnAppendCommunityData(vue.communityList, ret.data);
+					} else {
+
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			}, true);
+		}
+		//需求宝 xqblist
+		function fnSearchXqb(keyword) {	
+			$service.get('story/getIssueIndexForAllByKeyWord.ajax', {
+				keyword : keyword,
+				searchType : 2,
+				pageIndex : 1,
+				pageSize : 3
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						vue.xqblist = [];
+						vue.xqblist=ret.data.list;
+						//fnAppendTopicData(vue.topicList, ret.data.list);
+					} else {
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			}, true, true);			 
+		}		
+
+		function fnAppendCommunityData(oldArr, data) {
+			for (var i = 0; i < data.length; i++) {
+				if (fnIsEmpty(data[i].topicImg)) {
+					data[i].topicImg = '../../image/home/tmp_default_header.png';
+				}
+				if (fnIsEmpty(data[i].userImg)) {
+					data[i].userImg = '../../image/home/tmp_default_header.png';
+				}
+				if (fnIsEmpty(data[i].userName)) {
+					data[i].userName = data[i].userId;
+				}
+				oldArr.push(data[i]);
+			}
+			return oldArr;
+		}
+
+		function fnSearchUser(keyword) {
+			$service.get('user/usersByCondition.ajax', {
+				keywords : keyword,
+				pageIndex : 1,
+				pageSize : 3
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						vue.userList = [];
+						fnAppendUserData(vue.userList, ret.data);
+					} else {
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		function fnAppendUserData(oldArr, data) {
+			for (var i = 0; i < data.length; i++) {
+				if (fnIsEmpty(data[i].userImg)) {
+					data[i].userImg = '../../image/home/tmp_default_header.png';
+				}
+				if (fnIsEmpty(data[i].userName)) {
+					data[i].userName = data[i].userId;
+				}
+                data[i].selfId = userId;
+				oldArr.push(data[i]);
+			}
+			return oldArr;
+		}
+
+		function fnSearchTopic(keyword) {
+			$service.get('story/getStoryIndexByCondition.ajax', {
+				keyword : keyword,
+				searchType : 2,
+				pageIndex : 1,
+				pageSize : 3
+			}, function(ret, err) {			 
+				if (ret) {
+					if (ret.ok == 1) {
+						vue.topicList = [];
+						fnAppendTopicData(vue.topicList, ret.data.list);
+					} else {
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			}, true, true);
+		}
+
+		function fnAppendTopicData(oldArr, data) {
+			for (var i = 0; i < data.length; i++) {
+				if (fnIsEmpty(data[i].userHead)) {
+					data[i].userHead = '../../image/home/tmp_default_header.png';
+				}
+				// if (fnIsEmpty(data[i].mainImg)) {
+				// 	data[i].mainImg = '../../image/tmp.jpg';
+				// }
+				if (fnIsEmpty(data[i].userName)) {
+					data[i].userName = data[i].userId;
+				}
+				oldArr.push(data[i]);
+			}
+			return oldArr;
+		}
+
+		function fnSearchVideoTopic(keyword) {
+			$service.get('story/getStoryIndexByCondition.ajax', {
+				keyword : keyword,
+				searchType : 6,
+				pageIndex : 1,
+				pageSize : 3
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						vue.videoList = [];
+						fnAppendTopicData(vue.videoList, ret.data.list);
+					} else {
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			}, true, true);
+		}
+
+		function fnOpenMoreReuslt(searchType) {
+            api.openWin({
+                name : 'search_more',
+                url :'search_more.html?v=' + new Date().getTime(),
+                pageParam : {
+                    searchType : searchType,
+                    keyword : currentKeyword
+                },
+                softInputBarEnabled:true,
+                softInputDismissMode:['tap','drag'],
+                slidBackEnabled : false,
+                allowEdit : true
+            });
+		}
+		//搜索需求宝
+		function fnOpenXqb(searchType) {
+			fnOpenWin('search_more', null, {
+				searchType : searchType,
+				keyword : currentKeyword
+			});
+		}		
+		
+
+		function fnRefreshJoinStatusListener() {
+			api.addEventListener({
+	            name:'join_status'
+            },function(ret,err) {
+            	fnRefreshList(ret.value.topicId,ret.value.isJoin,ret.value.search);
+            });
+		}
+
+		function fnRefreshList(topicId,status,search) {
+			for(var i = 0; i < vue.communityList.length; i++){
+				if(vue.communityList[i].id == topicId){
+					vue.$set(vue.$data.communityList[i], 'isJoin', status);
+					if(typeof search == 'undefined'){
+                        api.closeWin({
+                            name : 'community_detial'
+                        });
+					}
+
+				}
+			}
+		}
+
+		function fnJoinInTopic(item, index) {
+			$service.get('topic/joinInTopic.ajax', {
+				topicId : item.id
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						fnToast('加入圈子成功','middle');
+						vue.$set(vue.$data.communityList[index], 'isJoin', 1);
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		function fnPraise(item, index, isVideo) {
+			$service.get('story/praiseStory.ajax', {
+				storyId : item.id,
+				userCode : item.userId
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						if (item.userPraiseFlag == 0) {
+							if(isVideo){
+								vue.$set(vue.$data.videoList[index], 'userPraiseFlag', 1);
+								vue.$set(vue.$data.videoList[index], 'praiseNumber', item.praiseNumber + 1);
+							}else{
+								vue.$set(vue.$data.topicList[index], 'userPraiseFlag', 1);
+								vue.$set(vue.$data.topicList[index], 'praiseNumber', item.praiseNumber + 1);
+							}
+						} else {
+							if(isVideo){
+								vue.$set(vue.$data.videoList[index], 'userPraiseFlag', 0);
+								vue.$set(vue.$data.videoList[index], 'praiseNumber', item.praiseNumber - 1);
+							}else{
+								vue.$set(vue.$data.topicList[index], 'userPraiseFlag', 0);
+								vue.$set(vue.$data.topicList[index], 'praiseNumber', item.praiseNumber - 1);
+							}
+						}
+					} else {
+					}
+				} else {
+					fnToast(err.msg, 'middle')
+				}
+			}, true)
+		}
+
+		function fnImgError(el){
+			el.src = '../../image/tmp.jpg';
+		}
+	</script>
+</html>

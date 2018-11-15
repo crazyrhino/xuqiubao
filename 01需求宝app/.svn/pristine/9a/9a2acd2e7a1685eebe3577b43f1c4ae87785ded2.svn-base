@@ -1,0 +1,245 @@
+/*活跃排行榜*/
+.kings_circle .subtotal {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 0 16px;
+	height: 31px;
+	font-size: 12px;
+	color: #666666;
+	margin-bottom: 4px;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	align-self: center;
+}
+.kings_circle .subtotal img {
+	width: 21px;
+	height: 21px;
+	margin-right: 8px;
+}
+.kings_circle .subtotal .circle {
+	width: 3px;
+	height: 3px;
+	border-radius: 3px;
+	background: #d8d8d8;
+	margin-left: 7px;
+	margin-right: 6px;
+}
+.kings_circle .subtotal ._selfmonth, .kings_circle .subtotal .lastMonth {
+	font-size: 12px;
+	color: #999999;
+	padding: 0 6px;
+	position: relative;
+	margin-right: 6px;
+}
+.kings_circle .subtotal .lastMonth {
+	padding: 0;
+	margin: 0;
+}
+.kings_circle .subtotal ._selfmonth:after {
+	content: '';
+	width: 1px;
+	height: 11px;
+	background: #d8d8d8;
+	position: absolute;
+	top: 3px;
+	right: 0;
+}
+.kings_circle .subtotal .active {
+	color: #FF6026 !important;
+}
+.community-flex {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: flex;
+}
+.community-flex-v {
+	-webkit-box-orient: vertical;
+	-webkit-flex-flow: column;
+	flex-flow: column;
+}
+
+.community-flex-h {
+	-webkit-box-orient: horizontal;
+	-webkit-flex-flow: row;
+	flex-flow: row;
+}
+
+.community-flex-flex1 {
+	-webkit-box-flex: 1;
+	-webkit-flex: 1;
+	flex: 1;
+}
+.flex-center {
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+}
+/*自己*/
+.communityList .self {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 0 16px;
+	height: 110px;
+	background: #FD6260;
+	color: #fff;
+}
+.communityList .self_blue {
+	background: #6886B8;
+}
+.communityList .self .num, .communityList .other .num {
+	font-size: 14px;
+}
+.communityList .self .Perimage, .communityList .other .Perimage {
+	box-sizing: border-box;
+	width: 82px;
+	height: 82px;
+	border-radius: 82px;
+	margin-left: 15px;
+	margin-right: 8px;
+	text-align: center;
+}
+.communityList .self .Perimage {
+	border: 6px solid rgba(255, 255, 255, 0.08);
+	position: relative;
+}
+.communityList .self .Perimage .Perimage-1 {
+	box-sizing: border-box;
+	width: 70px;
+	height: 70px;
+	border-radius: 70px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	z-index: 5;
+	border: 5px solid rgba(255, 255, 255, 0.21);
+}
+.communityList .self .Perimage img {
+	width: 60px;
+	height: 60px;
+	border-radius: 60px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+}
+.normal_user_img {
+	width: 44px;
+	height: 44px;
+	border-radius: 44px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+}
+.communityList .self .details {
+	font-size: 12px;
+}
+.communityList .level {
+	font-size: 14px;
+	line-height: 20px;
+	margin-top: 5px;
+	margin-bottom: 3px;
+}
+.level-alert {
+	font-size: 8px;
+	line-height: 11px;
+	margin-left: 13px;
+}
+.communityList .self ._items {
+	font-size: 10px;
+	line-height: 1;
+	text-align: center;
+}
+.communityList .self .topic_num {
+	font-size: 12px;
+	line-height: 17px;
+}
+.communityList .showCircle {
+	background: #fff;
+	margin-left: 17px;
+	margin-right: 15px;
+	vertical-align: middle;
+}
+.circle_ranking {
+	display: flex;
+	padding: 16px 11px;
+}
+.circle_people {
+	flex: 1;
+	padding: 16px 10px 11px 10px;
+	margin-left: 5px;
+	margin-right: 5px;
+	text-align: center;
+	border: 1px solid #eee;
+}
+.circle_img {
+	position: relative;
+	height: 70px;
+}
+.back_pic {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	margin: 0 auto;
+	margin-left: -35px;
+	width: 70px;
+	height: 70px;
+}
+.king_two {
+	background: url(../image/rank/top_two.png) no-repeat;
+	background-size: contain;
+}
+.king_one {
+	background: url(../image/rank/top_one.png) no-repeat;
+	background-size: contain;
+}
+.king_three {
+	background: url(../image/rank/top_three.png) no-repeat;
+	background-size: contain;
+}
+.fore_pic {
+	position: absolute;
+	top: 17px;
+	left: 50%;
+	margin-left: -22px;
+	width: 45px;
+	height: 45px;
+	border-radius: 50%;
+	overflow: hidden;
+}
+.item.More {
+	margin-left: 17px;
+	margin-right: 17px;
+	height: 44px;
+	color: #999;
+	font-size: 12px;
+	border-top: 1px solid #EEE;
+	border-bottom: 1px solid #EEE;
+	justify-content: center;
+}
+.item.More img {
+	width: 24px;
+	height: 24px;
+	margin-right: 2px;
+}
+.circle_name {
+	padding-top: 23px;
+	font-size: 14px;
+	color: #333;
+}
+.circle_num {
+	height: 22px;
+	line-height: 22px;
+	font-size: 16px;
+	color: #999;
+}
+.margin-bottom-15 {
+	margin-bottom: 15px !important;
+}
+.follow_img {
+	width: 54px;
+	height: 22px;
+	vertical-align: middle;
+}

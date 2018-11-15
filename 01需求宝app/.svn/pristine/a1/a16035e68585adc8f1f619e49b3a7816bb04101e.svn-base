@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>标签</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/main.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/labelList.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+		</style>
+	</head>
+	<body>
+		<header class="labelList_header meui_border_b_1">
+			<div class="meui_flex_wrap header">
+				<img tapmode onclick="fnBack()" class="user-header" src="../../image/label/back.png" alt="" />
+				<div id="title" class="search-btn meui_flex_con meui_flex_wrap">
+					<span style="min-width: 60px">标签</span>
+				</div>
+				<div class="msg-btn" onclick="fnEditLales()">
+					编辑
+				</div>
+			</div>
+		</header>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/Sortable.js"></script>
+	<script type="text/javascript" src="../../script/vuedraggable.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+			fnSysHeaderStyle();
+			fnBackListener(fnBack);
+			fnOpenFrameInWinMarginTop(1);
+		};
+		
+		function fnBack(){
+			api.execScript({
+				name : 'root',
+	            script: 'fnReGetTags();'
+            });
+		}
+		
+		var isEdit = false;
+		function fnEditLales(){
+			fnChangeRightBtnTxt(isEdit);
+			api.execScript({
+				frameName : api.winName + '_frame',
+	            script: 'fnEditLales('+!isEdit+');'
+            });
+			isEdit = !isEdit;
+		}
+		
+		function fnChangeRightBtnTxt(isEdit){
+			if(isEdit){
+				fnSetTxt('.msg-btn','编辑');	
+				fnSetTxt('title','标签');	
+			}else{
+				fnSetTxt('.msg-btn','完成');
+				fnSetTxt('title','编辑标签');	
+			}
+		}
+	</script>
+</html>

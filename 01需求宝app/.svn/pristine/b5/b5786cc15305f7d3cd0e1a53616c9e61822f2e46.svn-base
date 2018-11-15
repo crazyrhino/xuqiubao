@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<style>
+			body, html {
+				background: rgba(0,0,0,0);
+			}
+			.index_div {
+				width: 50px;
+				height: 30px;
+				line-height: 30px;
+				text-align: center;
+				font-size: 12px;
+				color: #FFF;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="index_div">
+			<span class="currentIndex"></span>
+			/ <span class="totalNum"></span>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+			fnSetTxt('.currentIndex', api.pageParam.activeIndex + 1);
+			fnSetTxt('.totalNum', api.pageParam.totalNum);
+            fnBackListener(fnBack)
+		};
+		function fnSetIndex(activeIndex) {
+			fnSetTxt('.currentIndex', activeIndex + 1);
+		}
+	</script>
+</html>

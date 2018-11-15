@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/select_picture.css"/>
+		<style type="text/css">
+			.back_layout {
+				width: 2.4rem;
+			}
+		</style>
+	</head>
+	<body>
+		<header  id="header">
+			<div class="header_div">
+				<div class="back_layout" tapmode="meui_click" onclick="getFolder()">
+					<div class="back_btn"></div>
+					<div class="back_txt">
+						返回
+					</div>
+				</div>
+				<div class="title">
+					所有照片
+				</div>
+				<div class="cancle_btn" tapmode="meui_click" onclick="fnBack()">
+					取消
+				</div>
+			</div>
+		</header>
+		<div class="footer">
+			<div class="left_btn" tapmode="meui_click" onclick="fnOpenPreview()">
+				预览
+			</div>
+			<div class="right_btn" tapmode="meui_click" onclick="fnGetSelectedImgs()">
+				完成(<span class="select_num">0</span>)
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+            fnBackListener(fnBack)
+			fnSysHeaderStyle();
+			api.openFrame({
+				name : api.winName + '_frame',
+				url : api.winName + '_frame.html?v=' + new Date().getTime(),
+				rect : {
+					y : fnGetTopY(44),
+					h : api.winHeight - fnGetTopY(44) - 50 - api.safeArea.bottom
+				},
+				pageParam : api.pageParam,
+				bounces : true
+			});
+			$api.css($api.dom('.footer'), 'bottom:' + api.safeArea.bottom + 'px');
+		};
+		function fnOpenPreview() {
+			var selectedImgs = JSON.parse(api.readFile({
+				sync : true,
+				path : api.boxDir + '/selectedImgs.txt'
+			}));
+			api.writeFile({
+				path : api.boxDir + '/imgs.txt',
+				data : JSON.stringify(selectedImgs)
+			}, function(ret, err) {
+				if (selectedImgs && selectedImgs.length > 0) {
+					fnOpenWin('select_picture_preview', null, {
+						activeIndex : 0,
+						winName : api.pageParam.winName,
+						frameName : api.pageParam.frameName,
+						canSelectNum : api.pageParam.canSelectNum,
+                        topicType:api.pageParam.topicType
+                    });
+				}
+			});
+		}
+
+		function fnSelectNum(num) {
+			fnSetTxt(".select_num", num);
+		}
+
+		var isExec = false;
+		function fnGetSelectedImgs() {
+			if(isExec)return;
+			isExec = true;
+			if (api.pageParam.winName && typeof api.pageParam.topicType != 'undefined') {
+				if (api.pageParam.frameName) {
+					api.execScript({
+						name : api.pageParam.winName,
+						frameName : api.pageParam.frameName,
+						script : 'fnGetSelectedImgs();'
+					});
+				} else {
+                    if(api.pageParam.winName == 'root' && api.pageParam.topicType == 'image'){
+                        api.execScript({
+                            name : 'root',
+                            frameName : 'edit_topic_frame',
+                            script : 'fnGetSelectedImgs();'
+                        });
+                    }else{
+                        api.execScript({
+                            name : api.pageParam.winName,
+                            script : 'fnGetSelectedImgs();'
+                        });
+                    }
+				}
+			}else if(api.pageParam.winName && api.pageParam.frameName && typeof api.pageParam.topicType == 'undefined'){
+				api.execScript({
+					name : api.pageParam.winName,
+					frameName : api.pageParam.frameName,
+					script : 'fnGetSelectedImgs();'
+				});
+			}else {
+				api.execScript({
+					name : 'edit_topic',
+					frameName : 'edit_topic_frame',
+					script : 'fnGetSelectedImgs();'
+				});
+			}
+		}
+
+		function getFolder() {
+			fnOpenWin('select_picture_folder');
+		}
+
+		function getFolderPhoto(name, id) {
+			$api.text($api.dom('.title'), name);
+			var jsFun = 'getFolderPhoto("'+name+'","'+id+'")';
+			api.execScript({
+				name: 'select_picture',
+				frameName : 'select_picture_frame',
+				script: jsFun
+			});
+			api.closeToWin({
+				name : api.winName
+            });
+		}
+	</script>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>标签</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/main.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/labelList.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+	</head>
+	<body>
+		<header class="labelList_header meui_border_b_1">
+			<div class="meui_flex_wrap header">
+				<img onclick="fnBack()" class="user-header" src="../../image/label/back.png" alt="" />
+				<div class="search-btn meui_flex_con meui_flex_wrap">
+					编辑标签
+				</div>
+				<div class="msg-btn modify">
+					完成
+				</div>
+			</div>
+		</header>
+		<div class="section_labellist" v-cloak>
+			<div class="commonLabel">
+				<div class="sub_header">
+					<img src="../../image/label/bqc.png" alt=""><span class="name">我的标签</span><span class="name_alert">长按拖动顺序</span>
+				</div>
+				<div class="sub_content">
+					<draggable :list="commonList" @start="dragging=true" @end="dragging=false">
+						<div v-for="item,index in commonList" class="item">
+							{{item.name}}<img class="deleteBtn" @click.stop="fnDeleteLabel(item,index)" src="../../image/label/delete.png" alt="">
+						</div>
+					</draggable>
+
+				</div>
+			</div>
+			<div class="recommendLabel">
+				<div class="sub_header">
+					<img src="../../image/label/bqb.png" alt=""><span class="name">推荐标签</span><span class="name_alert">点击添加到我的标签</span>
+				</div>
+				<div class="sub_content">
+					<div v-for="item,index in reCommonList" class="item bgFFF">
+						<span @click="fnAddLabel(item,index)" class="addBtn">+</span>{{item.name}}
+					</div>
+					<!-- <div class="item bgFFF"><span class="addBtn">+</span>学习</div>
+					<div class="item bgFFF"><span class="addBtn">+</span>洗衣机</div>
+					<div class="item bgFFF"><span class="addBtn">+</span>洗衣机</div>
+					<div class="item bgFFF"><span class="addBtn">+</span>洗衣机</div>
+					<div class="item bgFFF"><span class="addBtn">+</span>洗衣机</div>
+					<div class="item bgFFF"><span class="addBtn">+</span>洗衣机</div>
+					<div class="item bgFFF"><span class="addBtn">+</span>洗衣机</div> -->
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="../../script/api.js" charset="utf-8"></script>
+	<script src="../../script/mapi.js" charset="utf-8"></script>
+	<script src="../../script/vue.js" charset="utf-8"></script>
+	<script type="text/javascript" src="../../script/Sortable.js"></script>
+	<script type="text/javascript" src="../../script/vuedraggable.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+			fnSysHeaderStyle()
+		};
+		var myVue = new Vue({
+			el : '.section_labellist',
+			data : {
+				dragging:false,
+				commonList : [{
+					id : 0,
+					name : '洗衣机1'
+				}, {
+					id : 1,
+					name : '学习1'
+				}, {
+					id : 2,
+					name : '洗衣机2'
+				}, {
+					id : 3,
+					name : '学习2'
+				}, {
+					id : 4,
+					name : '洗衣机3'
+				}, {
+					id : 5,
+					name : '学习3'
+				}, {
+					id : 6,
+					name : '洗衣机4'
+				}, {
+					id : 7,
+					name : '学习4'
+				}],
+				reCommonList : [{
+					id : 8,
+					name : '洗衣机5'
+				}, {
+					id : 11,
+					name : '学习5'
+				}, {
+					id : 21,
+					name : '洗衣机6'
+				}, {
+					id : 31,
+					name : '学习6'
+				}, {
+					id : 41,
+					name : '洗衣机7'
+				}, {
+					id : 51,
+					name : '学习7'
+				}, {
+					id : 61,
+					name : '洗衣机8'
+				}, {
+					id : 71,
+					name : '学习8'
+				}]
+			},
+			methods : {
+				fnDeleteLabel : function(item, i) {
+					fnDeleteLabel(item, i)
+				},
+				fnAddLabel : function(item, i) {
+					fnAddLabel(item, i)
+				}
+			}
+		})
+		function fnDeleteLabel(item, i) {
+			console.log(item + '要删除的数据');
+			myVue.commonList.splice(i, 1);
+			myVue.reCommonList.push(item);
+		}
+
+		function fnAddLabel(item, i) {
+			console.log(item + '要添加的数据')
+			myVue.reCommonList.splice(i, 1);
+			myVue.commonList.push(item);
+		}
+
+		function fnBack() {
+			api.closeWin();
+		}
+	</script>
+</html>

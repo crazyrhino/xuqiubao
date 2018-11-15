@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta content="telephone=no,email=no" name="format-detection">
+    <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>知道</title>
+    <link rel="stylesheet" href="css/content.css">
+    <style>
+    .contents{
+        height: 5rem;
+    }
+    .go_back{padding: 0rem 2rem .2rem 0; display: block; height:3rem;}     
+        .title span:nth-child(1) img{width:1.2rem;height: 1.2rem;}
+        .title  span:nth-child(1){ margin: 0; padding-left:.8rem;width:20%; text-align: left;}
+        .title {padding: 0 ; width: 100%;}
+    </style>
+</head>
+
+<body v-cloak>
+    <div v-cloak class="contents">
+        <!-- 标题 --> 
+        <div v-cloak id="titless" class="title">
+            <span v-cloak class="go_back" @click="backHome()"><img src="images/back.png"> </span>
+            <em v-cloak style="float:right;diaplay:inline-block;margin-right:1rem;" @click="shares()"><img style="width:1rem;height:.2rem;" src="./images/more_@2x.png" alt=""></em>
+        </div>
+    </div>
+        
+<script src="./js/jquery-1.11.1.min.js"></script>
+<script src="./js/js.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/signature.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript" src="../../script/common.js?v=0"></script>
+<script> 
+	
+ 
+apiready = function() {
+    softInputBarEnabled:false
+    $app.fixStatusBar('#titless');
+    //隐藏底部导航
+    softInputBarEnabled:false;  
+    // if ($app.SYSTEM_TYPE() === 'ios') {
+    //     var titleTop = $('#titless').height()+14
+    //   }else{
+    //     var titleTop = $('#titless').height()
+    //   }
+      var o=$api.dom('#titless')
+      var titleTop = $api.offset(o).h;
+    contents.tips=api.pageParam.a
+    api.openFrame({
+        name: 'content',
+        url: './content.html',
+        softInputMode:'pan',
+        softInputDismissMode:['tap','drag'],
+        rect: {
+            x: 0,
+           	y: titleTop,
+            w: 'auto',
+            h: 'auto'
+        },
+        allowEdit:true,
+        pageParam: {
+            id:api.pageParam.id,
+            issueId:api.pageParam.issueId,
+            userName:api.pageParam.userName,
+            userCode:api.pageParam.userCode,
+            isAnswersPraise:api.pageParam.isAnswersPraise
+        }
+    });
+    api.addEventListener({
+        name: 'contentList'
+    }, function(ret, err) {
+        contents.message=ret.value.lists
+    });
+    fnAddNormalNativeListener()
+        if (api.winName == 'root' && api.systemType == 'android') {
+            fnGetAndroidParams();
+        } else {
+            var params = api.pageParam;
+        }
+}
+
+//分享页面
+function fnShareNative(platformType) {
+      var shareTopicInfo={
+        summary:contents.message.issueAnswers.answersCommentNoStyle,
+        title:contents.message.issueAnswers.title,
+        userName:contents.message.issueAnswers.userName,
+        mainImg:contents.message.issueAnswers.mainImgs,
+        userCode:contents.message.issueAnswers.userCode,
+        dataTypeNew:contents.message.issueAnswers.answersCommentNoStyle,
+        id:contents.message.issueAnswers.id
+      }
+      var storyContent = contents.fnReplaceComment(shareTopicInfo.summary);
+      var url = SHARE_HOST + '/content.html?ids='+contents.message.issueAnswers.id+"&names="+contents.message.issueAnswers.userCode;
+      var title = shareTopicInfo.title ? shareTopicInfo.title + '-顺逛微社区' : shareTopicInfo.userName + '的话题-顺逛微社区'; //分享标题
+      var content = storyContent ? storyContent.substr(0, 30) : '马上进入，参与话题讨论吧...';
+      var pic = shareTopicInfo.mainImg && shareTopicInfo.mainImg.indexOf('../') == '-1' ? shareTopicInfo.mainImg : 'http://www.ehaier.com/mstatic/wd/v2/img/sg.png';//分享图片，写绝对路径  是否后台获取
+      if ($app.isEmpty(pic)) {
+          pic = 'http://www.ehaier.com/mstatic/wd/v2/img/sg.png';
+      }
+      // $app.showProgress();
+      $event.callRNEvent(3,1,{
+          command : [title, content, pic, url, 0, platformType]
+      });
+  }
+  // 金币跳转RN
+  function fnGetAndroidParams() {
+      api.sendEvent({
+          name: 'APICloudCallNaviteMethod',
+          extra: {
+              type: 8,
+              canCallBack: 1
+          }
+      });
+  }
+  function fnAddNormalNativeListener(){
+    api.addEventListener({
+      name: 'NaviteCallAPICloudMethod'
+  }, function (rets, err) {
+      var ret = rets.value;
+      if(ret.type == 13){
+        $event.isShowHomeTab(false);
+        api.closeFrame({
+            name: 'list_share_frame'
+        });
+      }
+    });
+  };
+  function fnGetShareUrl() {
+    var shareTopicInfo={
+            summary:'123',
+            title:'分享页面用',
+            userName:'h5页面',
+            mainImg:'./images/fbht@2x.png',
+            userCode:'1',
+            dataTypeNew:'2',
+            id:'3'
+        }
+      var memberId = api.readFile({
+          sync: true,
+          path: api.boxDir + '/userid.txt'
+      });
+      if ($app.isEmpty(memberId)) {
+          memberId = shareTopicInfo.userCode;
+      }
+      var params = {
+          type: shareTopicInfo.dataTypeNew,
+          id: shareTopicInfo.id,
+          memberId: memberId
+      };
+      return new Base64().encode(JSON.stringify(params));
+  }
+  // 复制函数
+  function fnCopy() {
+      var clipBoard = api.require('clipBoard');
+      clipBoard.set({
+          value: SHARE_HOST +'/content.html?ids='+contents.message.issueAnswers.id+"&names="+contents.message.issueAnswers.userCode
+      }, function (ret, err) {
+          if (ret && ret.status) {
+            $event.isShowHomeTab(false);
+            api.closeFrame({
+                name: 'list_share_frame'
+            });
+              api.toast({
+                  msg: '复制成功',
+                  duration: 2000,
+                  location: 'middle'
+              });
+              api.closeFrame({
+                  name: 'topic_share_frame'
+              });
+              api.closeFrame({
+                  name: 'collect_share_frame'
+              });
+          } else {
+            $event.isShowHomeTab(false);
+            api.closeFrame({
+                name: 'list_share_frame'
+            });
+            api.toast({
+                msg: '复制失败',
+                duration: 2000,
+                location: 'middle'
+            });
+          }
+      });
+  }
+  // 复制参数
+  function fnGetShareUrlCollect() {
+ 
+      var params = {
+          id: '123',
+          memberId: '222'
+      };
+    
+      return new Base64().encode(JSON.stringify(params));
+  }
+  function fnInitListener(needId) {
+    $event.isShowHomeTab(false);
+        $event.scrollBottomListener(function () {
+            $app.showProgress();
+            boxs.fnGetStoryIndexByCondition(needId);
+        });
+        $event.addEventListener('NaviteCallAPICloudMethod', function (ret) {
+            $app.hideProgress();
+            var ret = ret.value;
+            if (ret.type == 3 && ret.tag == api.frameName) {
+                $app.hideProgress();
+                if (ret.success == 1) {
+                    isShare = true;
+                    $app.toast('分享成功');
+                    $event.isShowHomeTab(false);
+                    api.closeFrame({
+                        name: 'list_share_frame'
+                    });
+                } else {
+                    $app.toast('您已取消分享');
+                    $event.isShowHomeTab(false);
+                    api.closeFrame({
+                        name: 'list_share_frame'
+                    });
+                }
+            } else if (ret.type == 13) {
+                if (ret.tag == 'resume') {
+                }
+            }
+        });
+    }
+
+var contents = new Vue({
+        el: '.contents',
+        data: {
+            message: {},//获取详情评论
+            msg: [],//获取对话题的评论详情
+            show: true,
+            iptval: "",//输入框内容绑定
+            now: "",
+            showImgs: true,
+            clickAdd: true,
+            clickAddNumber: '30',
+            guanzhu: 0,
+            three: "",
+            img: [],//显示图片数组
+            accept: {//接受所传的值
+                answersCommentTo: '',
+                answersCommentToCode: "",
+                answersCommentId: '',
+                issueId: ''
+            },
+            follow: "",//关注状态
+            img2: "./images/zang@2x.png",
+            img3: "./images/zan@2x.png",
+            notice: "+关注",//关注内容
+            tips:""
+        },
+        computed: {
+            // 获取评论内容
+        },
+        methods: {
+            //返回
+            backHome:function() {
+                api.closeWin({})
+                var jsfun = 'funcGoto(2);'; 
+                api.execScript({
+                    name: 'details',
+                    frameName: 'details_frame',
+                    script: jsfun
+                });
+                if(this.tips==1){
+                    var thous = 'answer();';
+                    api.execScript({
+                        name: 'thought_win',
+                        frameName: 'thought_frame',
+                        script: thous
+                    });
+                }
+            },
+            shares:function(){
+                    $app.openFrame('list_share_frame',null,null,{
+                        frameName:api.frameName
+                    },{
+                        bounces: false
+                    })
+                },
+                  fnReplaceComment:function(comment) {
+                      if (!$app.isEmpty(comment)) {
+                          comment = comment.replace(/<br\s*\/?>/gi, "\r\n");
+                          comment = comment.replace(/<br\/>/g, "\r\n");
+                          comment = comment.replace(/<br>/g, "\r\n");
+                          comment = comment.replace(/<[^>]+>/g, "");
+                          return comment;
+                      }
+                      return '';
+                  },
+        }
+    })
+</script>
+</body>
+
+</html>

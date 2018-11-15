@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta content="telephone=no,email=no" name="format-detection">
+    <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <title>我要装修和推荐资源</title>
+    <!--//公共样式-->
+    <link rel="stylesheet" type="text/css" href="../../css/base.css"/>
+    <script type="text/javascript" src="../../script/rem.js"></script>
+    <!--//日期样式-->
+    <link rel="stylesheet" type="text/css" href="dates/fjl.css">
+    <link rel="stylesheet" type="text/css" type="text/css" href="dates/fjl.picker.css"/>
+    <link rel="stylesheet" type="text/css" href="css/decoration_resource_form.css?v=9">
+</head>
+<body>
+<div class="box" id="decoration_resource_form" v-cloak>
+    <!-- 标题 -->
+    <div class="sort">
+        <div class="decorationBox" v-show="tableClick == 0">
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+
+                        <img src="http://cdn50.ehaier.com/story-manage-web/circleucstorycontroller/image/2018/11/50278434c25c45df95a5080fe1e2c279.jpg" alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="decorationFromBox">
+                <form action="" id="decorationFrom">
+                    <input type="text" placeholder="姓名" class="name" v-model="decorationName">
+                    <input id="decorationFromTel" type="text" v-model="decorationTel" placeholder="联系电话">
+                    <div class="select">
+                        <select id="decorationProvince" v-model="decorationSelectedProvincValue"
+                                @change="fnGetCity(decorationSelectedProvincValue,'1','1')"
+                                class="selectActice" v-if="decorationSelectedProvincValue > 0">
+                            <option value="0">省</option>
+                            <option v-for="option in provinceArr" v-bind:value="option.id">{{ option.regionName }}
+                            </option>
+                        </select>
+                        <select id="decorationProvince" v-model="decorationSelectedProvincValue"
+                                @change="fnGetCity(decorationSelectedProvincValue,'1','1')" v-else>
+                            <option value="0">省</option>
+                            <!--<option value="1" selected="selected">省2</option>-->
+                            <option v-for="option in provinceArr" v-bind:value="option.id">{{ option.regionName }}
+                            </option>
+                        </select>
+                        <select name="" id="decoratioMunicipality"
+                                v-model="decorationSelectedMunicipalityValue"
+                                @change="fnGetCity(decorationSelectedMunicipalityValue,'1','0')"
+                                class="selectActice" v-if="decorationSelectedMunicipalityValue > 0">
+                            <option value="0">市</option>
+                            <option v-for="option in decorationSelectedMunicipalityArr" v-bind:value="option.id">{{
+                                option.regionName }}
+                            </option>
+                        </select>
+                        <select v-else name="" id="decoratioMunicipality"
+                                v-model="decorationSelectedMunicipalityValue"
+                                @change="fnGetCity(decorationSelectedMunicipalityValue,'1','0')">
+                            <option value="0">市</option>
+                            <option v-for="option in decorationSelectedMunicipalityArr" v-bind:value="option.id">{{
+                                option.regionName }}
+                            </option>
+                        </select>
+                        <select name="" class="fr selectActice" id="decoratioCounty"
+                                v-model="decorationSelectedCountyValue"
+                                v-if="decorationSelectedCountyValue > 0">
+                            <option value="0">县(区)</option>
+                            <option v-for="option in decorationSelectedCountyArr" v-bind:value="option.id">
+                                {{option.regionName}}
+                            </option>
+                        </select>
+                        <select v-else name="" class="fr" id="decoratioCounty"
+                                v-model="decorationSelectedCountyValue">
+                            <option value="0">县(区)</option>
+                            <option v-for="option in decorationSelectedCountyArr" v-bind:value="option.id">
+                                {{option.regionName}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="selection" v-if="decorationDetailedAddress.length > 0">
+                        <input type="text" v-model="decorationDetailedAddress" placeholder="具体地址" class="name">
+                    </div>
+                    <div class="selection" v-else>
+                        <input type="text" v-model="decorationDetailedAddress" placeholder="具体地址" class="name">
+                        <i class="">选填</i>
+                    </div>
+                    <div class="selection" v-if="decorationS.trim().length > 0 ">
+                        <input type="text" v-model="decorationS" placeholder="房屋面积" class="name">
+                        <i style="display: block!important;">平方米</i>
+                    </div>
+                    <div class="selection" v-else>
+                        <input type="text" v-model="decorationS" placeholder="房屋面积" class="name">
+                        <i>选填</i>
+                    </div>
+                    <div class="selection dateSelection" v-if="decorateDate != '' " @click="preventDefaultClick()">
+                        <button style="text-align: left!important;" id='demo2'
+                                data-options='{"type":"date","beginYear":2018,"endYear":2086}'
+                                class="btn mui-btn mui-btn-block decorationDate">装修时间
+                        </button>
+                    </div>
+                    <div class="selection dateSelection" v-else @click="preventDefaultClick()">
+                        <button style="text-align: left!important;" id='demo2'
+                                data-options='{"type":"date","beginYear":2018,"endYear":2086}'
+                                class="btn mui-btn mui-btn-block decorationDate">装修时间
+                        </button>
+                        <span class="imgI">选填</span>
+                    </div>
+
+                    <input class="submitBut submitActive" value="提交"
+                           v-if="this.decorationName != '' && this.decorationTel.length > 10 && this.decorationSelectedProvincValue != 0 && this.decorationSelectedMunicipalityValue != 0 && (this.decorationSelectedCountyValue != 0 || !this.cityNull) "
+                           type="submit" @click="submitDecoration()"/>
+                    <input v-else type="submit" value="提交" class="submitBut" @click="submitDecoration()"/>
+                </form>
+            </div>
+            <div class="technologicalProcessBox">
+                <img src="http://cdn50.ehaier.com/story-manage-web/circleucstorycontroller/image/2018/11/503fb0614d9a43908c4f68c0987234b7.png" alt="">
+                <img src="http://cdn50.ehaier.com/story-manage-web/circleucstorycontroller/image/2018/11/02b1eddb6ea74f1a9af5175f56663440.jpg" alt="">
+            </div>
+        </div>
+        <div class="resourceBox" v-show="tableClick == 1">
+            <div class="decorationFromBox resourceFromBox">
+                <form action="" id="resourceFrom">
+                    <input type="text" placeholder="姓名" v-model="resourceName" class="name">
+                    <input id="resourceFromFromTel" type="text" v-model='resourceTel'
+                           placeholder="联系电话" class="name">
+                    <input id="resourceFromName" v-model="resourceFromName" type="text" placeholder="小区名称"
+                           class="name">
+                    <p class="address">小区地址:</p>
+                    <div class="select">
+                        <select v-if="resourceSelectedProvincValue > 0" id="resourceProvince"
+                                v-model="resourceSelectedProvincValue"
+                                @change="fnGetCity(resourceSelectedProvincValue,'0','1')" class="selectActice">
+                            <option value="0">省</option>
+                            <option v-for="option in provinceArr" v-bind:value="option.id">{{ option.regionName }}
+                            </option>
+                        </select>
+                        <select v-else id="resourceProvince" v-model="resourceSelectedProvincValue"
+                                @change="fnGetCity(resourceSelectedProvincValue,'0','1')" class="">
+                            <option value="0">省</option>
+                            <option v-for="option in provinceArr" v-bind:value="option.id">{{ option.regionName }}
+                            </option>
+                        </select>
+                        <select v-if="resourceSelectedMunicipalityValue > 0" name="" id="resourceMunicipality"
+                                v-model="resourceSelectedMunicipalityValue"
+                                @change="fnGetCity(resourceSelectedMunicipalityValue,'0','0')" class="selectActice">
+                            <option value="0">市</option>
+                            <option v-for="option in resourceSelectedMunicipalityArr" v-bind:value="option.id">{{
+                                option.regionName }}
+                            </option>
+                        </select>
+                        <select v-else name="" id="resourceMunicipality" v-model="resourceSelectedMunicipalityValue"
+                                @change="fnGetCity(resourceSelectedMunicipalityValue,'0','0')">
+                            <option value="0">市</option>
+                            <option v-for="option in resourceSelectedMunicipalityArr" v-bind:value="option.id">{{
+                                option.regionName }}
+                            </option>
+                        </select>
+
+                        <select v-if="resourceSelectedCountyValue > 0" name="" class="fr selectActice"
+                                id="resourceCounty" v-model="resourceSelectedCountyValue">
+                            <option value="0">县(区)</option>
+                            <option v-for="option in resourceSelectedCountyArr" v-bind:value="option.id">
+                                {{option.regionName}}
+                            </option>
+                        </select>
+                        <select v-else name="" class="fr" id="resourceCounty" v-model="resourceSelectedCountyValue">
+                            <option value="0">县(区)</option>
+                            <option v-for="option in resourceSelectedCountyArr" v-bind:value="option.id">
+                                {{option.regionName}}
+                            </option>
+                        </select>
+
+                    </div>
+
+                    <div class="selection" v-if="resourceDetailedAddress.length > 0">
+                        <input type="text" v-model="resourceDetailedAddress"
+                               placeholder="具体地址" class="name">
+                    </div>
+                    <div class="selection" v-else>
+                        <input type="text" v-model="resourceDetailedAddress"
+                               placeholder="具体地址" class="name">
+                        <i class="">选填</i>
+                    </div>
+
+                    <div class="selection dateSelection" v-if="completionDate != '' " @click="preventDefaultClick()">
+                        <button style="text-align: left!important;" id='demo3'
+                                data-options='{"type":"date","beginYear":2000,"endYear":2086}'
+                                class="btn2 mui-btn mui-btn-block decorationDate resourceDate">交房时间
+                        </button>
+                    </div>
+                    <div class="selection dateSelection" v-else @click="preventDefaultClick()">
+                        <button style="text-align: left!important;" id='demo3'
+                                data-options='{"type":"date","beginYear":2000,"endYear":2086}'
+                                class="btn2 mui-btn mui-btn-block decorationDate resourceDate">交房时间
+                        </button>
+                        <span class="imgI">选填</span>
+                    </div>
+
+                    <div class="selection" v-if="resourceRoomNumber.trim().length > 0">
+                        <input type="text" id="resourceRoomNumber" v-model="resourceRoomNumber" placeholder="交房套数"
+                               class="name">
+                        <i style="display: block!important;">套</i>
+                    </div>
+                    <div class="selection" v-else>
+                        <input type="text" id="resourceRoomNumber" v-model="resourceRoomNumber" placeholder="交房套数"
+                               class="name">
+                        <i>选填</i>
+                    </div>
+                    <div class="selection" v-if="resourceOtherTes.length > 0 ">
+                        <input type="text" id="resourceOtherTes" v-model="resourceOtherTes" placeholder="开发商或物业联系方式"
+                               class="name">
+                    </div>
+                    <div class="selection" v-else>
+                        <input type="text" id="resourceOtherTes" v-model="resourceOtherTes" placeholder="开发商或物业联系方式"
+                               class="name">
+                        <i>选填</i>
+                    </div>
+                    <input v-if="this.resourceName != '' && this.resourceTel.length > 10 && this.resourceFromName != '' && this.resourceSelectedProvincValue !=0 && this.resourceSelectedMunicipalityValue != 0 && (this.resourceSelectedCountyValue != 0 || !this.cityNull)"
+                           class="submitBut submitActive" @click="submitResource()" value="提交" type="submit"/>
+                    <input v-else class="submitBut" @click="submitResource()" value="提交" type="submit"/>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+
+<!--//日期引用插件-->
+<script src="./dates/fjl.min.js"></script>
+<script src="./dates/fjl.picker.min.js"></script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="js/decoration_resource_form.js?v=1"></script>
+<script>
+  apiready = function () {
+
+    FastClick.attach(document.body);
+    api.addEventListener({  //监听table切换传参
+      name: 'tableClick1'
+    }, function (ret, err) {
+      if (ret) {
+        decoration_resource_form_vue.tableClick = ret.value.tableClickBlool;
+      }
+    });
+    // if ($app.SYSTEM_TYPE() === 'ios') {
+    // // //向RN地理位置发出请求 120.4633782991,36.1146544721
+    api.sendEvent({
+      name: 'APICloudCallNaviteMethod',
+      extra: {
+        type: 2,
+        canCallBack: 1,
+        subType: 'getLocation'
+      }
+    });
+    //
+    // //接收rn地理位置
+    api.addEventListener({
+      name: 'NaviteCallAPICloudMethod',
+    }, function (ret, err) {
+      // alert(JSON.stringify(ret.value))
+      if (ret.value.success == '1' && ret.value.location.provinceId && ret.value.location.cityId && ret.value.location.areaId) {
+        decoration_resource_form_vue.provinceId = ret.value.location.provinceId;
+        decoration_resource_form_vue.cityId = ret.value.location.cityId;
+        decoration_resource_form_vue.areaId = ret.value.location.areaId;
+      } else {
+      }
+    });
+    // }
+    decoration_resource_form_vue.fnGetProvinc({
+      selectedProvincValue: decoration_resource_form_vue.provinceId, //默认省份value 16
+      SelectedMunicipalityValue: decoration_resource_form_vue.cityId, //默认市区value173
+      SelectedCountyValue: decoration_resource_form_vue.areaId, //默认县区value2450
+    });//调取省份地区接口
+
+    $event.isShowHomeTab(false);//隐藏底部导航
+    $app.showProgress();//加载中
+    setTimeout(function () {
+      $app.hideProgress();//停止"加载中"提示框
+    }, 2000)     
+  }
+  var decoration_resource_form_vue = new Vue({
+    el: '#decoration_resource_form',
+    data: {
+      tableClick: '0',//默认显示我要维修
+      cityNull: true,  //默认都有县城
+      provinceId: '16', //默认省份value 16
+      cityId: '173', //默认市区value173
+      areaId: "2450", //默认县区value2450
+      //装修
+      provinceArr: [], //省份
+      decorationSelectedProvincValue: '0', //省份value
+      decorationSelectedMunicipalityArr: [], //市区
+      decorationSelectedMunicipalityValue: '0', //市区value
+      decorationSelectedCountyArr: [], //县区
+      decorationSelectedCountyValue: "0", //县区value
+      decorationName: '',//姓名
+      decorationTel: "",//电话
+      decorationS: '',//面积
+      decorateDate: "",//装修时间
+      decorationDetailedAddress: '', //具体地址
+      //资源
+      resourceSelectedProvincValue: '0', //省份value
+      resourceSelectedMunicipalityArr: [], //市区
+      resourceSelectedMunicipalityValue: '0', //市区value
+      resourceSelectedCountyArr: [], //县区
+      resourceSelectedCountyValue: "0", //县区value
+      resourceName: '',//姓名
+      resourceTel: '',//电话
+      resourceFromName: '',//小区名称
+      resourceDetailedAddress: '',//具体地址
+      completionDate: "",//交房时间
+      resourceRoomNumber: '',//交房套数
+      resourceOtherTes: '',//开发商或物业联系方式
+    },
+    methods: {
+      /**阻止单击周边页面刷新
+       */
+      preventDefaultClick: function () {
+        event.preventDefault();//默认提交禁止
+        return false
+      },
+      /*  省份获取
+      * selectInitId  object 对象  默认显示地址
+      */
+      fnGetProvinc: function (selectInitId) {
+        $http.GET(HOST + UrlRouter.getProvinc, {//省份接口
+          values: {},
+        }, function (ret, err) {
+          if (ret.success) {
+            decoration_resource_form_vue.provinceArr = ret.data;
+            decoration_resource_form_vue.decorationSelectedProvincValue = 0;
+            decoration_resource_form_vue.resourceSelectedProvincValue = 0;
+            $app.hideProgress();//停止"加载中"提示框
+            if (selectInitId) {
+              decoration_resource_form_vue.decorationSelectedProvincValue = selectInitId.selectedProvincValue;//"维修"省的默认
+              decoration_resource_form_vue.resourceSelectedProvincValue = selectInitId.selectedProvincValue;//'推荐'省的默认
+              decoration_resource_form_vue.fnGetCity(selectInitId.selectedProvincValue, 1, 1, selectInitId.SelectedMunicipalityValue, "") //调取市区
+              decoration_resource_form_vue.fnGetCity(selectInitId.SelectedMunicipalityValue, 1, 0, '', selectInitId.SelectedCountyValue) //调取县
+            }
+
+          } else {
+            api.toast({
+              msg: '省份获取失败,请重试.',
+              duration: 1000,
+              location: 'middle'
+            });
+          }
+          $app.hideProgress();//停止"加载中"提示框
+        }, function () {
+          $app.toast(ret.msg, 'middle');
+          $app.hideProgress();//停止"加载中"提示框
+        });
+      },
+      /** 获取市区和县
+       * value: 选中的参数(value)
+       * type  : 字符串    1代表我要维修   0 代表推荐资源
+       * type2:  字符串    1代表 市区   0代表 县城
+       * SelectedMunicipalityValue:  市区默认选中项
+       * SelectedCountyValue:      县城默认选中项
+       */
+      fnGetCity: function (value, type, type2, SelectedMunicipalityValue, SelectedCountyValue) {   //value:选中的value   type:区分1装修和0资源   type2:区分1市区和2县城
+        if (0 != value) {
+          decoration_resource_form_vue.cityNull = true; //默认是有县城的
+          $http.GET(HOST + UrlRouter.getCity, {//地区和县份接口
+            values: {
+              id: value,
+            },
+          }, function (ret, err) {
+            decoration_resource_form_vue.cityNull = true //默认是有县城的
+            if (ret.success) {
+              if (ret.data.length > 0) {
+                if (SelectedMunicipalityValue) {
+                  decoration_resource_form_vue.decorationSelectedMunicipalityArr = ret.data; //"维修"市区
+                  decoration_resource_form_vue.resourceSelectedMunicipalityArr = ret.data; //'推荐'市区
+                  decoration_resource_form_vue.created(SelectedMunicipalityValue, ''); //调取默认选中函数
+                }
+                if (SelectedCountyValue) {
+                  decoration_resource_form_vue.decorationSelectedCountyArr = ret.data; //'维修"县区
+                  decoration_resource_form_vue.resourceSelectedCountyArr = ret.data; //'推荐'县区
+                  decoration_resource_form_vue.created('', SelectedCountyValue); //调取默认选中函数
+                }
+
+                if ('1' == type) {   //1维修  ,0资源
+                  if ('1' == type2) {  //单击维修省
+                    decoration_resource_form_vue.decorationSelectedMunicipalityArr = ret.data; //市区
+                    if (!SelectedMunicipalityValue) {
+                      decoration_resource_form_vue.decorationSelectedMunicipalityValue = 0;//市区value
+                      decoration_resource_form_vue.decorationSelectedCountyValue = 0;//县区value
+                    }
+
+                  } else { //单击维修市区
+                    decoration_resource_form_vue.decorationSelectedCountyArr = ret.data; //县区
+                    if (!SelectedCountyValue) {
+                      decoration_resource_form_vue.decorationSelectedCountyValue = 0;//县区value
+                    }
+
+                  }
+                } else {
+                  if ('1' == type2) { //单击资源省
+                    decoration_resource_form_vue.resourceSelectedMunicipalityArr = ret.data; //市区
+                    if (!SelectedMunicipalityValue) {
+                      decoration_resource_form_vue.resourceSelectedMunicipalityValue = 0;//市区value
+                      decoration_resource_form_vue.resourceSelectedCountyValue = 0;//县区value
+                    }
+                  } else {//单击资源市区
+                    decoration_resource_form_vue.resourceSelectedCountyArr = ret.data; //县区
+                    if (!SelectedCountyValue) {
+                      decoration_resource_form_vue.resourceSelectedCountyValue = 0;//县区value
+                    }
+                  }
+                }
+              } else {
+                decoration_resource_form_vue.cityNull = false
+              }
+            }
+
+            $app.hideProgress();//停止"加载中"提示框
+          }, function () {
+            $app.toast(ret.msg, 'middle');
+            $app.hideProgress();//停止"加载中"提示框
+          });
+        }
+      },
+      /* 增加默认省市县选中
+      * SelectedMunicipalityValue  字符串   市区默认
+      * SelectedCountyValue  字符串     县区默认
+      * */
+      created: function (SelectedMunicipalityValue, SelectedCountyValue) {
+        if (SelectedMunicipalityValue) {
+          decoration_resource_form_vue.decorationSelectedMunicipalityValue = SelectedMunicipalityValue; //'维修'青岛
+          decoration_resource_form_vue.resourceSelectedMunicipalityValue = SelectedMunicipalityValue; //'资源'青岛
+        }
+        if (SelectedCountyValue) {
+          decoration_resource_form_vue.decorationSelectedCountyValue = SelectedCountyValue; //'维修'青岛
+          decoration_resource_form_vue.resourceSelectedCountyValue = SelectedCountyValue; //'资源'青岛
+        }
+
+
+      },
+      /*
+      * 全角转为半角
+      * */
+      ToCDB: function (str) {
+        var tmp = "";
+        for (var i = 0; i < str.length; i++) {
+          if (str.charCodeAt(i) == 12288) {
+            tmp += String.fromCharCode(str.charCodeAt(i) - 12256);
+            continue;
+          }
+          if (str.charCodeAt(i) > 65280 && str.charCodeAt(i) < 65375) {
+            tmp += String.fromCharCode(str.charCodeAt(i) - 65248);
+          }
+          else {
+            tmp += String.fromCharCode(str.charCodeAt(i));
+          }
+        }
+        return tmp
+      },
+
+      /**
+       * 电话座机号码验证
+       * @param value  用户输入的号码
+       * @returns {boolean}
+       */
+      regExpTel: function (value) {
+        return /^0\d{3}－\d{7,8}$/.test(value.trim()) || (/^0\d{2}－\d{7,8}$/.test(value.trim())) || /^0\d{3}-\d{7,8}$/.test(value.trim()) || (/^0\d{2}-\d{7,8}$/.test(value.trim())) || (/^0\d{10,11}$/.test(value.trim())) || (/^0\d{9,10}$/.test(value.trim())) || /^0\d{2}—\d{7,8}$/.test(value.trim()) || /^0\d{3}—\d{7,8}$/.test(value.trim())
+      },
+      /*
+     * 特殊字符转换
+     * string 要转换的字符
+     * */
+      regExpStringChar: function (string) {
+        var patt = /[\ud800-\udbff][\udc00-\udfff]/g; // 检测utf16字符正则
+        return string.replace(patt, function (char) {
+          var H, L, code;
+          if (char.length === 2) {
+            H = char.charCodeAt(0); // 取出高位
+            L = char.charCodeAt(1); // 取出低位
+            code = (H - 0xD800) * 0x400 + 0x10000 + L - 0xDC00; // 转换算法
+            return "&#" + code + ";";
+          } else {
+            return char;
+          }
+        });
+      },
+      //装修提交数据获取
+      submitDecoration: function () {
+        event.preventDefault();//默认提交禁止
+        var value = {
+          name: this.regExpStringChar(this.decorationName.trim().toString()),     // "姓名",
+          iphone: this.decorationTel.trim().toString(),      //"电话",
+          provinceCode: parseInt(this.decorationSelectedProvincValue),   // "省code",
+          provinceName: $("#decorationProvince option:selected").text().trim().toString(),   //"省name",
+          cityCode: parseInt(this.decorationSelectedMunicipalityValue),   //"市code",
+          cityName: $("#decoratioMunicipality option:selected").text().trim().toString(),   // "市name",
+          regionCode: parseInt(this.decorationSelectedCountyValue),// "区code",
+          regionName: $("#decoratioCounty option:selected").text().trim().toString(),    //"区name",
+          address: this.regExpStringChar(this.decorationDetailedAddress.trim().toString()),     //"具体地址",
+          acreage: this.decorationS.trim().toString(),     //"面积",
+          decorateDate: decoration_resource_form_vue.decorateDate.toString(),  //"装修时间",
+          completionDate: '',    //"交房时间",
+          completionNumber: "",   // "交房套数",
+          realEstate: "",    //"物业联系方式",
+          type: "0",  //0是我的发布1是推荐"
+        }
+        if (this.decorationName.trim().toString() == "") {
+          api.toast({
+            msg: '请输入姓名!',
+            duration: 1000,
+            location: 'middle'
+          });
+        } else if (this.decorationTel.trim() == '') {
+          api.toast({
+            msg: '请输入联系电话!',
+            duration: 1000,
+            location: 'middle'
+          });
+        } else if (0 == this.ToCDB(this.decorationTel.trim())[0] && !this.regExpTel(this.ToCDB(this.decorationTel.trim()))) {
+          api.toast({
+            msg: '联系电话输入格式不正确!',
+            duration: 1000,
+            location: 'middle'
+          });
+        } else if (0 != this.ToCDB(this.decorationTel.trim())[0] && !(/^1[34578]\d{9}$/.test(this.ToCDB(this.decorationTel.trim())))) {
+          api.toast({
+            msg: '联系电话输入格式不正确!',
+            duration: 1000,
+            location: 'middle'
+          });
+        } else if (0 == this.decorationSelectedProvincValue) {
+          api.toast({
+            msg: '请选择省份!',
+            duration: 1000,
+            location: 'middle'
+          });
+          return false
+        } else if (0 == this.decorationSelectedMunicipalityValue) {
+          api.toast({
+            msg: '请选择市!',
+            duration: 1000,
+            location: 'middle'
+          });
+          return false
+        } else if (0 == this.decorationSelectedCountyValue && this.cityNull) {
+          api.toast({
+            msg: '请选择县(区)!',
+            duration: 1000,
+            location: 'middle'
+          });
+          return false
+        } else if (this.decorationS.trim() != '' && !(/^(\d+\.\d{1,4000}|\d+)$/).test(this.decorationS.trim())) {
+          api.toast({
+            msg: "房屋面积格式不正确,单位平方米",
+            duration: 1000,
+            location: 'middle'
+          })
+          return false
+        } else if (this.decorateDate != '' && !this.dateTest()) {
+          api.toast({
+            msg: "装修时间选择不正确,请重新选择.",
+            duration: 1000,
+            location: 'middle'
+          })
+          return false  //decorateDate
+        } else {
+          this.fnPostSubmit(value)
+        }
+      },
+      //推荐资源提交数据获取
+      submitResource: function () {
+        event.preventDefault();//默认提交禁止
+        var value = {
+          name: this.regExpStringChar(this.resourceName.trim().toString()),     // "姓名",
+          iphone: this.resourceTel.trim().toString(),      //"电话",
+          communityName: this.regExpStringChar(this.resourceFromName.trim().toString()),   //"小区名称",
+          provinceCode: parseInt(this.resourceSelectedProvincValue),   // "省code",
+          provinceName: $("#resourceProvince option:selected").text().toString(),   //"省name",
+          cityCode: parseInt(this.resourceSelectedMunicipalityValue),   //"市code",
+          cityName: $("#resourceMunicipality option:selected").text().toString(),   // "市name",
+          regionCode: parseInt(this.resourceSelectedCountyValue),// "区code",
+          regionName: $("#resourceCounty option:selected").text().toString(),    //"区name",
+          address: this.regExpStringChar(this.resourceDetailedAddress.trim().toString()),   //"地址",
+          acreage: '',     //"房屋面积",
+          decorateDate: '',     //"装修时间",
+          completionDate: decoration_resource_form_vue.completionDate.toString(),    //"交房时间",
+          completionNumber: this.resourceRoomNumber.trim().toString(),   // "交房套数",
+          realEstate: this.resourceOtherTes.trim().toString(),    //"物业联系方式",
+          type: "1",  //0是我的发布1是推荐"
+        }
+        if (this.resourceName.trim().toString() == "") {
+          api.toast({
+            msg: '请输入姓名!',
+            duration: 1000,
+            location: 'middle'
+          });
+        } else if (this.resourceTel.trim() == '') {
+          api.toast({
+            msg: '请输入联系电话!',
+            duration: 1000,
+            location: 'middle'
+          });
+        } else if (0 == this.ToCDB(this.resourceTel.trim())[0] && !this.regExpTel(this.ToCDB(this.resourceTel.trim()))) {
+          api.toast({
+            msg: '联系电话输入格式不正确!',
+            duration: 1000,
+            location: 'middle'
+          });
+        } else if (0 != this.ToCDB(this.resourceTel.trim())[0] && !(/^1[34578]\d{9}$/.test(this.ToCDB(this.resourceTel.trim())))) {
+          api.toast({
+            msg: '联系电话输入格式不正确!',
+            duration: 1000,
+            location: 'middle'
+          });
+        } else if (this.resourceFromName.trim() == '') {
+          api.toast({
+            msg: '请输入小区名称!',
+            duration: 1000,
+            location: 'middle'
+          });
+          return false
+        } else if (0 == this.resourceSelectedProvincValue) {
+          api.toast({
+            msg: '请选择省份!',
+            duration: 1000,
+            location: 'middle'
+          });
+          return false
+        } else if (0 == this.resourceSelectedMunicipalityValue) {
+          api.toast({
+            msg: '请选择市!',
+            duration: 1000,
+            location: 'middle'
+          });
+          return false
+        } else if (0 == this.resourceSelectedCountyValue && this.cityNull) {
+          api.toast({
+            msg: '请选择县(区)!',
+            duration: 1000,
+            location: 'middle'
+          });
+          return false
+        } else if (this.resourceRoomNumber.trim() != '' && !(/^[1-9]\d*$/.test(this.resourceRoomNumber.trim()))) {
+          api.toast({
+            msg: '交房套数输入格式不正确,只能输入大于0的数字.',
+            duration: 1000,
+            location: 'middle'
+          });
+        } else if (this.resourceOtherTes.trim().length > 0 && 0 == this.resourceOtherTes.trim()[0] && !this.regExpTel(this.resourceOtherTes)) {
+          api.toast({
+            msg: '开发商或物业联系方式输入格式不正确!',
+            duration: 1000,
+            location: 'middle'
+          });
+        } else if (this.resourceOtherTes.trim().length > 0 && 0 != this.resourceOtherTes.trim()[0] && !(/^1[34578]\d{9}$/.test(this.resourceOtherTes.trim()))) {
+          api.toast({
+            msg: '开发商或物业联系方式输入格式不正确!',
+            duration: 1000,
+            location: 'middle'
+          });
+        } else {
+          this.fnPostSubmit(value)
+        }
+      },
+      //数据提交接口
+      fnPostSubmit: function (params) {
+        $app.showProgress("提交中...", "")
+        $http.POST(HOST + UrlRouter.addDecorationtrade, {
+          body: params,
+          h5: 1, //区别app请求
+        }, function (ret) {
+          if (ret.ok == '1') {
+            $app.hideProgress()
+            fnToast('提交成功!', 'middle')
+            api.closeWin();
+          } else {
+            api.toast({
+              msg: '提交失败,请重新提交..',
+              duration: 1000,
+              location: 'middle'
+            });
+            $app.hideProgress()
+          }
+
+        }, function (err) {
+          $app.hideProgress();
+          $app.toast(err.msg, 'middle');
+        });
+      },
+      /*
+      * 日期检测,若是过去日期便返回false
+      * */
+      dateTest: function () {
+        var date = (new Date().Format("yyyy-M-d")).split('-'); //2018-01-1   2018-11-113
+        var dateSelect = (this.decorateDate).split('-');  //2018-01-01         2022-01-06
+        for (var i = 0; i < date.length; i++) {
+          if (parseInt(date[0]) == parseInt(dateSelect[0]) && parseInt(date[1]) == parseInt(dateSelect[1]) && parseInt(date[2]) == parseInt(dateSelect[2])) {
+            return true;
+          }
+          if (dateSelect[0] > date[0]) {
+            return true;
+          } else if (parseInt(dateSelect[1]) > parseInt(date[1])) {
+            return true;
+          } else if (parseInt(dateSelect[2]) > parseInt(date[2])) {
+            return true;
+          }
+        }
+
+      },
+      /*
+      * 解决ios单击延迟的问题
+      * */
+      clickIOS: function () {
+        if ($app.SYSTEM_TYPE() === 'ios') {
+          $('select').on('touchstart', function (e) {
+            $('input').blur();
+            e.preventDefault();
+          });
+          $('input').on('touchend', function () {
+            $(this).focus();
+            return false;
+             
+          });
+        }
+      }
+    }
+  })
+
+</script>
+<script>
+  $(function () {
+    $('.selection').on("touchend", 'i', function () {
+      $(this).parent().find('input').focus();
+      // alert("ddddd")
+      event.preventDefault();
+      return false;
+    })
+
+  })
+
+</script>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>搜索列表页面</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/search_list.css"/>
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style type="text/css">
+			#header .clear{
+				position: absolute;
+				top:0;
+				right: 0;
+				height:30px;
+				width: 30px;
+				z-index: 999;
+				background: url("../../image/label/delete.png") no-repeat center;
+				background-size: 17px;
+			}
+			#search-wrap .header #input{
+				position: relative;
+				height: 28px;
+				line-height: 28px;
+				background: #EEEEEE;
+				border-radius: 14px;
+				background-image: url(../../image/home/search_icon.png);
+				background-position: 5px center;
+				background-repeat: no-repeat;
+				background-size: 24px;
+				padding-left: 35px;
+			}
+			 .input_search{
+            	width : 100%;
+            	height: 20px;
+            	padding-right : 24px;
+            	margin-top : 4px;
+				line-height: 20px;
+				font-size : 14px;
+                outline: none;
+            }
+			input[type="search"]::-webkit-search-cancel-button {
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="search-wrap">
+			<div id="header" class="header list-flex list-flex-h list-flex-center">
+				<span class="back" tapmode onclick="api.closeWin()"></span>
+				<div id="input" class="input-wrap list-flex-flex1">
+					<form action="javascript:fnSearch();">
+						<input class="input_search" type="search" placeholder="搜索" oninput="fnIsShow()">
+					</form>
+					<div class="clear" tapmode onclick="fnClearContent()"></div>
+				</div>
+				<span class="search-btn" tapmode onclick="fnSearch()">搜索</span>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js?v=1"></script>
+	<script type="text/javascript">
+        var input = document.getElementById('input'), UIInput;
+		apiready = function() {
+			//fnRefreshOpen();
+			fnSysHeaderStyleById();
+            // UIInput = api.require('UIInput');
+			// fnInit();
+            $api.val($api.dom('.input_search'), api.pageParam.keyword);
+			fnOpenSearchResultFrame();
+			fnBackListener(fnBack);
+		};
+		
+		function fnOpenSearchResultFrame(){
+			api.openFrame({
+				name : 'search_result_total',
+				url : './search_result_total.html',
+				bounces : true,
+				rect : {
+					x : 0,
+					y : fnGetTopY(44),
+					w : 'auto',
+					h : 'auto'
+				},
+				pageParam : api.pageParam
+			});
+		}
+		
+		function fnSetInputValue(value) {
+			UIInput.value({
+				msg : value
+			});
+		}
+
+
+		function fnInit() {
+			UIInput.open({
+				rect : {
+					x : input.offsetLeft + 30,
+					y : input.offsetTop,
+					w : input.offsetWidth - 80,
+					h : input.offsetHeight
+				},
+				styles : {
+					bgColor : '#eee',
+					size : 14,
+					color : '#333',
+					placeholder : {
+						color : '#999',
+						size : 14
+					}
+				},
+				autoFocus : false,
+				placeholder : '搜索',
+				keyboardType : 'search',
+			}, function(ret) {
+				if (ret.eventType == 'show') {
+					UIInput.value({
+					    msg: api.pageParam.keyword
+					});
+				} else if (ret.eventType == 'search') {
+					fnSearch();
+				} else if(ret.eventType == 'change'){
+                    fnIsShow()
+                }else {
+					console.log(JSON.stringify(ret));
+				}
+			});
+		}
+        function fnIsShow() {
+            if (fnIsEmpty($api.dom('.input_search').value)) {
+                $api.css($api.dom('.clear'), 'display:none');
+            } else {
+                $api.css($api.dom('.clear'), 'display:block');
+            }
+        }
+		function fnSearch() {
+			// fnHideKeyBoard();
+			var value = $api.dom('.input_search').value;
+            if (fnIsEmpty(value)) {
+                fnToast('关键字不能为空');
+            } else {
+                api.execScript({
+                    frameName: 'search_result_total',
+                    script: 'fnSearch("' + value + '");'
+                });
+                api.execScript({
+                    name: 'search_list',
+                    frameName: 'search_list_frame',
+                    script: 'fnSaveStorage("' + value + '");'
+                });
+            }
+		}
+
+        function fnClearContent() {
+            $api.dom('.input_search').value = "";
+            $api.css($api.dom('.clear'), 'display:none');
+        }
+		function fnHideKeyBoard() {
+			var keyBoardMgr = api.require("keyBoardMgr");
+			keyBoardMgr.hideKeyBoard(function(ret, err) {
+			});
+		}
+	</script>
+</html>

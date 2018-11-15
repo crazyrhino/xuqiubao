@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>查看成员</title>
+  <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../../css/letter_list.css" />
+</head>
+<body>
+  <div class="recommendations">
+    <div class="recommendation_conts">
+      <div class="recommendation_list">
+        <div class="list_header"><img src="../../image/test_img/person.jpeg"></div>
+        <div class="list_cont">
+          <p class="cont_name">Sophia索菲亚</p>
+        </div>
+      </div>
+      <div class="recommendation_list">
+        <div class="list_header"><img src="../../image/test_img/person.jpeg"></div>
+        <div class="list_cont">
+          <p class="cont_name">Sophia索菲亚</p>
+        </div>
+      </div>
+      <div class="recommendation_list">
+        <div class="list_header"><img src="../../image/test_img/person.jpeg"></div>
+        <div class="list_cont">
+          <p class="cont_name">Sophia索菲亚</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/flexible.js"></script>
+<script type="text/javascript">
+  apiready = function() {
+ 
+  };
+</script>
+</html>

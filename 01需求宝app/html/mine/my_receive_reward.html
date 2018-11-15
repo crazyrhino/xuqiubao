@@ -1,0 +1,120 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>我的粉丝</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/my_fans_win.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/my_receive_reward.css" />
+    <style type="text/css">
+        body, html {
+            background: #FFF;
+        }
+        header {
+            width: 100%;
+            height: 1.173333rem;
+            line-height: 1.173333rem;
+            background-color: #FFF!important;
+        }
+        .rank_content{
+            position: relative;
+            width: 100%;
+            height: 1.173333rem;
+            line-height: 1.173333rem;
+            font-size: 0.453333rem;
+            text-align: center;
+            border-bottom: 1px solid #EEE;
+        }
+        .rank_back{
+            position: absolute;
+            left: 0.426667rem;
+            top: 0.186667rem;
+            width: 0.640000rem;
+            height: 0.640000rem;
+        }
+    </style>
+</head>
+<body>
+<header id="header" class="header">
+    <p class="rank_content"><img class="rank_back" src="../../image/rank/rank_back.png" tapmode onclick="api.closeWin()">我的收赏</p>
+</header>
+<div id="tabs" class="tabs">
+    <div class="tabs_con my_flex my-flex-h">
+        <div class="item my-flex-flex1 my_flex flex-center" :class="(index==0)&&'active'" onclick="fnChangeFrame(0)">
+            <img v-show="index!=0" src="../../image/mine/zy01@2x.png" alt="">
+            <img v-show="index==0" src="../../image/mine/zy06@2x.png" alt="">话题
+        </div>
+        <div class="item_no"></div>
+        <div class="item my-flex-flex1 my_flex flex-center" :class="(index==1)&&'active'" onclick="fnChangeFrame(1)">
+            <img v-show="index!=1" src="../../image/mine/zy02@2x.png" alt="">
+            <img v-show="index==1" src="../../image/mine/zy05@2x.png" alt="">评论
+        </div>
+        <div class="item_no"></div>
+        <div class="item my-flex-flex1 my_flex flex-center" :class="(index==2)&&'active'" onclick="fnChangeFrame(2)">
+            <img v-show="index!=2" src="../../image/mine/zy03@2x.png" alt="">
+            <img v-show="index==2" src="../../image/mine/zy04@2x.png" alt="">打榜
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/flexible.js"></script>
+<script type="text/javascript">
+    var myVue = null;
+    apiready = function() {
+    	//fnRefreshOpen();
+        fnBackListener(fnBack)
+        fnInit();
+        var header = $api.dom('header');
+        var tabs = $api.byId('tabs');
+        fnSysHeaderStyle()
+        var headerH = $api.offset(header).h;
+        var tabsH = $api.offset(tabs).h;
+        api.openFrameGroup({
+            name : 'my_receive_reward',
+            rect : {
+                x : 0,
+                y : headerH + tabsH,
+                w : 'auto',
+                h : 'auto'
+            },
+            index : 0,
+            frames : [{
+                name : 'my_receive_reward_frame',
+                url : 'my_receive_reward_frame.html?v=' + new Date().getTime(),
+            }, {
+                name : 'reward_comment',
+                url : 'reward_comment.html?v=' + new Date().getTime(),
+            }, {
+                name : 'hit_list_frame',
+                url : 'hit_list_frame.html',
+            }]
+        }, function(ret, err) {
+            myVue.index = ret.index;
+        });
+        // setTimeout(fnRefreshOpen, 300);
+    }
+    function fnInit() {
+        myVue = new Vue({
+            el : "#tabs",
+            data : {
+                index : 0
+            }
+        })
+    }
+
+    function fnChangeFrame(index) {
+        myVue.index = index;
+        api.setFrameGroupIndex({
+            name : "my_receive_reward",
+            index : index,
+            scroll : true,
+        })
+    }
+</script>
+</html>

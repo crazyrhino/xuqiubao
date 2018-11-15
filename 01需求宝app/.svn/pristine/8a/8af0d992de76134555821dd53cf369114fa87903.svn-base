@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta content="yes" name="apple-touch-fullscreen">
+  <meta content="telephone=no,email=no" name="format-detection">
+  <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <title>需求宝</title>
+  <link rel="stylesheet" href="css/public.css">
+  <style>
+     .main{ max-width: 750px; margin: 0 auto;}
+     .main img{ width: 100%;}
+</style>
+</head>
+<body> 
+    <div class="main">
+    	<img src="http://cdn50.ehaier.com/story-manage-web/circleucstorycontroller/image/2018/11/74221ca186d24e6880478bfde98b3c3f.jpg" />
+	    <img src="http://cdn50.ehaier.com/story-manage-web/circleucstorycontroller/image/2018/11/30d68d298c454a9ebef85d30f9f66e8d.jpg" />
+	     <img src="http://cdn50.ehaier.com/story-manage-web/circleucstorycontroller/image/2018/11/e49d1db85bdf48e18cd3201ea8b63bfc.jpg" />
+	     <img src="http://cdn50.ehaier.com/story-manage-web/circleucstorycontroller/image/2018/11/30fc5fc2d63c450b95d4e524232d2572.jpg" />
+	     <img src="http://cdn50.ehaier.com/story-manage-web/circleucstorycontroller/image/2018/11/95b0708fc2d644b794bc0ef8b060d98d.jpg" />
+	    </div>
+	</body>
+	<script>
+		 apiready = function(){
+      	$event.isShowHomeTab(false);
+    }
+	</script>
+</html>

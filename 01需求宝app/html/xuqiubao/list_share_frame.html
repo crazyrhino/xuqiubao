@@ -1,0 +1,190 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+        <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+        <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+        <title>关注主页</title>
+		<style>
+            html,body{
+                background-color: transparent;
+                height: 100%;
+            }
+            .share_div {
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                left: 0;
+                top: 0;
+                background: rgba(51,51,51,0.7);
+                z-index: 99999;
+            }
+			.share_dialog {
+				position: absolute;
+				left: 0;
+				bottom: 0;
+				width: 100%;
+				height: auto;
+				background: #FFF;
+			}
+			.share_title {
+				width: 100%;
+				height: 1rem;
+				margin-top: 1rem;
+                display: flex;
+			}
+			.share_title_line {
+				height: 1px;
+				margin-top: 0.5rem;
+				margin-left: 0.9rem;
+				margin-right: 0.9rem;
+				background: #EEE;
+                flex: 1;
+			}
+			.share_title_label {
+				width: 3rem;
+				height: 1rem;
+				line-height: 1rem;
+				font-size: .7rem;
+				color: #999;
+				text-align: center;
+			}
+			.share_operation_list {
+				height: 5rem;
+			}
+			.share_operation_item {
+				float: left;
+				width: 20%;
+			}
+			.share_operation_item_icon {
+				width: 2rem;
+				height: 2rem;
+				margin-top: .7rem;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			.share_wx_timeline {
+				background: url(../../image/rank/im-pyq@2x.png) no-repeat center;
+				background-size: 2rem;
+			}
+			.share_wx_friends {
+				background: url(../../image/rank/im-wx@2x.png) no-repeat center;
+				background-size: 2rem;
+			}
+			.share_qq {
+				background: url(../../image/rank/qq@2x.png) no-repeat center;
+				background-size: 2rem;
+			}
+			.share_qq_timeline {
+				background: url(../../image/rank/im-qzone@2x.png) no-repeat center;
+				background-size: 2rem;
+			}
+			.share_wb {
+				background: url(../../image/rank/im-wb@2x.png) no-repeat center;
+				background-size: 2rem;
+			}
+			.share_opercopy {
+				background: url(../../image/rank/htdx1@2x.png) no-repeat center;
+				background-size: 2rem;
+			}
+			.share_operation_item_txt {
+				height: 0.9rem;
+				margin-top: 0.3rem;
+				line-height: 0.9rem;
+				text-align: center;
+				font-size: 0.6rem;
+				color: #999;
+			}
+            .share_cancel {
+                height: 2.4rem;
+                line-height: 2.4rem;
+                text-align: center;
+                font-size: 0.85rem;
+                color: #333;
+            }
+		</style>
+	</head>
+	<body>
+    <div class="share_div">
+        <div class="share_dialog">
+            <div class="share_title">
+                <div class="share_title_line"></div>
+                <div class="share_title_label">
+                    分享
+                </div>
+                <div class="share_title_line"></div>
+            </div>
+            <div class="share_operation_list">
+                <div class="share_operation_item" tapmode onclick="fnShareNative(1)">
+                    <div class="share_operation_item_icon share_wx_timeline"></div>
+                    <div class="share_operation_item_txt">
+                        朋友圈
+                    </div>
+                </div>
+                <div class="share_operation_item" tapmode onclick="fnShareNative(0)">
+                    <div class="share_operation_item_icon share_wx_friends"></div>
+                    <div class="share_operation_item_txt">
+                        微信
+                    </div>
+                </div>
+                <div class="share_operation_item" tapmode onclick="fnShareNative(3)">
+                    <div class="share_operation_item_icon share_qq"></div>
+                    <div class="share_operation_item_txt">
+                        QQ
+                    </div>
+                </div>
+                <div class="share_operation_item" tapmode onclick="fnShareNative(4)">
+                    <div class="share_operation_item_icon share_qq_timeline"></div>
+                    <div class="share_operation_item_txt">
+                        QQ空间
+                    </div>
+                </div>
+                <!-- <div class="share_operation_item" tapmode onclick="fnShareNative(2)">
+                    <div class="share_operation_item_icon share_wb"></div>
+                    <div class="share_operation_item_txt">
+                        微博
+                    </div>
+                </div> -->
+                <div class="share_operation_item" tapmode onclick="fnCopy()">
+                    <div class="share_operation_item_icon share_opercopy"></div>
+                    <div class="share_operation_item_txt">
+                        复制
+                    </div>
+                </div>
+            </div>
+            <div class="share_title_line no_margin_top"></div>
+            <div class="share_cancel" onclick="fnCloseShare()">
+                取消
+            </div>
+        </div>
+    </div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/common.js"></script>
+	<script type="text/javascript">
+        apiready = function() {
+            
+        };
+        function fnShareNative(platformType) {
+            api.execScript({
+                name: api.winName,
+                frameName: api.pageParam.frameName,
+                script: 'fnShareNative("'+ platformType +'")'
+            });
+        }
+        function fnCopy() {
+            api.execScript({
+                name: api.winName,
+                frameName: api.pageParam.frameName,
+                script: 'fnCopy()'
+            });
+        }
+        function fnCloseShare() {
+            $event.isShowHomeTab(false);
+            api.closeFrame();
+        }
+
+	</script>
+</html>

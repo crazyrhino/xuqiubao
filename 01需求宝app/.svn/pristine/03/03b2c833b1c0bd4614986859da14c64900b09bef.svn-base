@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>打赏列表</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/reward_list.css"/>
+		<style type="text/css">
+			.reward_li_img {
+				position: relative;
+			}
+
+			.red_vip,.yellow_vip,.purple_vip {
+				position: absolute;
+				right: 2px;
+				top: 30px;
+				width: 12px;
+				height: 12px;
+			}
+			.reward_li_cont{
+				width: calc(100% - 5rem);
+			}
+			.aui-ellipsis-1 {
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				/*display: inline-block;*/
+			}
+		</style>
+	</head>
+	<body>
+		<div class="warp" id="wrap">
+			<div class="accumulatives">
+				<div class="accumulative_list">
+					<div class="gglod"><img class="glodimg" src="../../image/mine/glod.png">收获打赏：
+					</div>
+					<div class="details">
+						<div class="detail detail_bor">
+							<span class="commentTipedCount">0</span>
+							<span class="sign">次</span>
+						</div>
+						<div class="detail">
+							<span class="commentTipedAmount">0</span>
+							<span class="sign">金币</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="my_reward">
+				<div v-for="(item,index) in list" class="reward_list">
+					<div class="reward_li_img" tapmode v-on:click="fnOpenHome(item)">
+						<img v-if="item.userImg" v-bind:src="item.userImg" onerror="fnImgError(this)">
+						<img v-else src="../../image/home/tmp_default_header.png">
+						<img v-show="item.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png" alt="" />
+						<img v-show="item.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png" alt="" />
+						<img v-show="item.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png" alt="" />
+					</div>
+					<div class="reward_li_cont">
+						<div class="user_name aui-ellipsis-1" tapmode v-on:click="fnOpenHome(item)">
+							{{item.userName}}
+						</div>
+						<div class="date">
+							{{formatDateTime(item.createDate)}}
+						</div>
+					</div>
+					<div class="reward_li_right">
+						<div class="img_reply" v-show="item.amount != 0">
+							金币+{{item.amount}}
+						</div>
+						<img v-show="item.isFollow && myUserId !=item.userId" src="../../image/rank/cancel_follow.png" alt="" tapmode @click="fnOwnerFollow(item,'UnFollow',index)">
+						<img v-show="!item.isFollow && myUserId !=item.userId" src="../../image/rank/follow.png" alt="" tapmode @click="fnOwnerFollow(item,'Follow',index)">
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript">
+		var pageIndex = 1;
+		apiready = function() {
+			//fnRefreshOpen();
+			fnRefreshReward();
+			fnSetRefresh(function() {
+				pageIndex = 1;
+				fnRefreshReward(false, true)
+			});
+			addBottomListener(function() {
+				pageIndex++;
+				fnRefreshReward(true, false)
+			})
+            api.readFile({
+                path : api.boxDir + '/userid.txt'
+            }, function(ret, err) {
+                if (ret) {
+                    myVue.myUserId = ret.data;
+                }
+            });
+		};
+
+		var myVue = new Vue({
+			el : '#wrap',
+			data : {
+				list : [],
+                myUserId:''
+			},
+			methods : {
+				fnOpenHome : function(item) {
+					var token = api.readFile({
+						sync : true,
+						path : api.boxDir + '/token.txt'
+					});
+					if (fnIsEmpty(token)) {
+						api.sendEvent({
+							name : 'APICloudCallNaviteMethod',
+							extra : {
+								type : 1,
+								canCallBack : 1,
+								toPageName : 'Login'
+							}
+						});
+					}else {
+						if (token.indexOf('#') === -1) {
+			                api.sendEvent({
+								name : 'APICloudCallNaviteMethod',
+								extra : {
+									type : 1,
+									canCallBack : 1,
+									toPageName : 'Login'
+								}
+							});
+			                return;
+						}
+						api.readFile({
+							path : api.boxDir + '/userid.txt'
+						}, function(ret, err) {
+							if (ret) {
+								var _userid = ret.data;
+								if (item.userId == _userid) {
+									fnOpenWin('mine', '../mine/');
+								} else {
+									fnOpenWin('ta_page', '../ta_page/', {
+										userId : item.userId,
+										isFollow : item.isFollow
+									});
+								}
+							}
+						});
+					}
+				},
+                formatDateTime: function(datetime) { //格式化时间，几天前
+                    if(!datetime) return "";
+                    var current_date = new Date().getTime();
+                    var mul = current_date - datetime;
+                    var time = parseInt(mul / 1000);
+                    if(time < 60) {
+                        return "刚刚"
+                    } else if(time < 3600) {
+                        return parseInt(time / 60) + " 分钟前"
+                    } else if(time < 86400) {
+                        return parseInt(time / 3600) + " 小时前"
+                    } else if(time < 604800) {
+                        return parseInt(time / 86400) + " 天前"
+                    } else if(time < 2592000) {
+                        return parseInt(time / 604800) + " 周前"
+                    } else if(time < 31536000) {
+                        return parseInt(time / 2592000) + " 个月前"
+                    } else {
+                        return parseInt(time / 31536000) + " 年前"
+                    }
+                    return datetime
+                },
+                fnOwnerFollow:function (item,follow,index) {
+                    api.showProgress();
+                    $service.get('user/follow.ajax', {
+                        followId: item.userId,
+                        type: follow
+                    }, function (ret, err) {
+                        api.hideProgress();
+                        if (ret) {
+                            if (ret.ok == 1) {
+                                myVue.list[index].isFollow = follow === 'Follow';
+                            }
+                        } else {
+                            fnToast(err.msg);
+                        }
+                    }, true);
+                }
+			}
+		});
+
+		function fnIsNeedLogin() {
+			var token = api.readFile({
+				sync : true,
+				path : api.boxDir + '/token.txt'
+			});
+			if (fnIsEmpty(token)) {
+				return true;
+			}
+			return false;
+		}
+
+		
+		//打赏后获取打赏列表，显示打赏相关布局
+		function fnRefreshReward(isLoadMore, isRefresh) {
+			$service.get('story/getTipList.ajax', {
+				storyId : api.pageParam.storyId,
+				pageIndex : pageIndex,
+				pageSize : 20,
+				type : 1
+			}, function(ret, err) {
+				api.refreshHeaderLoadDone();
+				if (ret.ok == 1) {
+					if (pageIndex == 1) {
+						$api.text($api.dom('.commentTipedCount'), ret.data.count);
+						$api.text($api.dom('.commentTipedAmount'), ret.data.sumAmount);
+					}
+					if (ret.data.list && ret.data.list.length > 0) {
+						if (isRefresh) {
+							myVue.list = [];
+						}
+						fnAppendData(myVue.list, ret.data.list);
+					} else {
+						if (isLoadMore) {
+							fnToast('没有更多')
+						}
+					}
+				}
+			}, isRefresh);
+		}
+	</script>
+</html>

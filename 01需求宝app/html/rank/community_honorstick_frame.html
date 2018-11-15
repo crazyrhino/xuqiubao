@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>社区荣誉榜</title>
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/main.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/communityHonorStick.css" />
+		<style>
+			.communityList .showCircle {
+				width: 2px;
+				height: 2px;
+				border-radius: 2px;
+			}
+			[v-cloak] {
+				display: none;
+			}
+      .uploadImg{
+          position: relative;
+      }
+      .play_btn{
+          height: 32px;
+          position: absolute;
+          top:50%;
+          left: 50%;
+          transform: translate(-16px,-16px);
+          z-index: 9999;
+      }
+			.communityList .self .Perimage .perimage_rel{
+				position: relative;
+			}
+			img.red_vip,img.yellow_vip,img.purple_vip{
+				position: absolute;
+				left: initial !important;
+				right: 1px;
+				top: 42px !important;
+				width: 14px !important;
+				height: 14px !important;
+				transform: none !important;
+			}
+		</style>
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+	</head>
+	<body>
+		<div id="wrap" v-cloak>
+			<!-- 活跃排行榜 -->
+			<div id="communityHonor" class="communityHonor">
+				<div class="subtotal flex-center">
+					<img src="../../image/rank/trophy.png" alt=""><span>牛人榜</span><span class="circle"></span>
+					<span> <span onclick="fnChangeMonth('1','current',this)" class="_selfmonth _self active">本月</span> <span onclick="fnChangeMonth('1','pre',this)" class="lastMonth last month">上月</span> </span>
+				</div>
+				<div class="communityList">
+					<div class="self community-flex flex-center community-flex-h">
+						<div class="num">
+							{{personRankMonth1.rank}}
+						</div>
+						<div class="Perimage" tapmode onclick="fnOpenMine()">
+							<div class="Perimage-1 perimage_rel">
+								<img v-bind:src="personRankMonth1.userImg" alt="">
+								<img v-show="personRankMonth1.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png" alt=""/>
+								<img v-show="personRankMonth1.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png" alt=""/>
+								<img v-show="personRankMonth1.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png" alt=""/>
+							</div>
+						</div>
+						<div class="details community-flex-flex1">
+							<div class="">
+								{{personRankMonth1.userName}}
+								<span v-show="personRankMonth1.awardNumber && personRankMonth1.awardType == 0" class="Gold float-right">金币+{{personRankMonth1.awardNumber}}</span>
+								<span v-show="personRankMonth1.awardNumber && personRankMonth1.awardType == 1" class="Gold float-right">钻石+{{personRankMonth1.awardNumber}}</span>
+							</div>
+							<div class="level">
+								指数：{{personRankMonth1.rankIndexValue}}</span> <span v-if="personRankMonth1.rankingsType == -2" class="level-alert">友圈人数{{personRankMonth1.friendsCount}}人</span>
+								<span v-if="personRankMonth1.rankingsType == -1" class="level-alert">比上月下降{{personRankMonth1.rankings}}名，加油！</span>
+								<span v-if="personRankMonth1.rankingsType == 0" class="level-alert">名次与上月持平，加油！</span>
+								<span v-if="personRankMonth1.rankingsType == 1" class="level-alert">比上月上升{{personRankMonth1.rankings}}名，棒棒哒！</span>
+								<span v-if="personRankMonth1.rankingsType == 2" class="level-alert">本月落榜了哦，加油！</span>
+								<span v-if="personRankMonth1.rankingsType == 3" class="level-alert">恭喜你本月上榜！</span>
+								<span v-if="personRankMonth1.rankingsType == 4" class="level-alert">遗憾，你仍未入围榜单，加油！</span>
+							</div>
+							<div class="topic community-flex flex-center">
+								<div class="_items">
+									<div class="topic_num">
+										{{personRankMonth1.storyCount}}
+									</div>
+									<div>
+										话题
+									</div>
+								</div>
+								<span class="showCircle"></span>
+								<div class="_items">
+									<div class="topic_num">
+										{{personRankMonth1.shareCount}}
+									</div>
+									<div>
+										分享
+									</div>
+								</div>
+								<span class="showCircle"></span>
+								<div class="_items">
+									<div class="topic_num">
+										{{personRankMonth1.commentCount}}
+									</div>
+									<div>
+										评论
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="other">
+						<div v-for="(item,index) in list_1" class="item community-flex flex-center community-flex-h" tapmode v-on:click="fnOpenHome(item)">
+							<div v-if="item.rank == 1" class="num numOne">
+								1
+							</div>
+							<div v-if="item.rank == 2" class="num numTwo">
+								2
+							</div>
+							<div v-if="item.rank == 3" class="num">
+								3
+							</div>
+							<div class="Perimage ">
+								<div v-if="item.rank == 1" class="large"></div>
+								<div v-if="item.rank == 2" class="large numtwo"></div>
+								<div v-if="item.rank == 3" class="large numthree"></div>
+								<img class="less" v-bind:src="item.userImg" alt="">
+							</div>
+							<div class="contents community-flex-flex1">
+								<div class="otherName">
+									{{item.userName}}
+                <span v-show="item.awardNumber && item.awardType == 0" class="Gold float-right">金币+{{item.awardNumber}}</span>
+                <span v-show="item.awardNumber && item.awardType == 1" class="Gold float-right">钻石+{{item.awardNumber}}</span>
+								</div>
+								<div>
+									指数：{{item.rankIndexValue}}
+								</div>
+							</div>
+						</div>
+						<div class="item More community-flex flex-center community-flex-h" tapmode @click="fnOPenMore('1')">
+							<img src="../../image/rank/more.png" alt="">更多...
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- 被捧排行榜 -->
+			<div id="exaltedHonor" class="communityHonor">
+				<div class="subtotal flex-center">
+					<img src="../../image/rank/trophy.png" alt=""><span>红人榜</span><span class="circle"></span>
+					<span><span onclick="fnChangeMonth('2','current',this)" class="_selfmonth _selfexalted active">本月</span><span onclick="fnChangeMonth('2','pre',this)" class="lastMonth lastexalted">上月</span></span>
+				</div>
+				<div class="communityList">
+					<div class="self community-flex flex-center community-flex-h">
+						<div class="num">
+							{{personRankMonth2.rank}}
+						</div>
+						<div class="Perimage" tapmode onclick="fnOpenMine()">
+							<div class="Perimage-1 perimage_rel">
+								<img v-bind:src="personRankMonth2.userImg" alt="">
+								<img v-show="personRankMonth1.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png" alt=""/>
+								<img v-show="personRankMonth1.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png" alt=""/>
+								<img v-show="personRankMonth1.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png" alt=""/>
+							</div>
+						</div>
+						<div class="details community-flex-flex1">
+							<div class="">
+								{{personRankMonth2.userName}}
+                                <span v-show="personRankMonth2.awardNumber && personRankMonth2.awardType == 0" class="Gold float-right">金币+{{personRankMonth2.awardNumber}}</span>
+                                <span v-show="personRankMonth2.awardNumber && personRankMonth2.awardType == 1" class="Gold float-right">钻石+{{personRankMonth2.awardNumber}}</span>
+							</div>
+							<div class="level">
+								指数：{{personRankMonth2.rankIndexValue}} <span v-if="personRankMonth2.rankingsType == -2" class="level-alert">友圈人数{{personRankMonth2.friendsCount}}人</span>
+								<span v-if="personRankMonth2.rankingsType == -1" class="level-alert">比上月下降{{personRankMonth2.rankings}}名，加油！</span>
+								<span v-if="personRankMonth2.rankingsType == 0" class="level-alert">名次与上月持平，加油！</span>
+								<span v-if="personRankMonth2.rankingsType == 1" class="level-alert">比上月上升{{personRankMonth2.rankings}}名，棒棒哒！</span>
+								<span v-if="personRankMonth2.rankingsType == 2" class="level-alert">本月落榜了哦，加油！</span>
+								<span v-if="personRankMonth2.rankingsType == 3" class="level-alert">恭喜你本月上榜！</span>
+								<span v-if="personRankMonth2.rankingsType == 4" class="level-alert">遗憾，你仍未入围榜单，加油！</span>
+							</div>
+							<div class="topic community-flex flex-center">
+								<div class="_items">
+									<div class="topic_num">
+										{{personRankMonth2.focusCount}}
+									</div>
+									<div>
+										粉丝
+									</div>
+								</div>
+								<span class="showCircle"></span>
+								<div class="_items">
+									<div class="topic_num">
+										{{personRankMonth2.commentCount}}
+									</div>
+									<div>
+										获评
+									</div>
+								</div>
+								<span class="showCircle"></span>
+								<div class="_items">
+									<div class="topic_num">
+										{{personRankMonth2.praisedCount}}
+									</div>
+									<div>
+										获赞
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="other">
+						<div v-for="(item,index) in list_2" class="item community-flex flex-center community-flex-h" tapmode v-on:click="fnOpenHome(item)">
+							<div v-if="item.rank == 1" class="num numOne">
+								1
+							</div>
+							<div v-if="item.rank == 2" class="num numTwo">
+								2
+							</div>
+							<div v-if="item.rank == 3" class="num">
+								3
+							</div>
+							<div class="Perimage ">
+								<div v-if="item.rank == 1" class="large"></div>
+								<div v-if="item.rank == 2" class="large numtwo"></div>
+								<div v-if="item.rank == 3" class="large numthree"></div>
+								<img class="less" v-bind:src="item.userImg" alt="">
+							</div>
+							<div class="contents community-flex-flex1">
+								<div class="otherName">
+									{{item.userName}}
+                                    <span v-show="item.awardNumber && item.awardType == 0" class="Gold float-right">金币+{{item.awardNumber}}</span>
+                                    <span v-show="item.awardNumber && item.awardType == 1" class="Gold float-right">钻石+{{item.awardNumber}}</span>
+								</div>
+								<div>
+									指数：{{item.rankIndexValue}}
+								</div>
+							</div>
+						</div>
+						<div class="item More community-flex flex-center community-flex-h" tapmode @click="fnOPenMore('2')">
+							<img src="../../image/rank/more.png" alt="">更多...
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- 话题排行榜 -->
+			<div id="topicHonor" class="communityHonor">
+				<div class="subtotal flex-center">
+					<img src="../../image/rank/trophy.png" alt=""><span>话题榜</span><span class="circle"></span>
+					<span><span onclick="fnChangeMonth('3','current',this)" class="_selfmonth _selftopic active">本月</span><span onclick="fnChangeMonth('3','pre',this)" class="lastMonth lasttopic">上月</span></span>
+				</div>
+				<div class="communityList">
+					<div class="other">
+						<div v-for="(item,index) in list_3" class="item community-flex flex-center community-flex-h" @click="openDetails(item.dataTypeNew,item.storyId)">
+							<div v-if="item.rank == 1" class="num numOne"></div>
+							<div v-if="item.rank == 2" class="num numtwo"></div>
+							<div v-if="item.rank == 3" class="num numthree"></div>
+							<div class="uploadImg">
+								<img class="topic_img" v-bind:src="item.mainImg" alt="">
+                                <img v-show="item.dataTypeNew == 3" class="play_btn" src="../../image/edit_topic/play.png" alt="" />
+                            </div>
+							<div class="contents community-flex-flex1">
+								<div class="otherName community-flex line2">
+									<span v-if="item.isChoice != 0" class="fine-label"></span>{{item.storyName}}
+								</div>
+								<div>
+									指数：{{item.rankIndexValue}}
+                                    <span v-show="item.awardNumber && item.awardType == 0" class="Gold float-right">金币+{{item.awardNumber}}</span>
+                                    <span v-show="item.awardNumber && item.awardType == 1" class="Gold float-right">钻石+{{item.awardNumber}}</span>
+								</div>
+							</div>
+						</div>
+						<div class="item More community-flex flex-center community-flex-h" tapmode @click="fnOPenMore('3')">
+							<img src="../../image/rank/more.png" alt="">更多...
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript">
+		var myVue = null;
+		apiready = function() {
+			//fnRefreshOpen();
+			fnInit();
+			fnRankPersonalCurrentMoth();
+			fnRankPersonalCurrentMoth2();
+			fnRankCommunityCMonth();
+			fnRankCommunityCMonth2();
+			fnRankCommunityCMonth3();
+		}
+		function fnInit() {
+			myVue = new Vue({
+				el : '#wrap',
+				data : {
+					activity : {//活跃排行榜  true --本月
+						type : true,
+					},
+					exalted : {//被捧排行榜
+						type : true
+					},
+					topic : {//话题排行榜
+						type : true
+					},
+					list_1 : [],
+					list_2 : [],
+					list_3 : [],
+					personRankMonth1 : {
+					},
+					personRankMonth2 : {
+					}
+				},
+				methods : {
+					fnOPenMore : function(type) {
+						var data = {
+							title : type == 1 ? '牛人榜' : type == 2 ? '红人榜' : '话题榜',
+							month : type == 1 ? this.activity.type : type == 2 ? this.exalted.type : this.topic.type,
+							myRank : type == 1 ? myVue.personRankMonth1 : myVue.personRankMonth2
+						};
+						fnOpenWin('more_communityhonor_win', './', data);
+					},
+					openDetails : function(_dataTypeNew, _id) {
+						fnOpenWin('topic_details', '../topic/', {
+							type : _dataTypeNew,
+							id : _id
+						});
+					},
+                    fnOpenHome : function(item){
+                        api.readFile({
+                            path: api.boxDir + '/userid.txt'
+                        }, function (ret, err) {
+                            if (ret) {
+                                var _userid = ret.data;
+                                if (item.userId == _userid) {
+                                    fnOpenWin('mine', '../mine/');
+                                } else {
+                                    fnOpenWin('ta_page', '../ta_page/', {
+                                        userId : item.userId,
+                                        isFollow : item.isFollow
+                                    });
+                                }
+                            }
+                        })
+                    }
+				}
+			})
+		}
+        function fnOpenMine(){
+            fnOpenWin('mine', '../mine/');
+        }
+		function fnChangeMonth(type,month,el) {
+			if (type == 1) {//活跃排行榜
+				if (month == 'current') {
+                    myVue.activity.type = true;
+                    $api.removeCls($api.dom('.last'),'active');
+                    $api.addCls(el,'active');
+					fnRankPersonalCurrentMoth();
+					fnRankCommunityCMonth();
+				} else {
+                    myVue.activity.type = false;
+                    $api.removeCls($api.dom('._self'),'active');
+                    $api.addCls(el,'active');
+					fnRankPersonalPreMoth();
+					fnRankCommunityPreMonth();
+				}
+			} else if (type == 2) {
+				if (month == 'current') {
+                    myVue.exalted.type = true;
+                    $api.removeCls($api.dom('.lastexalted'),'active');
+                    $api.addCls(el,'active');
+					fnRankPersonalCurrentMoth2();
+					fnRankCommunityCMonth2();
+				} else {
+                    myVue.exalted.type = false;
+                    $api.removeCls($api.dom('._selfexalted'),'active');
+                    $api.addCls(el,'active');
+					fnRankPersonalPreMoth2();
+					fnRankCommunityPreMonth2();
+				}
+			} else {
+				if (month == 'current') {
+                    myVue.topic.type = true;
+                    $api.removeCls($api.dom('.lasttopic'),'active');
+                    $api.addCls(el,'active');
+					fnRankCommunityCMonth3();
+				} else {
+                    myVue.topic.type = false;
+                    $api.removeCls($api.dom('._selftopic'),'active');
+                    $api.addCls(el,'active');
+					fnRankCommunityPreMonth3();
+				}
+			}
+		}
+
+		//我的排名,个人社区牛人榜排行本月
+		function fnRankPersonalCurrentMoth() {
+			$service.get('rank/personal.ajax', {
+				monthFlag : 1,
+				type : 1
+			}, function(ret, err) {
+				// alert("fnRankPersonalCurrentMoth:" + JSON.stringify(ret));
+				if (ret) {
+					if (ret.ok == 1) {
+						if (fnIsEmpty(ret.data.userImg)) {
+							ret.data.userImg = '../../image/home/tmp_default_header.png';
+						}
+						myVue.personRankMonth1 = ret.data;
+					} else {
+                        if(ret.data.content == '需要登录'){
+                            return;
+                        }
+                        fnToast(ret.data.content,'middle');
+                    }
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		//我的排名,个人社区活跃排行上月
+		function fnRankPersonalPreMoth() {
+			$service.get('rank/personal.ajax', {
+				monthFlag : 0,
+				type : 1
+			}, function(ret, err) {
+				//alert("fnRankPersonalPreMoth:" + JSON.stringify(ret));
+				if (ret) {
+					if (ret.ok == 1) {
+						if (fnIsEmpty(ret.data.userImg)) {
+							ret.data.userImg = '../../image/home/tmp_default_header.png';
+						}
+						myVue.personRankMonth1 = ret.data;
+					} else {
+                        if(ret.data.content == '需要登录'){
+                            return;
+                        }
+                        fnToast(ret.data.content,'middle');
+                    }
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		//我的排名,社区活跃排行
+		function fnRankPersonalCurrentMoth2() {
+			$service.get('rank/personal.ajax', {
+				monthFlag : 1,
+				type : 3
+			}, function(ret, err) {
+				//alert("fnRankPersonalCurrentMoth2:" + JSON.stringify(ret));
+				if (ret) {
+					if (ret.ok == 1) {
+						if (fnIsEmpty(ret.data.userImg)) {
+							ret.data.userImg = '../../image/home/tmp_default_header.png';
+						}
+						// ret.data.rankingsType = -2;
+						myVue.personRankMonth2 = ret.data;
+					} else {
+                        if(ret.data.content == '需要登录'){
+                            return;
+                        }
+                        fnToast(ret.data.content,'middle');
+                    }
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		//我的排名,社区活跃排行
+		function fnRankPersonalPreMoth2() {
+			$service.get('rank/personal.ajax', {
+				monthFlag : 0,
+				type : 3
+			}, function(ret, err) {
+				if (ret) {
+					//alert("fnRankPersonalPreMoth2:" + JSON.stringify(ret));
+					if (ret.ok == 1) {
+						if (fnIsEmpty(ret.data.userImg)) {
+							ret.data.userImg = '../../image/home/tmp_default_header.png';
+						}
+						// ret.data.rankingsType = -2;
+						myVue.personRankMonth2 = ret.data;
+					} else {
+                        if(ret.data.content == '需要登录'){
+                            return;
+                        }
+                        fnToast(ret.data.content,'middle');
+                    }
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		function fnRankCommunityCMonth() {
+			$service.get('rank/community.ajax', {
+				monthFlag : 1,
+				pageIndex : 1,
+				pageSize : 3,
+				type : 1
+			}, function(ret, err) {
+				//alert("fnRankCommunityCMonth:" + JSON.stringify(ret));
+				//alert("fnRankCommunityCMonth:"+JSON.stringify(err));
+				if (ret) {
+					if (ret.ok == 1) {
+						myVue.list_1 = [];
+						fnAppendData(myVue.list_1, ret.data);
+					} else {
+                        if(ret.data.content == '需要登录'){
+                            return;
+                        }
+                        fnToast(ret.data.content,'middle');
+                    }
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		function fnRankCommunityPreMonth() {
+			$service.get('rank/community.ajax', {
+				monthFlag : 0,
+				pageIndex : 1,
+				pageSize : 3,
+				type : 1
+			}, function(ret, err) {
+				//alert("fnRankCommunityPreMonth:" + JSON.stringify(ret));
+				//alert("fnRankCommunityPreMonth:"+JSON.stringify(err));
+				if (ret) {
+					if (ret.ok == 1) {
+						myVue.list_1 = [];
+						fnAppendData(myVue.list_1, ret.data);
+					} else {
+                        if(ret.data.content == '需要登录'){
+                            return;
+                        }
+                        fnToast(ret.data.content,'middle');
+                    }
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		function fnAppendData(oldArr, data) {
+			if (fnIsEmpty(data)) {
+				oldArr = [];
+				return;
+			}
+			for (var i = 0; i < data.length; i++) {
+				if (fnIsEmpty(data[i].userImg)) {
+					data[i].userImg = '../../image/home/tmp_default_header.png';
+				}
+				oldArr.push(data[i]);
+			}
+			return oldArr;
+		}
+
+		function fnRankCommunityCMonth2() {
+			$service.get('rank/community.ajax', {
+				monthFlag : 1,
+				pageIndex : 1,
+				pageSize : 3,
+				type : 3
+			}, function(ret, err) {
+				//alert("fnRankCommunityCMonth2:" + JSON.stringify(ret));
+				//alert("fnRankCommunityCMonth2:"+JSON.stringify(err));
+				if (ret) {
+					if (ret.ok == 1) {
+						myVue.list_2 = [];
+						fnAppendData(myVue.list_2, ret.data);
+					} else {
+                        if(ret.data.content == '需要登录'){
+                            return;
+                        }
+                        fnToast(ret.data.content,'middle');
+                    }
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		function fnRankCommunityPreMonth2() {
+			$service.get('rank/community.ajax', {
+				monthFlag : 0,
+				pageIndex : 1,
+				pageSize : 3,
+				type : 3
+			}, function(ret, err) {
+				//alert("fnRankCommunityPreMonth2:" + JSON.stringify(ret));
+				//alert("fnRankCommunityPreMonth2:"+JSON.stringify(err));
+				if (ret) {
+					if (ret.ok == 1) {
+						myVue.list_2 = [];
+						fnAppendData(myVue.list_2, ret.data);
+					} else {
+                        if(ret.data.content == '需要登录'){
+                            return;
+                        }
+                        fnToast(ret.data.content,'middle');
+                    }
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		function fnRankCommunityCMonth3() {
+			$service.get('rank/community.ajax', {
+				monthFlag : 1,
+				pageIndex : 1,
+				pageSize : 3,
+				type : 5
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						myVue.list_3 = [];
+						fnAppendData(myVue.list_3, ret.data);
+					} else {
+                        if(ret.data.content == '需要登录'){
+                            return;
+                        }
+                        fnToast(ret.data.content,'middle');
+                    }
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		function fnRankCommunityPreMonth3() {
+			$service.get('rank/community.ajax', {
+				monthFlag : 0,
+				pageIndex : 1,
+				pageSize : 3,
+				type : 5
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						myVue.list_3 = [];
+						fnAppendData(myVue.list_3, ret.data);
+					} else {
+                        if(ret.data.content == '需要登录'){
+                            return;
+                        }
+                        fnToast(ret.data.content,'middle');
+                    }
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+	</script>
+</html>

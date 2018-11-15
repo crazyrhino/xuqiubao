@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/select_video.css"/>
+		<style>
+		</style>
+	</head>
+	<body>
+		<div class="footer">
+			相册
+			<div class="left_btn" tapmode="meui_click" onclick="fnBack()">
+				取消
+			</div>
+			<div class="right_btn" tapmode="meui_click" onclick="fnBack()"></div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js?v=1"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript">
+        var isRoot;
+		apiready = function() {
+            isRoot = api.readFile({
+                sync : true,
+                path : api.boxDir + '/isRoot.txt'
+            });
+            $api.fixTabBar($api.dom('.footer'));
+			fnOpenSelectFrame();
+			fnBackListener(fnBack);
+		};
+		
+		function fnBack(){
+		    if(isRoot == 'isRoot'){
+                api.execScript({
+                    name : 'root',
+                    script: 'fnReOpenRecord();'
+                });
+            }else {
+                api.execScript({
+                    name : 'video_record',
+                    script: 'fnReOpenRecord();'
+                });
+            }
+		}
+		
+		function fnOpenSelectFrame(){
+			api.openFrame({
+	            name: api.winName + '_frame',
+	            url: api.winName + '_frame.html',
+	            rect: {
+		            x:0,
+		            y:0,
+		            w:api.winWidth,
+		            h:api.winHeight - fnGetHeight('.footer')
+	            },
+	            pageParam : api.pageParam
+            });	
+		}
+	</script>
+</html>

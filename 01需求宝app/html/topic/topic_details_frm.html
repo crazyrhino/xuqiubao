@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/topic_details.css?v=2"/>
+    <style>
+        html, body, header, .header_div {
+            background: transparent;
+        }
+        .back_btn{
+            background: url(../../image/edit_topic/back_black.png) no-repeat center;
+            background-size: 24px;
+            padding-left: 12px;
+        }
+        .more_btn{
+            background: url(../../image/edit_topic/more@2x.png) no-repeat center;
+            background-size: 24px;
+            width: 60px;
+        }
+        .header_wrap {
+            position: relative;
+        }
+
+        .red_vip,.yellow_vip,.purple_vip {
+            position: absolute;
+            right: 0px;
+            top: 25px;
+            width: 10px;
+            height: 10px;
+        }
+        #header_user_follow,#header_user_cancel_follow{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<!--header-->
+<header class="header">
+    <div class="header_div meui_flex_wrap">
+        <div class="back_btn" tapmode="meui_click" onclick="fnBack()"></div>
+        <div class="header_middle meui_flex_con meui_flex_wrap" style="visibility: hidden">
+            <div class="header_wrap">
+                <img id="header_user_img" class="header_img" alt="" onclick="fnOpenUser()"/>
+                <img class="red_vip" src="../../image/mine/red_vip.png" alt=""/>
+                <img class="yellow_vip" src="../../image/mine/yellow_vip.png" alt=""/>
+                <img class="purple_vip" src="../../image/mine/purple_vip.png" alt=""/>
+            </div>
+            <div id="header_user_name" class="user_name meui_flex_con_no_w meui_single_line"></div>
+            <img id="header_user_follow" class="follow_img" src="../../image/rank/follow.png" alt=""
+                 onclick="fnFollow()"/>
+            <img id="header_user_cancel_follow" class="follow_img" src="../../image/rank/cancel_follow.png" alt=""
+                 onclick="fnFollow()"/>
+        </div>
+        <div class="more_btn" onclick="fnShare()"></div>
+    </div>
+</header>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript">
+    var isFullscreen = false;
+    var storageUserId;
+    apiready = function () {
+        fnSysHeaderStyle();
+        storageUserId = api.readFile({
+            sync : true,
+            path : api.boxDir + '/userid.txt'
+        });
+        var noImgs = api.pageParam.noImgs;
+        var types = api.pageParam.type;
+        if(types == 1 && !noImgs){
+            $api.css($api.dom('.back_btn'), 'background: url(../../image/edit_topic/back.png) no-repeat center;background-size: 30px;');
+            $api.css($api.dom('.more_btn'), 'background: url(../../image/edit_topic/more_btn.png) no-repeat center;background-size: 30px;');
+        }else {
+            $api.css($api.dom('.back_btn'), 'background: url(../../image/edit_topic/back_black.png) no-repeat center;background-size: 24px;');
+            $api.css($api.dom('.more_btn'), 'background: url(../../image/edit_topic/more@2x.png) no-repeat center;background-size: 24px;');
+        }
+    };
+
+    function fnSetHeaderUserInfo(data) {
+        api.execScript({
+            frameName: api.pageParam.frame,
+            script: "clear()"
+        });
+        data = JSON.parse(decodeURIComponent(data));
+        fnSetImgSrc('header_user_img', data.userImg);
+        var userName;
+        if (data.userName && data.userName.length > 10) {
+            userName = data.userName.substring(0, 10) + '...';
+        } else {
+            userName = data.userName
+        }
+
+        fnSetTxt('header_user_name', userName);
+        fnSetDisplay('.red_vip', data.talentFlag == 1);
+        fnSetDisplay('.yellow_vip', data.talentFlag == 2);
+        fnSetDisplay('.purple_vip', data.talentFlag == 3);
+        if(storageUserId == data.userCode){
+            fnSetDisplay('header_user_follow', false);
+            fnSetDisplay('header_user_cancel_follow', false);
+        }else if (data.isFollow) {
+            fnSetDisplay('header_user_follow', false);
+            fnSetFlex('header_user_cancel_follow');
+        } else {
+            fnSetDisplay('header_user_cancel_follow', false);
+            fnSetFlex('header_user_follow');
+        }
+    }
+
+    function fnScroll(scrollTop, type, noImgs) {
+        if (type == 1 && noImgs) {
+            fnSetDisplay('.header', true);
+        }
+        if (scrollTop > 50) {
+            fnSetVisibility('.header_middle', true);
+            $api.css($api.dom('.header'), 'background:#fff');
+            $api.css($api.dom('.back_btn'), 'background: url(../../image/label/back.png) no-repeat center;background-size: 24px;');
+            $api.css($api.dom('.more_btn'), 'background: url(../../image/mine/more@2x.png) no-repeat center;background-size: 24px;');
+
+            $api.addCls($api.dom('.header_div'), 'meui_border_b');
+            if (type != 3) {
+                // fnSetDisplay('.header', true);
+                fnSetVisibility('.header_middle', true);
+            }
+        } else {
+            fnSetVisibility('.header_middle', false);
+            $api.removeCls($api.dom('.header_div'), 'meui_border_b');
+            $api.css($api.dom('.header'), 'background:transparent');
+            $api.css($api.dom('.header_middle'), 'background:transparent');
+            if (type != 2 && type != 4) {
+                fnSetVisibility('.header_middle', true);
+                // fnSetDisplay('.header', false);
+            }
+            if (type == 1 && noImgs) {
+                fnSetDisplay('.header', true);
+                fnSetVisibility('.header_middle', false);
+            }
+            if(type == 1 && noImgs == 'false'){
+                $api.css($api.dom('.back_btn'), 'background: url(../../image/edit_topic/back.png) no-repeat center;background-size: 30px;');
+                $api.css($api.dom('.more_btn'), 'background: url(../../image/edit_topic/more_btn.png) no-repeat center;background-size: 30px;');
+            }else{
+                $api.css($api.dom('.back_btn'), 'background: url(../../image/edit_topic/back_black.png) no-repeat center;background-size: 24px;');
+                $api.css($api.dom('.more_btn'), 'background: url(../../image/edit_topic/more@2x.png) no-repeat center;background-size: 24px;');
+            }
+        }
+    }
+
+    function fnShare() {
+        api.execScript({
+            frameName: api.winName + '_frame',
+            script: 'fnShare();'
+        });
+    }
+
+    function fnFollow() {
+        api.execScript({
+            frameName: api.winName + '_frame',
+            script: 'fnFollow();'
+        });
+    }
+
+    function fnOpenUser(fullscreen) {
+        api.execScript({
+            frameName: api.winName + '_frame',
+            script: 'fnOpenUser();'
+        });
+    }
+</script>
+</html>

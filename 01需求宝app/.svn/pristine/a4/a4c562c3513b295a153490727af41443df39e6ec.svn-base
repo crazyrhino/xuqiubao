@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta content="yes" name="apple-touch-fullscreen">
+  <meta content="telephone=no,email=no" name="format-detection">
+  <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <title>需求宝</title>
+  <link rel="stylesheet" href="css/skin.css">
+  <style>
+  .search-text{
+    color: red;
+  }
+</style>
+</head>
+
+<body>
+  <div class="wrap" id="askDemand" style="position:relative">
+      <div class="warpContent" style="background:#fff;position:fixed;top:0;width: 100%;">
+          <textarea  maxlength="50" onkeydown="if(event.keyCode==13 || event.keyCode==32)return false;" style="position:relative;border:none;border: .12rem solid #f6f6f7;word-break:break-all;word-wrap: break-word;" id="orgAuditDesc" v-model="keyWords" @input="handleQuery" style="resize:none;" name="orgAuditDesc" placeholder="请输入你的需求(5到50字以内)"></textarea>
+          <p><span id="text-count" :style="numbers > 0 ? 'color: #333333' : 'color: #a7a7a7'">{{numbers}}</span>/50</p>
+       </div>
+       <div  v-if="showList" style="margin-top: 4rem;">
+          <ul class="contentList">
+              <li v-for="(item,index) in results" :key='index' @click="jump(item)">
+                <h4 v-html='item.titles'></h4>
+                <!-- <p v-html='item.content'></p>
+                <p><span>{{item.userName}}</span><span>{{item.createDate}}</span></p> -->
+              </li>
+           </ul>
+       </div>
+  </div>
+
+</body>
+<script src="./js/jquery-1.11.1.min.js"></script>
+<script src="./js/js.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript" src="../../script/common.js?v=0"></script>
+<script>
+  function funcGotoBack(){
+    $('textarea').blur()
+  }
+  apiready = function () {
+    };
+   var askDemand = new Vue({
+    el:'#askDemand',
+    data:{
+      cancel:'取消',
+      toptittle:'提需求',
+      next:'下一步',
+      aaa:'',
+      showList:false,
+      numbers:'0',
+      keyWords: '',//输入框
+      results: [],
+      datas: []
+    },
+    mounted:function() {
+        window.addEventListener('scroll', this.handleScroll)
+    },
+    methods:{
+      clearTimer:function() {
+        if (this.timer) {
+          clearTimeout(this.timer)
+        }
+      },
+      handleScroll:function() {
+        var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        if(scrollTop >= 10){
+          $('textarea').blur();
+        }
+      },
+      handleQuery:function(event) {
+        this.numbers = this.keyWords.length
+        this.showList = false
+        var _this = this
+        var a = new RegExp("[\\u4E00-\\u9FFF]+","g");
+        var b = a.test(_this.keyWords);//true,说明有汉字
+        var c = /[a-zA-Z0-9_\u4e00-\u9fa5]+/i;
+        var d = c.test(_this.keyWords)//true,有数字和字母
+        var e = /[`~%!@#^=''?~！@#￥……&——‘”“'？*()（），,。.、]+/i;
+        var f = e.test(_this.keyWords)//true,有特殊符号
+        var g = /\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDE4F]/g;
+        var h = g.test(_this.keyWords)//true,emoji表情
+        if(_this.numbers > 0){
+          // re = /[\u4E00-\u9FA5]/g; //测试中文字符的正则
+          // var styleContent  = _this.keyWords.replace(/\n/g,"<br/>").replace(/\s/g,"&nbsp;")
+          // var YesName = styleContent.match(re).length
+          api.sendEvent({
+              name: 'indexsFrame',
+              extra: {
+                  numberbb: _this.numbers,
+                  numberContent:_this.keyWords,
+                  YesHanz:b,
+                  YesNumber:d,
+                  YesFhao:f,
+                  YesBiao:h
+              }
+            });
+        }
+        var _this = this
+        this.clearTimer()
+        this.timer = setTimeout(function(){
+            $http.GET(HOST+UrlRouter.qxIndex,{
+              values:{
+                keyword:_this.keyWords
+              }
+            },function(ret,err){
+              var mydata = ret.data
+              var list = [];
+              _this.showList = true;
+              if(_this.numbers == 0){
+                _this.showList = false;
+              }
+              list = ret.data
+              _this.changeColor(list.list)
+            })
+          },500)
+      },
+      changeColor:function(resultsList) {
+        // resultsList.map((item, index) => {
+        //   // console.log('item', item)
+        //   if (this.keyWords && this.keyWords.length > 0) {
+        //     // 匹配关键字正则
+        //     var replaceReg = new RegExp(this.keyWords, 'g')
+        //     // 高亮替换v-html值
+        //     var replaceString =
+        //       '<span class="search-text">' + this.keyWords + '</span>'
+        //     resultsList[index].titles = item.title.replace(
+        //       replaceReg,
+        //       replaceString
+        //     )
+        //   }
+        // })
+        
+        for(var i = 0; i< resultsList.length;i++){
+          if (this.keyWords && this.keyWords.length > 0) {
+              // 匹配关键字正则
+              var replaceReg = new RegExp(this.keyWords, 'g')
+              // 高亮替换v-html值
+              var replaceString =
+                '<span class="search-text">' + this.keyWords + '</span>'
+              resultsList[i].titles = resultsList[i].title.replace(
+                replaceReg,
+                replaceString
+              )
+          }
+        }
+        this.results = []
+        this.results = resultsList
+      },
+      jump:function(item){
+        api.openWin({
+          name:'details',
+          url:'./details.html',
+          slidBackEnabled:false,
+          pageParam:{
+            listId:item.id
+          }
+        })
+      },
+      textBluer:function(){
+          $('textarea').blur()
+      },
+      backHome:function(){
+        api.closeWin({})
+      },
+      backNext:function(){
+            api.openWin({
+            name:'supplement',
+            url:'./supplement.html',
+            slidBackEnabled:false,
+            pageParam:{
+              name:this.keyWords
+            }
+          })
+      }
+    }
+  })
+</script>
+<script>
+    $('textarea').on( 'touchstart', function() {
+      $(this).focus();
+    });
+</script>
+</html>

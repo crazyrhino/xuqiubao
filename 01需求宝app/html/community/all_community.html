@@ -1,0 +1,171 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>全部圈子</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/all_community.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+	</head>
+	<body class="meui_flex_wrap meui_flex_vertical">
+		<div id="header"  class="rank_header">
+			<div class="rank_content">
+				<div class="rank_back" tapmode onclick="api.closeWin()"></div>
+				全部圈子
+				<div class="search_div" tapmode onclick="fnOpenSearch()"></div>
+			</div>
+		</div>
+		<div class="left_community meui_flex_con">
+			<div v-for="(item,index) in list" class="each_part" v-text="item.categoryName" v-on:click="fnChange(item.id,index)"></div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+			fnSysHeaderStyleById()
+            fnBackListener(fnBack)
+			fnInitVue();
+			fnGetTopicCategoryList();
+            fnInitEventListener();
+        };
+		var isFrameOpen = false;
+		function fnOpenCommunityList(id) {
+			var header = $api.byId('header');
+			if (api.systemType ==='ios') {
+                $api.fixStatusBar($api.dom('#header'));
+                api.setStatusBarStyle({
+                    style: 'dark',
+                    color: 'dark'
+                });
+            }
+			var headerH = $api.offset(header).h;
+			var leftCommunity = $api.dom('.left_community');
+			var leftCommunityW = $api.offset(leftCommunity).w;
+			api.openFrame({
+				name : 'all_community_frame',
+				url : 'all_community_frame.html?v=' + new Date().getTime(),
+				background : '#fff',
+				rect : {
+					x : leftCommunityW,
+					y : headerH,
+					w : 'auto',
+					h : 'auto'
+				},
+				pageParam : {
+					id : id
+				}
+			});
+			isFrameOpen = true;
+		}
+        var isNeedLogin = false;
+        function fnInitEventListener() {
+            api.addEventListener({
+                name : 'NaviteCallAPICloudMethod'
+            }, function(rets, err) {
+                api.hideProgress();
+                var ret = rets.value;
+                if (ret.type == 1) {
+                    isNeedLogin = false;
+                    isShareing = false;
+                    if (ret.success == 1) {
+                        var token = ret.token;
+                        api.writeFile({
+                            path : api.boxDir + '/token.txt',
+                            data : token
+                        }, function(ret, err) {
+                            if(fnRefreshInfo) {
+                                fnRefreshInfo();
+                            }
+                        });
+                    } else {
+                        fnToast('登录失败', 'middle');
+                    }
+                }
+            })
+        }
+        function fnRefreshInfo(){
+            fnSetTokenFlag();
+            fnGetTopicCategoryList();
+        }
+        function fnSetTokenFlag(){
+            var token = api.readFile({
+                sync : true,
+                path : api.boxDir + '/token.txt'
+            });
+            if (fnIsEmpty(token) || token.indexOf('#') == -1) {
+
+            }else{
+                fnSetDisplay('no_login_input',false);
+                fnSetDisplay('login_input',true);
+            }
+        }
+		var vue = null;
+		function fnInitVue() {
+			vue = new Vue({
+				el : ".left_community",
+				data : {
+					activeIndex : 0,
+					list : []
+				},
+				methods : {
+					fnChange : function(id,index) {
+						fnChange(id,index);
+					}
+				}
+			})
+		}
+
+		function fnChange(id,index) {
+			api.execScript({
+				frameName : api.winName+'_frame',
+	            script: 'fnGetTopicCategoryList('+id+');'
+            });
+			fnSetActivie(index);
+		}
+		
+		function fnSetActivie(index){
+			var items = $api.domAll(".each_part");
+			for(var i = 0; i < items.length; i++){
+				$api.removeCls(items[i], 'part_active');
+				if(i == index){
+					$api.addCls(items[i], 'part_active');
+				}
+			}
+		}
+
+		function fnGetTopicCategoryList() {
+			$service.get('topic/getTopicCategoryList.ajax', {}, function(ret, err) {
+				if (ret.ok == 1) {
+					if(!isFrameOpen){
+						fnOpenCommunityList(ret.data[0].id);
+						setTimeout(function(){
+							fnSetActivie(0);
+						},300);
+					}
+					fnAppendData(vue.list, ret.data);
+				}
+			});
+		}
+		
+		function fnOpenSearch(){
+            api.openWin({
+                name : 'search_more',
+                url :'../search/search_more.html?v=' + new Date().getTime(),
+                pageParam : {
+                    searchType : 'community'
+				},
+                softInputBarEnabled:true,
+                softInputDismissMode:['tap','drag'],
+                slidBackEnabled : false,
+                allowEdit : true
+            });
+		}
+	</script>
+</html>

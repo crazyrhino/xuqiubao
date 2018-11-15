@@ -1,0 +1,199 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>选择标签</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+    <style>
+        html, boay {
+            height: 100%;
+        }
+
+        h4 {
+            color: #666;
+            background-color: #f2f2f2;
+            line-height: 1.3rem;
+        }
+
+        .use_list {
+            height: 3.2rem;
+            display: flex;
+            padding: .6rem 0;
+        }
+
+        .use_list img {
+            height: 2rem;
+            width: 2rem;
+            border-radius: 50%;
+        }
+
+        .info {
+            width: calc(100% - 2.3rem);
+        }
+
+        .use_list p {
+            color: #333;
+            line-height: .9rem;
+            margin-top: .2rem;
+        }
+
+        .use_list span {
+            color: #999;
+            display: inline-block;
+            float: left;
+            width: 100%;
+        }
+        li:last-child{
+            background-image: none;
+        }
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="search_wrap" v-cloak>
+    <h4 class="aui-font-size-14 aui-padded-l-15" v-show="historyList.length > 0 && isShowConcern">最近使用</h4>
+    <ul class="aui-padded-l-15 aui-padded-r-15" v-show="isShowConcern">
+        <li class="use_list aui-border-b" v-for="item in historyList">
+            <img class="aui-margin-r-10" :src="item.tagImg" alt="">
+            <div class="info">
+                <p class="aui-font-size-14" v-text="item.name"></p>
+                <span class="aui-font-size-12 aui-ellipsis-1" v-text="item.tagInfo"></span>
+            </div>
+        </li>
+    </ul>
+    <h4 class="aui-font-size-14 aui-padded-l-15" v-show="concernList.length > 0 && isShowConcern">推荐</h4>
+    <ul class="aui-padded-l-15 aui-padded-r-15" v-show="isShowConcern">
+        <li class="use_list aui-border-b" v-for="item in concernList" tapmode @click="selectThis(item)">
+            <img class="aui-margin-r-10" :src="item.tagImg" alt="">
+            <div class="info">
+                <p class="aui-font-size-14" v-text="item.name"></p>
+                <span class="aui-font-size-12 aui-ellipsis-1" v-text="item.tagInfo"></span>
+            </div>
+        </li>
+    </ul>
+    <h4 class="aui-font-size-14 aui-padded-l-15" v-show="searchList.length > 0">标签</h4>
+    <ul class="aui-padded-l-15 aui-padded-r-15">
+        <li class="use_list aui-border-b" v-for="item in searchList" tapmode @click="selectThis(item)">
+            <img class="aui-margin-r-10" :src="item.tagImg" alt="">
+            <div class="info">
+                <p class="aui-font-size-14" v-text="item.name"></p>
+                <span class="aui-font-size-12 aui-ellipsis-1" v-text="item.tagInfo"></span>
+            </div>
+        </li>
+    </ul>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/service.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript">
+    var circleVue, userid = '';
+    apiready = function () {
+        userid = api.readFile({
+            sync: true,
+            path: api.boxDir + '/userid.txt'
+        });
+        initVue();
+        $app.showProgress();
+        circleVue.getCircle()
+    };
+
+    function initVue() {
+        circleVue = new Vue({
+            el: '.search_wrap',
+            data: {
+                historyList: $api.getStorage(userid + "historyList") && $api.getStorage(userid + "historyList").length > 0 ? $api.getStorage(userid + "historyList").reverse() : [],
+                concernList: [],
+                searchList: [],
+                keyword:'',
+                isShowConcern:true
+            },
+            methods: {
+                getCircle: function () {
+                    $http.GET(UrlRouter.getHotTag, {//推荐标签
+                        values: {
+                            pageNo: 1,
+                            pageSize: 20
+                        }
+                    }, function (ret) {
+                        $app.hideProgress();
+                        circleVue.concernList = [];
+                        circleVue.fnAppendTopicData(circleVue.concernList, ret.data);
+                    });
+                },
+                fnSearchTag: function (keyword) {
+                    this.keyword = keyword;
+                    $http.GET(UrlRouter.getQuery, {//搜索标签
+                        values: {
+                            keyword: keyword,
+                            pageNo: 1,
+                            pageSize: 20
+                        }
+                    }, function (ret) {
+                        circleVue.searchList = [];
+                        circleVue.searchList = circleVue.fnAppendTopicData(circleVue.searchList, ret.data);
+                        circleVue.filterSearchList();
+                    });
+                },
+                filterSearchList:function () {
+                    for (var key in this.searchList) {
+                        if(this.searchList[key].name === this.keyword){
+                            return ;
+                        }
+                    }
+                    this.searchList.unshift({'name':this.keyword,'id':'','tagImg':'../../image/home/tmp_default_header.png','tagInfo':'新标签'})
+                },
+                fnAppendTopicData: function (oldArr, data) {
+                    for (var i = 0; i < data.length; i++) {
+                        if ($app.isEmpty(data[i].topicImg)) {
+                            data[i].topicImg = '../../image/home/tmp_default_header.png';
+                        }
+                        oldArr.push(data[i]);
+                    }
+                    return oldArr;
+                },
+                selectThis: function (searchStr) {
+                    var searchHistory = $api.getStorage(userid + 'historyList') || [];
+                    if (searchHistory) {
+                        if (searchHistory.length > 20) {
+                            searchHistory.splice(0, 1);
+                        }
+                    } else {
+                        searchHistory = [];
+                    }
+                    if (circleVue.fnIsExist(searchHistory, searchStr)) {
+                        return;
+                    }
+                    searchHistory.push(searchStr);
+                    $api.setStorage(userid + 'historyList', searchHistory);
+                    circleVue.historyList = searchHistory.reverse();
+                    circleVue.$forceUpdate();
+                },
+                fnIsExist: function (searchHistory, searchStr) {
+                    if (searchHistory && searchHistory.length > 0) {
+                        for (var i = 0; i < searchHistory.length; i++) {
+                            if (searchHistory[i].id == searchStr.id) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+            },
+            updated: function () {
+                $api.css($api.dom('.search_wrap'), 'margin-bottom:' + api.safeArea.bottom + 'px');
+                $api.css($api.dom('.search_wrap'), 'padding-bottom:' + api.safeArea.bottom + 'px');
+            }
+        })
+    }
+
+</script>
+</html>

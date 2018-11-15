@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>@谁看</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/to_see_who_frame.css"/>
+</head>
+<body>
+<div class="box" id="app">
+    <ul v-for="arrList in arrList">
+        <li class="aui-clearfix">
+            <div class="order">
+                <p> {{arrList.order}}</p>
+            </div>
+            <div class="content">
+                <ul>
+                    <li class="content_li" v-for="arrList in arrList.content">
+                        <div class="select">
+                            <img class="select_none" src="../../image/community/select_none.png" alt="">
+                            <img class="select_ok aui-hide" src="../../image/community/select_ok.png" alt="">
+                        </div>
+                        <img class="user_img" :src="arrList.img" alt="">
+                        <span> {{arrList.name}}</span>
+                    </li>
+                </ul>
+
+            </div>
+        </li>
+
+    </ul>
+</div>
+
+</body>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script>
+
+    new Vue({
+        el: '#app',
+        // data 就好比 $scope 视图模型对象
+        // 也就是在模板中可以直接使用 data 中定义的成员
+        data: {
+            arrList: [
+                {
+                    order: "A",
+                    content:
+                        [
+                            {
+                                img: '../../image/img_type.png',
+                                name: '张三',
+                            },
+                            {
+                                img: '../../image/video_type.png',
+                                name: '李四'
+                            },
+                            {
+                                img: '../../image/img_type.png',
+                                name: '张三'
+                            },
+                            {
+                                img: '../../image/img_type.png',
+                                name: '王五'
+                            },
+                            {
+                                img: '../../image/video_type.png',
+                                name: '张三'
+                            }
+
+                        ]
+                },
+                {
+                    order: "B",
+                    content:
+                        [
+                            {
+                                img: '../../image/video_type.png',
+                                name: '张三',
+                            },
+                            {
+                                img: '../../image/video_type.png',
+                                name: '李四'
+                            },
+                            {
+                                img: '../../image/video_type.png',
+                                name: '张三'
+                            },
+                            {
+                                img: '../../image/video_type.png',
+                                name: '王五'
+                            },
+                            {
+                                img: '../../image/video_type.png',
+                                name: '张三'
+                            }
+
+                        ]
+                },
+                {
+                    order: "C",
+                    content:
+                        [
+                            {
+                                img: '../../image/video_type.png',
+                                name: '张三',
+                            },
+                            {
+                                img: '../../image/video_type.png',
+                                nae: '李四'
+                            },
+                            {
+                                img: '../../image/video_type.png',
+                                name: '张三'
+                            },
+                            {
+                                img: '../../image/video_type.png',
+                                name: '王五'
+                            },
+                            {
+                                img: '../../image/video_type.png',
+                                name: '张三'
+                            }
+
+                        ]
+                }
+            ]
+        }
+    })
+
+    $('.select img').on('click', function () {
+        $(this).toggleClass('aui-hide').siblings().removeClass('aui-hide')
+    })
+
+</script>
+
+</html>

@@ -1,0 +1,89 @@
+body, html {
+	background: rgba(0,0,0,0);
+}
+
+html, body, #warp, .popup_position {
+	height: 100%;
+}
+.popup_position {
+	-webkit-box-orient: vertical;
+	display: flex;
+	flex-flow: column;
+}
+/*选择精华位置-弹窗  头部*/
+.popup_position {
+	position: relative;
+	background: rgba(0, 0, 0, 0.7);
+}
+.list-flex-flex1 {
+	flex: 1;
+}
+.popup_content {
+	width: 100%;
+	box-sizing: border-box;
+	/*position: fixed;;*/
+	bottom: 0;
+	background: #fff;
+}
+.popup_content_title {
+	height: 38px;
+	line-height: 38px;
+	text-align: center;
+	font-size: 17px;
+	color: #333;
+	border-bottom: 1px solid #EEE;
+	position: relative;
+}
+.popup_content_title .float_r {
+	width: 24px;
+	height: 38px;
+	background-image: url(../image/closeWin.png);
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 24px 24px;
+	position: absolute;
+	right: 14px;
+}
+
+.select_lists {
+	height: 257px;
+	padding: 19px 0 13px 16px;
+	overflow :scroll;
+	border-bottom: 1px solid #EEE;
+}
+.c_item{
+	display : inline-block;
+	margin-right: 8px;
+	margin-bottom: 15px;
+	width: 106px;
+	height: 34px;
+}
+.every_one {
+	text-align: center;
+	line-height: 34px;
+	border: 1px solid #EEE;
+	border-radius: 100px;
+	font-size: 14px;
+	color: #999;
+}
+.every_one_active {
+	background-color: #FF6026;
+	color: #fff;
+	border-color: #FF6026;
+}
+.submits {
+	padding-top: 11px;
+	padding-left: 21px;
+	padding-right: 21px;
+	padding-bottom: 13px;
+}
+.submits .sure {
+	width: 100%;
+	text-align: center;
+	height: 44px;
+	line-height: 44px;
+	background: #FF6026;
+	color: #fff;
+	font-size: 17px;
+	border-radius: 100px;
+}

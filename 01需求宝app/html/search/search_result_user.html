@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/search_result_total.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/search_list.css"/>
+		<style>
+            html,body,.details_conts,.no-data{
+                height: 100%;
+            }
+			.no-data{
+				background-color: #fff;
+				text-align: center;
+				height: 100%;
+				overflow: hidden;
+			}
+			.no-data img{
+				height:97px;
+				width: 124px;
+				margin:156px 0 12px 0;
+			}
+			.no-data p{
+				font-size: 14px;
+				color: #999;
+				margin-bottom:24px;
+			}
+			.no-data div{
+				height: 38px;
+				width: 126px;
+				margin:0 auto;
+				border-radius: 100px;
+				border:1px solid #FF6026;
+				color: #FF6026;
+				font: 16px/38px '';
+			}
+			[v-cloak] {
+				display: none;
+			}
+			.key {
+				color: #FF6026;
+				font-style: normal;
+			}
+			.wrap {
+				position: relative;
+				width: 1.173333rem;
+				height: 1.173333rem;
+			}
+			.wrap img.red_vip,.wrap img.yellow_vip,.wrap img.purple_vip{
+				position :absolute;
+				right: 0;
+				bottom : 0;
+				width : 12px;
+				height : 12px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="details_conts" v-cloak>
+			<div v-if="list.length == 0" class="no-data">
+				<img src="../../image/empty/no_search_results.png" alt="">
+				<p>换个词试一下</p>
+			</div>
+			<div v-else class="recommendations">
+				<div class="comment_sum">
+					<div class="padd_lr">
+						<span class="span_borleft">账号</span>
+					</div>
+				</div>
+				<div class="recommendation_conts">
+					<div v-for="(item,index) in list" class="recommendation_list" tapmode="meui_click" v-on:click.stop="fnOpenUser(item)">
+						<div class="wrap">
+							<div class="list_header">
+								<img v-bind:src="item.userImg">
+							</div>
+							<img v-if="item.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png">
+							<img v-if="item.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png">
+							<img v-if="item.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png">
+						</div>
+						<div class="list_cont">
+							<p class="cont_name" v-html="fnChangeKeyColor(item.userName)"></p>
+							<p class="cont_num">
+								粉丝：{{item.followedCount}}
+							</p>
+						</div>
+						<div v-show="item.userId != item.selfId" class="list_follow" tapmode="meui_click" v-on:click.stop="fnFollow(item,index)">
+							<img v-if="item.isFollow == 0" src="../../image/rank/follow.png">
+							<img v-else src="../../image/rank/cancel_follow.png">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/jquery.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript">
+		var pageIndex = 1;
+        var currentKeyword;
+        var userId;
+        apiready = function() {
+        	//fnRefreshOpen();
+            fnBackListener(fnBack)
+            currentKeyword = api.pageParam.keyword;
+			fnSetRefresh(function() {
+				pageIndex = 1;
+				fnSearch(currentKeyword, false, true);
+			});
+			fnSearch(currentKeyword);
+			addBottomListener(function() {
+				pageIndex++;
+				fnSearch(currentKeyword, true);
+			});
+            fnScrollListener();
+            userId = api.readFile({//获取当前用户信息，作为分享使用
+                sync : true,
+                path : api.boxDir + '/userid.txt'
+            })
+        };
+		var vue = new Vue({
+			el : '.details_conts',
+			data : {
+				list : [],
+			},
+			methods : {
+				fnTopicUnfocus : function(id) {
+					fnTopicUnfocus(id);
+				},
+				fnFollow : function(item, index) {
+					var follow;
+					if (item.isFollow == 0) {
+						follow = 'Follow';
+					} else {
+						follow = 'UnFollow';
+					}
+					$service.get('user/follow.ajax', {
+						followId : item.userId,
+						type : follow
+					}, function(ret, err) {
+						if (ret) {
+							if (ret.ok == 1) {
+								if (item.isFollow == 0) {
+									vue.$set(vue.$data.list[index], 'isFollow', 1);
+								} else {
+									vue.$set(vue.$data.list[index], 'isFollow', 0);
+								}
+							}
+						} else {
+							fnToast(err.msg);
+						}
+					});
+				},
+				fnOpenUser : function(item) {
+                    api.readFile({
+                        path: api.boxDir + '/userid.txt'
+                    }, function (ret, err) {
+                        if (ret) {
+                            var _userid = ret.data;
+                            if (_userid === ''){
+                                fnOpenLogin();
+                                return
+                            }
+                            if (item.userId == _userid) {
+                                fnOpenWin('mine', '../mine/');
+                            } else {
+                                fnOpenWin('ta_page', '../ta_page/', {
+                                    userId : item.userId
+                                });
+                            }
+                        }
+                    });
+					// if (item.userId == $api.getStorage('userId')) {
+					// 	fnOpenWin('mine', '../mine/');
+					// } else {
+					// 	fnOpenWin('ta_page', '../ta_page/', {
+					// 		userId : item.userId
+					// 	});
+					// }
+				},
+                fnChangeKeyColor: function (content) {
+                    var resultHtml = content.replace(new RegExp("(" + currentKeyword + ")", "g"), '<i class="key">' + currentKeyword + '</i>');
+                    return resultHtml;
+                }
+			}
+		});
+        var isOpen = false;
+        function fnScrollListener() {
+            $(document).scroll(function (e) {
+                var scrollTop = $(this).scrollTop();
+                if (scrollTop > api.winHeight * 3) {
+                    if (!isOpen) {
+                        fnOpenScrollTopBtnFrame();
+                        api.setPrefs({
+                            key: 'scroll_frame_name',
+                            value: api.frameName
+                        });
+                    }
+                    isOpen = true;
+                } else {
+                    if (isOpen) {
+                        fnCloseScrollTopBtnFrame();
+                    }
+                    isOpen = false;
+                }
+            });
+        }
+        function fnOpenScrollTopBtnFrame() {
+            api.openFrame({
+                name: 'scroll_top_btn_frame',
+                url: '../topic/scroll_top_btn_frame.html',
+                rect: {
+                    w: 48,
+                    h: 48,
+                    marginLeft: api.winWidth - 64,
+                    marginTop: api.winHeight - 114
+                },
+                bgColor: 'rgba(0,0,0,0)'
+            });
+        }
+        function fnCloseScrollTopBtnFrame() {
+            api.closeFrame({
+                name: 'scroll_top_btn_frame'
+            });
+        }
+        function fnScrollTop() {
+            document.body.scrollTop = document.documentElement.scrollTop = 0;
+        }
+        function fnOpenLogin() {
+            api.sendEvent({
+                name : 'APICloudCallNaviteMethod',
+                extra : {
+                    type : 1,
+                    canCallBack : 1,
+                    toPageName : 'Login'
+                }
+            });
+        }
+		function fnReSearch(keyword) {
+			pageIndex = 1;
+			api.showProgress();
+			fnSearch(keyword, false, true);
+            currentKeyword = keyword;
+		}
+
+		function fnSearch(keyword, isLoadMore, isRefresh) {
+			$service.get('user/usersByCondition.ajax', {
+				keywords : keyword,
+				pageIndex : pageIndex,
+				pageSize : 20
+			}, function(ret, err) {
+				api.refreshHeaderLoadDone();
+				if (ret) {
+					if (ret.data && ret.data.length > 0) {
+						if (isRefresh) {
+							vue.list = [];
+						}
+                        fnAppendData(vue.list, ret.data);
+					} else {
+						if (isLoadMore) {
+							fnToast("没有更多");
+						}else {
+                            vue.list = [];
+                        }
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			}, isRefresh);
+		}
+
+		function fnAppendData(oldArr, data) {
+			for (var i = 0; i < data.length; i++) {
+				if (fnIsEmpty(data[i].userImg)) {
+					data[i].userImg = '../../image/home/tmp_default_header.png';
+				}
+				if (fnIsEmpty(data[i].userName)) {
+					data[i].userName = data[i].userId;
+				}
+                data[i].selfId = userId;
+                oldArr.push(data[i]);
+			}
+			return oldArr;
+		}
+	</script>
+</html>

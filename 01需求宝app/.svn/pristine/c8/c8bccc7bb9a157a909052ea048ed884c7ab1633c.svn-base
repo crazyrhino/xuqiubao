@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta content="yes" name="apple-touch-fullscreen">
+  <meta content="telephone=no,email=no" name="format-detection">
+  <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <title>知道</title>
+    <link rel="stylesheet" href="css/skin.css">
+  <style>
+  </style>
+</head>
+
+<body>
+  <div class="wrap" id="answers">
+      <div class="supplementContent" style="background:#fff">
+          <div><span style="word-break:break-all;word-wrap: break-word;" id="scTittle" v-html="tittles"></span></div>
+          <textarea style="border:none;border: .12rem solid #f6f6f7;word-break:break-all;word-wrap: break-word;"
+          	 id="textareas" rows="4" cols="20" name="orgAuditDesc" @input="handleQuery"
+          	  placeholder="补充说明(选填)" v-model="contents"></textarea>
+       </div>
+       <div class="footer">
+        <div id="footerImg">
+            <p>最多添加三张图片</p>
+            <div id="footerImgs">
+                <div v-if="showImgs">
+                    <li id="imgLiPos" v-for="(item,index) in thuImgs" :key="index">
+                        <img style="object-fit:cover" @click="supplementImgs(thuImgs,index)" v-if="index<3" v-bind:src="item.thumbPath" alt="">
+                        <img v-if="index<3" @click="deleteImg(index)" id="imgPosition" src="./images/closeWin.png" alt="">
+                    </li>
+                </div>
+                <span v-if="thuImgs.length >= '3' ? false : true" @click="isIonaAopen()">
+                    +
+                </span>
+            </div>
+        </div>
+        </div>
+  </div>
+
+  <script src="./js/jquery-1.11.1.min.js"></script>
+  <script src="./js/js.js"></script>
+  <script type="text/javascript" src="../../script/vue.js"></script>
+  <script type="text/javascript" src="../../script/api.js"></script>
+  <script type="text/javascript" src="../script/service.js"></script>
+  <script type="text/javascript" src="../../script/fastclick.js"></script>
+  <script type="text/javascript" src="../../script/common.js?v=0"></script>
+  <script>
+      FastClick.prototype.onTouchEnd = function(event) {
+            if(event.target.hasAttribute("type") && event.target.getAttribute("type") == "text") {
+                event.preventDefault();　　　
+                return false;　　
+            }
+        }
+    var recruitId;
+	  var selectGoods = [];
+	  var haveSelectLabels;
+    function fnGetSelectedImgsa() {
+      answers.fnAppendData();
+        api.closeToWin({
+            name : api.winName
+        });
+    }
+    apiready = function() {
+      answers.tittles = api.pageParam.name
+      answers.fnAddNativeListener()
+        api.addEventListener({
+            name: 'thumbImgs'
+        }, function(ret, err) {
+            answers.thuImgs = ret.value.tImgs
+        });
+      answers.fnAddNativeListener()
+        if (api.safeArea.bottom > 0) {
+            $api.css($api.dom('.c_footer_bottom'),'padding-bottom:' + api.safeArea.bottom + 'rem');
+            $api.dom('.space').style.paddingBottom = api.safeArea.bottom + 'rem';
+        }
+            $api.css($api.dom('.c_footer'),'bottom:' + api.safeArea.bottom + 'rem');
+            recruitId = api.pageParam.recruitId;
+        fnOnFocus();
+        fnSetImgSrc('.c_upload_img', api.pageParam.record_video.thumbnailPath);
+        if (api.pageParam.topicId) {
+          selectCircleId = api.pageParam.topicId;
+          $api.dom('.c_circle').disabled = 'disabled';
+          fnExecSelectCircle(api.pageParam.topicId, api.pageParam.topicName, true);
+        }
+        $(document).on('touchmove', function(e) {
+          $api.dom('.c_title_input').blur();
+          $api.dom('.c_content_area').blur();
+        });
+        api.writeFile({
+            path : api.boxDir + '/selected_num.txt',
+            data : 0
+        });
+        fnInitEventListener();
+        $api.setStorage('selectGoods', selectGoods);
+        fnAddNativeListener();
+        fnKeyBoardListener();
+    };
+    function fnKeyBoardListener() {
+        api.addEventListener({
+            name : 'keyboardshow'
+        }, function(ret, err) {
+            $api.dom('.c_footer').style.position ='absolute';
+            $api.dom('.c_footer').style.bottom = ret.h - api.safeArea.bottom  + 'rem';
+        });
+        api.addEventListener({
+            name : 'keyboardhide'
+        }, function(ret, err) {
+            $api.dom('.c_footer').style.position ='fixed';
+            $api.css($api.dom('.c_footer'), 'bottom:' + api.safeArea.bottom + 'rem');
+        });
+    }
+    var answers = new Vue({
+      el:'#answers',
+      data:{
+        close:'取消',
+        submit:'提交',
+        titleName:'',
+        tittles:'',
+        textContent:'',
+        transImgs:[],//选择后图片存放地方path
+        imgPaths:[],//回调图片后的接口地址
+        aaa:[{"id":"23"}],
+        thuImgs:[],//本地路径
+        Jurisdiction:'0',
+        contents:'',
+        showImgsList:[],//显示大图
+        showImgs:true
+      },
+      methods:{
+        handleQuery:function(){
+          var _this = this
+          api.sendEvent({
+            name: 'myNumber',
+            extra: {
+                keyContent: _this.contents,
+            }
+          });
+        },
+        deleteImg:function(index){
+            this.thuImgs.splice(index,1)
+            this.imgPaths.splice(index,1)
+            api.sendEvent({
+                name: 'arrayImgList',
+                extra: {
+                    imgsList: this.imgPaths,
+                    isShangS:this.thuImgs
+                }
+            });
+        },
+        opensName:function(userList){
+          this.tittles = userList
+        },
+        backHome:function(){
+          api.closeWin({})
+        },
+        supplementImgs:function(item,index){
+            $event.isShowHomeTab(false);
+            var arr = [];
+            var showimgsList = '';
+            for(var i =0;i<item.length;i++){
+                showimgsList = item[i].path
+                arr.push(showimgsList)
+            }
+            $app.openWin('preview_picture', {
+                urlArr: arr,
+                activeIndex: index
+            }, {
+                url: '../topic/preview_picture.html'
+            })
+        },
+        fnAppendData:function() {
+            var _this = this
+            var data = JSON.parse(api.readFile({
+                sync : true,
+                path : api.boxDir + '/selectedImgs.txt'
+            }));
+            _this.aaa = data
+            _this.thuImgs = data
+            _this.transImgs = data
+            api.sendEvent({
+                name: 'arrayImgList',
+                extra: {
+                    isShangS: _this.thuImgs,
+                }
+            });
+            _this.postImg()
+        },
+        answerImgs:function(item,index){
+            $event.isShowHomeTab(false);
+            var arr = item
+            $app.openWin('preview_picture', {
+                urlArr: arr,
+                activeIndex: index
+            }, {
+                url: '../topic/preview_picture.html'
+            })
+        },
+        isIonaAopen:function(){
+            api.writeFile({
+                path : api.boxDir + '/selectedImgs.txt',
+                data : JSON.stringify(this.thuImgs)
+            });
+            api.readFile({
+                sync : true,
+                path : api.boxDir + '/selectedImgs.txt'
+            })
+            api.sendEvent({
+                name: 'mySupplement',
+                extra: {
+                    imgsList: this.thuImgs,
+                }
+            });
+            var _this = this
+            if (api.systemType === 'android') {
+                  if(this.Jurisdiction == '1'){
+                      api.openWin({
+                          name:'select_picture',
+                          url:'./select_picture.html',
+                          slidBackEnabled:false,
+                          pageParam:{
+                              imgsLists:_this.thuImgs
+                          }
+                      })
+                  }else{
+                      api.sendEvent({
+                          name : 'APICloudCallNaviteMethod',
+                          extra : {
+                              type : 9, // 权限管理
+                              tag:'supplement',
+                              canCallBack : 1, // 返回1时，说明有权限，可进行下一步操作
+                              command : ['android.permission.WRITE_EXTERNAL_STORAGE', 'android.permission.READ_EXTERNAL_STORAGE', 'android.permission.CAMERA'] // 需要哪些权限就在数组中传过来
+                          }
+                      });
+                  }
+                  
+        } else {
+          api.openWin({
+                name:'select_picture',
+                url:'./select_picture.html',
+                slidBackEnabled:false,
+                pageParam:{
+                    titleName:'supplement',
+                    imgsLists:_this.thuImgs
+                }
+            })
+        }
+      },
+        fnAddNativeListener:function() {
+          var _this = this
+          api.addEventListener({
+            name : 'NaviteCallAPICloudMethod'
+          }, function(rets, err) {
+                    var ret = rets.value;
+                    if(ret.type == 9){
+                      if(ret.success == 1){
+                          this.Jurisdiction = '1'
+                          api.writeFile({
+                                path : api.boxDir + '/selectedImgs.txt',
+                                data : JSON.stringify(_this.thuImgs)
+                            });
+                            api.readFile({
+                                sync : true,
+                                path : api.boxDir + '/selectedImgs.txt'
+                            })
+                          api.openWin({
+                              name:'select_picture',
+                              url:'./select_picture.html',
+                              slidBackEnabled:false,
+                              pageParam:{
+                                  titleName:'supplement',
+                                  imgsLists:_this.thuImgs
+                              }
+                          })
+                      }
+                    }
+                    var arr = ret.data.urls
+                    _this.showImgsList = ret.data.urls
+                    var newImg = []
+                    for(var i=0;i<arr.length;i++){
+                        newImg.push({
+                            img:arr[i]
+                        })
+                    }
+                    if(newImg > 0){
+                        _this.showImgs = false
+                    }else{
+                        _this.showImgs = true
+                    }
+                    _this.imgPaths = newImg
+                    // 广播图片多少张
+                    api.sendEvent({
+                        name: 'arrayImgList',
+                        extra: {
+                            imgsList: _this.imgPaths,
+                            isShangS:_this.thuImgs
+                        }
+                    });
+            if (ret.type == 9) {
+              if (ret.success == 1) {
+
+              } else {
+                // fnToast('没有相应权限', 'middle');
+                api.alert({
+                  title : '提示',
+                  msg : '没有相机权限，请进入设置添加应用的相机/相册权限',
+                  buttons : ['确定']
+                }, function(ret, err) {
+                });
+              }
+            }
+          });
+        },
+        isIonaA:function(){//判断相机权限
+          var _this = this
+          if (api.systemType === 'android') {
+            api.sendEvent({
+              name : 'APICloudCallNaviteMethod',
+              extra : {
+                type : 9, // 权限管理
+                canCallBack : 1, // 返回1时，说明有权限，可进行下一步操作
+                command : ['android.permission.WRITE_EXTERNAL_STORAGE', 'android.permission.READ_EXTERNAL_STORAGE', 'android.permission.CAMERA'] // 需要哪些权限就在数组中传过来
+              }
+            });
+          } else {
+            _this.postImg()
+          }
+        },
+        postImg:function(){//与RN交互'
+        var url = HOST + '/v3/h5/sg/upLoadCommentPicture.html';
+            var token = api.readFile({
+                sync : true,
+                path : api.boxDir + '/token.txt'
+            });
+            var files = [];
+            for (var i = 0; i < this.transImgs.length; i++) {
+                files.push(this.transImgs[i].path);
+            }
+            api.sendEvent({
+                name : 'APICloudCallNaviteMethod',
+                extra : {
+                    tag:api.winName,
+                    type : 4,
+                    canCallBack : 1,
+                    command : api.systemType === 'android' ? [url, token, 0, 0, null, files] : [url, token, 0, 0, 80, files, 1]
+                }
+            });
+        },
+        
+      }
+    })
+  </script>
+  <script>
+        $('textarea').on( 'touchstart', function() {
+          $(this).focus();
+        });
+    </script>
+</body>
+
+</html>

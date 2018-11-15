@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>视频话题列表frame</title>
+    <meta name="viewport"
+          content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+    <link rel="stylesheet" href="../../css/aliPlayer.css"/>
+    <style type="text/css">
+        /***********视频列表部分*******/
+        body {
+            background-color: #F4F4F4;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+
+        .no-data {
+            text-align: center;
+            overflow: hidden;
+            height: 100%;
+            background: #fff;
+        }
+
+        .no-data img {
+            height: 97px;
+            width: 6.2rem;
+            margin: 7.8rem auto 12px auto;
+        }
+
+        .no-data p {
+            font-size: 15px;
+            color: #999;
+        }
+
+        .video_item {
+            box-sizing: border-box;
+            padding: 0.5rem 0.8rem 0 0.8rem;
+            background: #fff;
+            margin-bottom: 0.2rem;
+        }
+
+        .video_top {
+            display: flex;
+            display: -webkit-box;
+            display: -webkit-flex;
+            flex-direction: row;
+            position: relative;
+            width: 100%;
+        }
+
+        .header-wrap {
+            width: 2rem;
+            position: relative;
+            margin-right: .4rem;
+        }
+
+        .user_head {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+        }
+
+        .red_vip, .yellow_vip, .purple_vip {
+            position: absolute;
+            top: 1.2rem;
+            left: 1.2rem;
+            height: .75rem;
+            width: .75rem;
+        }
+
+        .user_info {
+            margin-left: 0.2rem;
+            width: 70%
+        }
+
+        .user_name {
+            font-size: 0.75rem;
+            color: rgb(33, 33, 33);
+            margin: 0;
+            margin-top: 1px;
+            font-weight: bold;
+            line-height: 1.3;
+        }
+
+        .user_info_detail {
+            font-size: 0.6rem;
+            color: rgb(126, 126, 126);
+        }
+
+        .from {
+            margin-left: 0.64rem;
+        }
+
+        .more {
+            position: absolute;
+            right: 0.15rem;
+            width: 1.2rem;
+            height: 1.2rem;
+            transform: translateY(-50%);
+            -webkit-transform: translateY(-50%);
+            top: 50%;
+        }
+
+        .video_body_wrap {
+            color: #333;
+            font-size: 0.7rem;
+            letter-spacing: 0;
+            position: relative;
+        }
+
+        .video_title {
+            margin: 0.5rem 0 0.6rem 0;
+            color: rgb(54, 54, 54);
+            font-size: 0.8rem;
+            text-align: left;
+        }
+
+        .video_inner {
+            position: relative;
+            background-color: #000;
+            width: 100%;
+            /*height: 12.9rem;*/
+            height: 9.7rem;
+        }
+
+        .video_loading_img {
+            position: absolute;
+            width: 2rem;
+            height: 2rem;
+            left: 50%;
+            top: 50%;
+            margin-top: -1rem;
+            margin-left: -1rem;
+            background: url(../../image/loading.png) no-repeat center;
+            background-size: 2rem;
+            z-index: 99;
+            -webkit-animation: run 3s linear 0s infinite;
+        }
+
+        @-webkit-keyframes run {
+            from {
+                -webkit-transform: rotate(0deg);
+            }
+            to {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        .video_cover_img {
+            position: absolute;
+            width: 100%;
+            /*height: 12.9rem;*/
+            height: 9.7rem;
+            left: 0;
+            top: 0;
+            z-index: 99;
+            /*background-image: url("../../image/tmp.jpg");*/
+            background-color: #8FA8CC;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .video_play_btn, .video_pause_btn {
+            position: absolute;
+            width: 2.2rem;
+            height: 2.2rem;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            -webkit-transform: translate(-50%, -50%);
+            z-index: 99;
+            border-radius: 50%;
+        }
+
+        .video_duration {
+            position: absolute;
+            height: 1rem;
+            width: 2.8rem;
+            line-height: 1rem;
+            right: 0.4rem;
+            bottom: 0.4rem;
+            color: #FFF;
+            font-size: 0.6rem;
+            z-index: 10000;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 1rem;
+        }
+
+        .video_no_wifi {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            z-index: 88;
+        }
+
+        .no_wifi_toast {
+            position: absolute;
+            left: 50%;
+            top: 20%;
+            margin-left: -6rem;
+            width: 12rem;
+            height: 3.25rem;
+            line-height: 1.1rem;
+            padding: 0.45rem 1.15rem;
+            font-size: 0.8rem;
+            color: #FFF;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.70);
+            border-radius: 0.4rem;
+            box-sizing: border-box;
+        }
+
+        .no_wifi_play {
+            position: absolute;
+            left: 50%;
+            top: 70%;
+            margin-left: -2.35rem;
+            width: 4.7rem;
+            height: 1.5rem;
+            line-height: 1.5rem;
+            font-size: 0.7rem;
+            color: #FF6026;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.55);
+            border-radius: 0.75rem;
+            box-sizing: border-box;
+        }
+
+        .no_wifi_play_img {
+            position: absolute;
+            width: 1.2rem;
+            height: 1.2rem;
+            top: 3px;
+            left: 0.75rem;
+        }
+
+        .no_wifi_go_on {
+            position: absolute;
+            width: 2rem;
+            height: 1.5rem;
+            line-height: 1.5rem;
+            text-align: center;
+            right: 0.75rem;
+            top: 0px;
+        }
+
+        .video_no_net {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            z-index: 100;
+        }
+
+        .no_net_toast {
+            position: absolute;
+            left: 50%;
+            top: 20%;
+            margin-left: -6rem;
+            width: 12rem;
+            height: 1.6rem;
+            line-height: 1.6rem;
+            font-size: 0.8rem;
+            color: #fff;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.70);
+            border-radius: 0.4rem;
+            box-sizing: border-box;
+        }
+
+        .no_net_play {
+            position: absolute;
+            left: 50%;
+            top: 70%;
+            margin-left: -2.35rem;
+            width: 4.7rem;
+            height: 1.5rem;
+            line-height: 1.5rem;
+            font-size: 0.7rem;
+            color: #fff;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.55);
+            border-radius: 0.75rem;
+            box-sizing: border-box;
+            z-index: 100;
+        }
+
+        .video_control_wrap {
+            overflow: hidden;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+        }
+
+        .video_control {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 99;
+            height: 1.2rem;
+            line-height: 1.2rem;
+        }
+
+        .progress_bar {
+            width: 0px;
+            height: 0.1rem;
+            background: #FF6026;
+        }
+
+        .progress_outer {
+            position: absolute;
+            left: 0px;
+            top: -9px;
+            padding: 0.25rem;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 1rem;
+            background: rgba(0, 0, 0, 0);
+            box-sizing: border-box;
+        }
+
+        .progress_end {
+            padding: 0.1rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 0.5rem;
+            background: rgba(255, 96, 38, 0.35);
+            box-sizing: border-box;
+        }
+
+        .progress_end_inner {
+            width: 0.3rem;
+            height: 0.3rem;
+            border-radius: 0.3rem;
+            background: rgba(255, 96, 38, 1);
+        }
+
+        .top_video_time {
+            float: left;
+            padding-left: 0.8rem;
+            font-size: 0.5rem;
+            color: #FFF;
+        }
+
+        .video_bottom {
+            position: relative;
+            overflow: hidden;
+            /*display: flex;*/
+            /*flex-direction: row;*/
+            /*justify-content: flex-end;*/
+            height: 2rem;
+            line-height: 2rem;
+            text-align: right;
+        }
+
+        .bottom-item {
+            height: 2rem;
+            line-height: 2rem;
+            text-align: right;
+            display: inline-block;
+        }
+
+        .num_img {
+            width: 1.2rem;
+            height: 1.2rem;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .num_txt {
+            font-size: 0.6rem;
+            color: #999;
+        }
+
+        .fine-label {
+            width: 0.9rem;
+            height: 2rem;
+            line-height: 2rem;
+            background: url(../../image/rank/jx@3x.png) no-repeat center;
+            background-size: 0.9rem;
+            background-size: contain;
+            vertical-align: sub;
+            margin-right: 0.4rem;
+            float: left;
+
+        }
+    </style>
+</head>
+<body>
+<ul class="list" id="list" v-cloak>
+    <div v-if="list.length == 0" v-cloak class="no-data">
+        <img src="../../image/empty/nojz@2x.png" alt="">
+        <p>暂无动态</p>
+    </div>
+    <li class="video_item" v-for="(item,index) in list" :key="index" id="item.id" @click="goToDetail(item.id)">
+        <!--个人信息头部-->
+        <div class="video_top">
+            <!--<img class="user_head" :src="item.userHead" @click.stop="gotoUserInfo(item)"/>-->
+            <div class="header-wrap" tapmode @click.stop="gotoUserInfo(item)">
+                <img class="user_head" src="../../image/home/tmp_default_header.png" :src="item.userHead"/>
+                <img v-if="item.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png" alt=""/>
+                <img v-if="item.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png" alt=""/>
+                <img v-if="item.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png" alt=""/>
+            </div>
+
+            <div class="user_info">
+                <h3 class="user_name aui-ellipsis-1" v-text="item.userName" @click.stop="gotoUserInfo(item)">234555
+                </h3>
+                <div class="user_info_detail">
+                    <span class="time">{{formatDateTime(item.publishTime)}}</span>
+                    <!--<span class="from">来自 顺逛PC</span>-->
+                </div>
+            </div>
+            <img class="more" src="../../image/edit_topic/more@3x.png" @click.stop="fnShare(item)"/>
+        </div>
+        <!--视频容器-->
+        <div class="video_body_wrap">
+            <div class="video_title aui-ellipsis-2">
+                {{item.title}}
+            </div>
+            <div class="video_body">
+                <div class="video_inner" @click.stop="videoPlaying(item,index)">
+                    <div :id="'video_' + item.id" tapmode></div>
+                    <div v-show="item.imgShow" class="video_cover_img"
+                         :style="{'background-image':'url('+item.storyMediaList[0].url+'?x-oss-process=video/snapshot,t_3000,f_jpg )'}"
+                         alt="">
+                    </div>
+                    <!--<img v-show="!item.startPlay" class="video_play_btn"-->
+                    <!--src="../../image/edit_topic/play.png" @click.stop="startPlaying(item, index)"/>-->
+                    <!--缓冲loading-->
+                    <div class="video_loading_img" v-show="item.isWaiting"></div>
+                    <!--无wifi提示-->
+                    <div class="video_no_wifi" v-show="!item.itemWifi">
+                        <div class="no_wifi_toast">
+                            当前处于非wifi网络状态,已暂停播放,是否继续
+                        </div>
+                        <div class="no_wifi_play" tapmode @click.stop="fnPlayNoWifi(item, index)">
+                            <img class="no_wifi_play_img" src="../../image/edit_topic/play.png" alt=""/>
+                            <span class="no_wifi_go_on">继续</span>
+                        </div>
+                    </div>
+                    <!--无网络提示-->
+                    <div class="video_no_net" v-show="!item.itemNet">
+                        <div class="no_net_toast">
+                            视频加载失败，请检查网络
+                        </div>
+                        <!--<span class="no_net_go_on" @click.stop="fnPlayRefresh()"></span>-->
+                        <div class="no_net_play" tapmode @click.stop="fnPlayReplay(item,index)">
+                            点击重试
+                        </div>
+                    </div>
+                    <!--重播图片-->
+                    <!--<img v-show="item.reLoad" class="video_play_btn"-->
+                    <!--src="../../image/edit_topic/cb@2x.png" @click.stop.self="fnPlayPause(item, index)"/>-->
+                    <img v-show="!item.playing" class="video_play_btn"
+                         src="../../image/edit_topic/play.png" @click.stop="startPlaying(item, index)"/>
+                    <!--视频控制器-->
+                    <div class="video_control_wrap" v-show="item.isControl">
+                        <!--播放暂停按钮-->
+                        <img v-show="item.playing" class="video_pause_btn" @click.stop="fnPlayPause(item, index)"
+                             src="../../image/edit_topic/pause.png"/>
+                        <!--进度条控件-->
+                        <div class="video_control">
+                            <div class="progress_bar" :style="{'width':item.processWidth}"></div>
+                            <!--进度位置-->
+                            <div class="progress_outer" :style="{'left':item.processLeft}">
+                                <div class="progress_end">
+                                    <div class="progress_end_inner"></div>
+                                </div>
+                            </div>
+                            <!--视频时间-->
+                            <div class="top_video_time">
+                                <span class="current_time" v-text="item.duration">00:04</span>/<span
+                                    class="video_duration_con" v-text="item.durationTime">00:08</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="video_duration" v-text="item.duration" v-show="item.isDuration"></div>
+            </div>
+        </div>
+        <!--评论点赞功能-->
+        <div class="video_bottom">
+            <div v-if="item.isChoice != 0" class="fine-label"></div>
+            <div class="bottom-item" :style="{'float':item.isChoice!=0?'none':'left'}">
+                <img class="num_img" src="../../image/community/gk@3x.png" alt=""/>
+                <span class="num_txt" v-text="fnShowCount(item.browserNumber)">2355</span>
+            </div>
+            <div class="bottom-item">
+                <img class="num_img" src="../../image/community/Message@3x.png" alt=""/>
+                <span class="num_txt" v-text="fnShowCount(item.commentNumber)">2455</span>
+            </div>
+            <div class="bottom-item">
+                <img v-if="item.userPraiseFlag == 0" class="num_img" src="../../image/community/zan@3x.png"
+                     alt="" @click.stop="fnPraise(item,index)"/>
+                <img v-else class="num_img" src="../../image/mine/zans.png" alt=""
+                     @click.stop="fnPraise(item,index)"/>
+                <span class="num_txt" v-text="fnShowCount(item.praiseNumber)">5555</span>
+            </div>
+        </div>
+    </li>
+    <div style="height:2.7rem;background-color: #fff"></div>
+</ul>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript" src="../../script/aliPlayer.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/signature.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript">
+    var pageIndex = 1;
+    var totalCount = 0;
+    var vm;
+    var currentPlayingVideoIndex = "";
+    var currentPlayer = null;
+    var shareTopicInfo;
+    var isShare = false;
+    var isOpen = false;
+    var playerArr = [];
+    apiready = function () {
+        initVue();
+        initView();
+        initListener();
+        initParam();
+        // fnAddProgressBarListener();
+    };
+
+    function initParam() {
+        $app.fnSetRefresh(function () {
+            if (currentPlayer != null) {
+                currentPlayer.pause();
+            }
+            currentPlayingVideoIndex = "";
+            currentPlayer = null;
+            pageIndex = 1;
+            videoType = 0;
+            api.sendEvent({name: "refresh_message_num"});
+            fnRemoveVideo();
+            vm.list = [];
+            playerArr = [];
+            getVideoListData(true);
+        })
+    }
+
+    function fnRemoveVideo(){
+        for (var i = 0; i < playerArr.length; i++) {
+            var parent = $api.byId(playerArr[i].el().id);
+            var video = parent.getElementsByTagName('video')[0];
+            if(video){
+                parent.removeChild(video);
+            }
+        }
+    }
+    function initVue() {
+        vm = $app.MyVue({
+            el: "#list",
+            data: {
+                list: [],
+                hasWifi: true,//默认是true有wifi
+                hasNet: true,//默认是有网络
+                continuePlay: false
+            },
+            methods: {
+                goToDetail: function (id) {
+                    fnHideTabBar();
+                    $app.openWin("topic_details", {
+                        type: 3,
+                        id: id,
+                        preWinName: api.winName,
+                        preFrameName: api.frameName
+                    }, {
+                        url: "../topic/topic_details.html?v=" + new Date().getTime()
+                    });
+                },
+                gotoUserInfo: function (item) {
+                    api.readFile({
+                        path: api.boxDir + '/userid.txt'
+                    }, function (ret, err) {
+                        if (ret) {
+                            //ret:{"data":"138306870,"status":"true"}
+
+                            var _userid = ret.data;
+                            if (_userid === '') {//如果没有userid
+                                fnOpenLogin();
+                                return
+                            }
+                            if (item.userId == _userid) {
+                                $app.openWin('mine', {}, {url: '../mine/mine.html?v=' + new Date().getTime()});
+                            } else {
+                                $app.openWin('ta_page', {userId: item.userId}, {url: '../ta_page/ta_page.html?v=' + new Date().getTime()});
+                            }
+                        }
+                    })
+                },
+                videoPlaying: function (item, index) { //切换控制器
+                    if (item.player) {
+                        if (item.player.getStatus() == 'playing' || item.player.getStatus() == 'pause' || item.player.getStatus() == 'ready' || item.player.getStatus() == 'ended' || item.player.getStatus() == 'waiting') {
+                            if (!item.itemNet || !item.itemWifi) {
+                                return;
+                            } else {
+                                if (!item.isControl) {
+                                    item.isControl = true;
+                                    item.isDuration = false;
+                                    vm.$forceUpdate();
+                                } else {
+                                    item.isControl = false;
+                                    item.isDuration = true;
+                                    vm.$forceUpdate();
+                                }
+                            }
+                        }
+                    }
+                },
+                formatDateTime: function (datetime) { //格式化时间
+                    if (!datetime)
+                        return "";
+                    var tempDate;
+                    tempDate = datetime.replace(/-/g, ':').replace(' ', ':');
+                    tempDate = tempDate.split(':');
+                    tempDate = new Date(tempDate[0], (tempDate[1] - 1), tempDate[2], tempDate[3], tempDate[4], tempDate[5]);
+                    var current_date = new Date().getTime();
+                    var mul = current_date - tempDate;
+                    var time = parseInt(mul / 1000);
+                    if (time < 60) {
+                        return "刚刚";
+                    } else if (time < 3600) {
+                        return parseInt(time / 60) + " 分钟前";
+                    } else if (time < 86400) {
+                        return parseInt(time / 3600) + " 小时前";
+                    }
+                    return datetime.split(' ')[0];
+                },
+                startPlaying: function (item, index) {//播放按钮
+                    // 关掉正在播放的
+                    if (currentPlayer !== null) {
+                        currentPlayer.pause();
+                        vm.list[currentPlayingVideoIndex].isWaiting = false;
+                        vm.list[currentPlayingVideoIndex].playing = false;
+                        vm.list[currentPlayingVideoIndex].imgShow = true;
+                        vm.list[currentPlayingVideoIndex].itemWifi = true;
+                        vm.list[currentPlayingVideoIndex].itemNet = true;
+                        vm.list[currentPlayingVideoIndex].isControl = false;
+                    }
+                    //将正在播放的视频重置
+                    currentPlayingVideoIndex = index;
+                    hidePlayBtn = false;
+                    currentPlayer = vm.list[currentPlayingVideoIndex].player;
+
+                    //点击播放按钮 就初始化播放器
+                    if (!item.player) {
+                        initAliPlayer(item, index, function (player) {
+                            player.on('play', function () {
+                                Vue.set(item, 'playing', true);
+                                Vue.set(item, 'imgShow', false);
+                                Vue.set(item,'isWaiting', false);
+                                vm.$forceUpdate();
+                            });
+                            player.on('pause', function () {
+                                if (!hidePlayBtn) {
+                                    // Vue.set(vm.list[currentPlayingVideoIndex], 'playing', false);
+                                    Vue.set(item, 'playing', false);
+                                }
+                            });
+                            player.on('waiting', function (e) {
+                                Vue.set(item, 'isWaiting', true);
+                            });
+                            player.on('playing', function (e) {
+                                Vue.set(item, 'playing', true);
+                                Vue.set(item, 'isWaiting', false);
+                                Vue.set(item, 'imgShow', false);
+                                vm.$forceUpdate();
+                            });
+
+                            player.on('ended', function () {
+                                Vue.set(item, 'imgShow', true);
+                                Vue.set(item, 'isControl', false);
+                                Vue.set(item, 'isWaiting', false);
+                                if (!hidePlayBtn) {//隐藏播放按钮
+                                    Vue.set(item, 'playing', false);
+                                }
+                                Vue.set(item, 'isDuration', true);
+                                //将duration制成总时间
+                                Vue.set(item, 'duration', item.durationTime);
+                            });
+                            player.on('timeupdate', function () {
+                                //检测网络
+                                testNet();
+                                //视频duration控制器
+                                // vm.$set(vm.list[currentPlayingVideoIndex], 'duration', fnDuration(player.getCurrentTime()));
+                                vm.$set(item, 'duration', fnDuration(player.getCurrentTime()));
+                                //进度条
+                                var width = api.systemType === 'android' ? (api.frameWidth - 32) * (player.getCurrentTime() / player.getDuration()) : (api.winWidth - 32) * (player.getCurrentTime() / player.getDuration());
+                                // vm.$set(vm.list[currentPlayingVideoIndex], "processWidth", width + 'px');
+                                vm.$set(item, "processWidth", width + 'px');
+                                // vm.$set(vm.list[currentPlayingVideoIndex], "processLeft", width - 13 + 'px');
+                                vm.$set(item, "processLeft", width - 13 + 'px');
+
+                                // vm.list[currentPlayingVideoIndex].playing = true;
+                                item.playing = true;
+                            });
+                            player.on('error', function (e) {
+                                console.log(JSON.stringify(e));
+                                // vm.$set(vm.list[currentPlayingVideoIndex], "waiting", false);
+                                vm.$set(item, "waiting", false);
+                                //当报错
+                                hidePlayBtn = true;
+                                item.player.pause();
+                                item.itemNet = false;
+                                item.isWaiting = false;
+                                item.isControl = false;
+                                item.playing = false;
+                                vm.$forceUpdate();
+                                // alert(JSON.stringify(e));
+                            });
+                            currentPlayer = player;
+                        });
+
+                    } else {//作为暂停播放按钮使用
+                        this.fnPlayPause(item, index);
+                    }
+                },
+                fnPlayPause: function (item, index) {//暂停按钮
+
+                    if (item.player.getStatus() == "playing" || item.player.getStatus() == "loading"
+                        || item.player.getStatus() == "waiting"||item.player.getStatus() == "ready") {
+                        console.log('正在播放');
+                        // console.log("1111"+item.player.getStatus());
+                        currentPlayer.pause();
+                        item.isControl = true;
+                        item.playing = false;
+                        item.waiting = false;
+                        item.imgShow = false;
+                        item.isDuration = false;
+                        // console.log(item.playing);
+                        vm.$forceUpdate();
+                    } else {
+                        // console.log("2222"+item.player.getStatus());
+                        currentPlayer.play();
+                        item.isControl = false;
+                        item.playing = true;
+                        item.waiting = false;
+                        item.imgShow = false;
+                        item.isDuration = true;
+                        vm.$forceUpdate();
+                    }
+                    currentPlayingVideoIndex = index;
+                    currentPlayer = vm.list[currentPlayingVideoIndex].player;
+
+                },
+                fnPlayNoWifi: function (item, index) {
+                    if (currentPlayer !== null) {
+                        currentPlayer.pause();
+                        item.isWaiting = false;
+                        item.playing = false;
+                    }
+                    hidePlayBtn = false;
+                    currentPlayingVideoIndex = index;
+                    currentPlayer = vm.list[currentPlayingVideoIndex].player;
+
+                    var connectionType = api.connectionType;
+                    if (connectionType !== "wifi") {
+                        vm.continuePlay = true;
+                    }
+                    item.itemWifi = true;
+                    item.player.play();
+                    vm.$forceUpdate();
+                },
+                fnPlayReplay: function (item, index) {
+                    if (currentPlayer !== null) {
+                        currentPlayer.pause();
+                        item.isWaiting = false;
+                        // vm.list[currentPlayingVideoIndex].playing = false;
+                    }
+                    currentPlayingVideoIndex = index;
+                    currentPlayer = vm.list[currentPlayingVideoIndex].player;
+                    console.log(vm.list[currentPlayingVideoIndex].player.getStatus());
+                    var connectionType = api.connectionType;
+                    console.log(connectionType);
+                    if (connectionType !== "none") {
+                        hidePlayBtn = false;
+                        item.itemNet = true;
+                        currentPlayer.play();
+                    } else if (connectionType == "none") {
+                        $app.toast("当前无网络，请链接网络再尝试");
+                        hidePlayBtn = true;
+                    }
+                },
+                fnShare: function (item) {
+                    api.readFile({
+                        path: api.boxDir + '/userid.txt'
+                    }, function (ret, err) {
+                        if (ret) {
+                            var _userid = ret.data;
+                            if (_userid === '') {
+                                fnOpenLogin();
+                                return;
+                            }
+                            api.setFrameAttr({
+                                name: 'edit_btn_frame',
+                                hidden: true
+                            });
+                            api.setFrameAttr({
+                                name: 'scroll_top_btn_frame',
+                                hidden: true
+                            });
+                            fnHideTabBar();
+                            shareTopicInfo = item;
+                            isShare = true;
+                            $app.openFrame('list_share_frame', null, null, {
+                                frameName: api.frameName
+                            }, {
+                                bounces: false
+                            })
+                        }
+                    });
+                },
+                fnPraise: function (item, index) {
+                    $http.GET(UrlRouter.getPraiseStory, {
+                        values: {
+                            storyId: item.id,
+                            userCode: item.userId
+                        }
+                    }, function (ret, err) {
+                        if (item.userPraiseFlag == 0) {
+                            vm.$set(vm.list[index], 'userPraiseFlag', 1);
+                            vm.$set(vm.list[index], 'praiseNumber', item.praiseNumber + 1);
+                        } else {
+                            vm.$set(vm.list[index], 'userPraiseFlag', 0);
+                            vm.$set(vm.list[index], 'praiseNumber', item.praiseNumber - 1);
+                        }
+                    });
+                },
+                fnReplaceComment: function (comment) {
+                    if (!$app.isEmpty(comment)) {
+                        comment = comment.replace(/<br\s*\/?>/gi, "\r\n");
+                        comment = comment.replace(/<br\/>/g, "\r\n");
+                        comment = comment.replace(/<br>/g, "\r\n");
+                        comment = comment.replace(/<[^>]+>/g, "");
+                        return comment;
+                    }
+                    return '';
+                },
+                fnShowCount: function (count) {
+                    if (count >= 10000) {
+                        return (count / 10000).toFixed(1) + '万';
+                    }
+                    return count;
+                },
+            },
+            mounted: function () {
+                // //监听滚动关闭视频
+                document.addEventListener("scroll", function () {
+                    var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                    var domList = $api.domAll('.video_item');
+                    for (var i = 0; i < domList.length; i++) {
+                        var domOffset_Top = $api.offset(domList[i]).t;
+                        var itemScrollTop = domOffset_Top - scrollTop;
+                        if (itemScrollTop > 400 || itemScrollTop < -270)
+                            if (currentPlayingVideoIndex === i) {
+                                if ((vm.list[i].player.getStatus() == "playing" || vm.list[i].player.getStatus() == "loading"||vm.list[i].player.getStatus() == "ready"||vm.list[i].player.getStatus() == "waiting") && !hidePlayBtn) {//当是播放状态并且没有wifi或net提示
+                                    vm.list[i].player.pause();
+                                    vm.list[i].playing = false;
+                                    vm.list[i].isControl = true;
+                                    vm.list[i].isDuration = false;
+                                    vm.list[i].isWaiting = false;
+                                    vm.$forceUpdate();
+                                }
+                            }
+                    }
+                    //回到顶部按钮
+                    if (scrollTop > api.winHeight * 3) {
+                        if (!isOpen) {
+                            api.execScript({
+                                name: 'root',
+                                script: 'fnOpenScrollTopBtnFrame();'
+                            });
+                            api.setPrefs({
+                                key: 'scroll_frame_name',
+                                value: api.frameName
+                            });
+                        }
+                        isOpen = true;
+                    } else {
+                        if (isOpen) {
+                            api.execScript({
+                                name: 'root',
+                                script: 'fnCloseScrollTopBtnFrame();'
+                            });
+                        }
+                        isOpen = false;
+                    }
+                });
+            }
+        })
+    }
+
+    function initView() {
+        getVideoListData();
+    }
+
+    //获取视频数据列表
+    function getVideoListData(isRefresh) {
+        if (!isRefresh) {
+            $app.showProgress();
+        }
+        var params = {
+            searchType: 6,
+            pageIndex: pageIndex,
+            pageSize: 10
+        }
+        if (videoType) {
+            params.videoType = videoType;
+        }
+        $http.GET(UrlRouter.getVideoList, {
+            values: params
+        }, function (ret) {
+            $app.hideProgress();
+            api.refreshHeaderLoadDone();
+            if (ret.ok == 1) {
+                totalCount = ret.data.totalCount;
+                if (ret.data.list.length != 0) {//有数据
+                    if (isRefresh) {
+                        vm.list = [];
+                    }
+                    for (var i = 0; i < ret.data.list.length; i++) {
+                        //播放器控件变量
+                        // durationTime:"",
+                        // duration:"",
+                        // playing:"",//播放按钮开关
+                        // imgShow:""//视频占位图是否显示 默认显示true
+                        //isControl:false;//控制器默认不显示
+                        //isWaiting:false//视频加载图片默认false
+                        var duration = 0;
+                        if (ret.data.list[i].storyMediaList[0].ext) {
+                            duration = JSON.parse(ret.data.list[i].storyMediaList[0].ext).duration;
+                            duration = fnDuration(duration);
+                            ret.data.list[i]["durationTime"] = duration;
+                            ret.data.list[i]["duration"] = duration;
+                        }
+                        if (!$app.isEmpty(ret.data.list[i].storyImgs)) {
+                            ret.data.list[i].storyImgs = ret.data.list[i].storyImgs.split(",");
+                            var lengths = ret.data.list[i].storyImgs.length;
+                            if (ret.data.list[i].storyImgs[lengths - 1] == '') {
+                                ret.data.list[i].storyImgs = [];
+                            }
+                        }
+                        if ($app.isEmpty(ret.data.list[i].userHead)) {
+                            ret.data.list[i].userHead = '../../image/home/tmp_default_header.png';
+                        } else if (ret.data.list[i].userHead.indexOf('ehaier') !== -1) {
+                            ret.data.list[i].userHead = ret.data.list[i].userHead + '@120_120';
+                        }
+                        if ($app.isEmpty(ret.data.list[i].userName)) {
+                            ret.data.list[i].userName = ret.data.list[i].userId;
+                        }
+                        if (ret.data.list[i].userName.length > 10) {
+                            ret.data.list[i].userName = ret.data.list[i].userName.substring(0, 10) + '...';
+                        }
+                        ret.data.list[i]["playing"] = false;//显示播放按钮
+                        ret.data.list[i]["imgShow"] = true;
+                        ret.data.list[i]["player"] = null;
+                        ret.data.list[i]["isControl"] = false;
+                        ret.data.list[i]["isDuration"] = true;
+                        ret.data.list[i]["isWaiting"] = false;
+                        ret.data.list[i]["processWidth"] = 0;//视频进度条
+                        ret.data.list[i]["processLeft"] = 0;//视频进度条
+                        // ret.data.list[i]["reLoad"] = false;
+                        ret.data.list[i]["itemNet"] = true;//无网络提示
+                        ret.data.list[i]["itemWifi"] = true;//无wifi提示
+                        //list数据
+                        vm.list.push(ret.data.list[i]);
+                    }
+                }
+            }
+        })
+    }
+
+    function closeVideo() {
+        currentPlayer.pause();
+        vm.list[currentPlayingVideoIndex].playing = false;
+        vm.list[currentPlayingVideoIndex].isControl = true;
+        vm.list[currentPlayingVideoIndex].isDuration = false;
+        vm.list[currentPlayingVideoIndex].isWaiting = false;
+        vm.$forceUpdate();
+    }
+
+    function initAliPlayer(item, index, callback) {
+        item.player = new Aliplayer({
+            id: 'video_' + item.id,
+            width: '100%',
+            height: "194px",
+            useH5Prism: true,
+            source: item.storyMediaList[0].url,
+            autoplay: true,
+            showBuffer: true,
+            playsinline: true,
+            x5_video_position: 'center',
+            preload: true,
+            skinLayout: false
+        }, function (player) {
+
+            playerArr.push(player);
+            //安卓去掉视频加载的图片
+            if ($app.SYSTEM_TYPE() === "android") {
+                var id = "#video_" + item.id + " video";
+                $api.attr($api.dom(id), "poster", "//widget/image/black.jpg");
+            }
+            if (callback) {
+                callback(player);
+            }
+        });
+    }
+
+    function initListener() {
+        $event.addEventListener('select_frame_event_' + 2, function (){
+            fnSwitchScrollTopBtn()
+        });
+        $event.addEventListener('change_frame_event', function (ret) {
+            if (currentPlayer != null) {
+                currentPlayer.pause();
+            }
+        });
+        //上拉加载
+        $event.scrollBottomListener(function () {
+            if (totalCount > pageIndex * 10) {
+                pageIndex++;
+                getVideoListData();
+            } else {
+                $app.toast('没有更多数据');
+            }
+        });
+        $event.addEventListener('NaviteCallAPICloudMethod', function (ret) {
+            api.hideProgress();
+            var ret = ret.value;
+            if (ret.type == 3) {
+                if (ret.tag !== api.frameName) {
+                    return;
+                }
+                api.hideProgress();
+                if (ret.success == 1) {
+                    isShare = true;
+                    fnSuccess();
+                    $app.toast('分享成功');
+                } else {
+                    $app.toast('分享失败');
+                }
+            } else if (ret.type == 13) {
+                if (ret.tag == 'resume') {
+                    fnSuccess();
+                    //ios退出app暂停视频
+                    setTimeout(function () {
+                        if (currentPlayer != null) {
+                            currentPlayer.pause();
+                        }
+                    }, 300)
+
+                } else if (ret.tag == "pause") {
+                    //退出app暂停视频 安卓
+                    if (currentPlayer != null) {
+                        currentPlayer.pause();
+                    }
+                }
+            } else if (ret.type == 11) {
+                if (ret.tag == 'leave' || ret.tag == 'tabbar') {
+                    if (currentPlayer != null) {
+                        currentPlayer.pause();
+                    }
+                }
+            }
+        });
+    }
+
+    //监听视频进度触摸事件
+    function fnAddProgressBarListener() {
+        var x;
+        if (currentPlayingVideoIndex || currentPlayingVideoIndex == 0) {
+            // var dom = $api.domAll('.progress_outer')[currentPlayingVideoIndex];
+            var dom = document.querySelectorAll('.progress_outer')[currentPlayingVideoIndex];
+            dom.addEventListener("touchstart", function (e) {
+                x = e.originalEvent.targetTouches[0].pageX;
+                if (!vm.list[currentPlayingVideoIndex].player)
+                    return;
+                vm.list[currentPlayingVideoIndex].player.pause();
+            });
+
+            // dom.addEventListener('touchend', function(e) {
+            //     if (!vm.list[currentPlayingVideoIndex].player)
+            //         return;
+            //     var currentTime = parseInt($api.dom('.progress_bar').style.width) / api.winWidth * vm.list[currentPlayingVideoIndex].player.getDuration();
+            //     vm.list[currentPlayingVideoIndex].player.seek(currentTime);
+            //     vm.list[currentPlayingVideoIndex].player.play();
+            // });
+            // var touchY = 0;
+            // var lastTouchY = 0;
+            // dom.addEventListener('touchmove', function(e) {
+            //     if (!vm.list[currentPlayingVideoIndex].player)
+            //         return;
+            //     var tmpX = e.originalEvent.targetTouches[0].pageX;
+            //     $api.dom('.progress_bar').style.width = tmpX + 'px';
+            //     $api.dom('.progress_outer').style.left = tmpX - 10 + 'px';
+            // });
+        }
+
+    }
+
+    function fnSuccess() {
+        api.setFrameAttr({
+            name: 'edit_btn_frame',
+            hidden: false
+        });
+        api.setFrameAttr({
+            name: 'scroll_top_btn_frame',
+            hidden: false
+        });
+        api.closeFrame({
+            name: 'list_share_frame'
+        });
+        if (isShare) {
+            $event.isShowHomeTab(true);
+            isShare = false
+        }
+    }
+
+    //网络检测
+    var hidePlayBtn = false;//隐藏播放按钮
+    function testWifi() {
+        var connectionType = api.connectionType;
+        if (connectionType == 'wifi') {//如果是wifi
+            return true;
+        } else if (connectionType !== 'wifi' && connectionType !== "none") {//4G/3G/2G网络
+            if (vm.continuePlay) {
+                return true;
+            } else {
+                hidePlayBtn = true;
+                currentPlayer.pause();
+                vm.list[currentPlayingVideoIndex].isControl = false;
+                vm.list[currentPlayingVideoIndex].itemWifi = false;
+                vm.list[currentPlayingVideoIndex].isWaiting = false;
+                // vm.list[currentPlayingVideoIndex].imgShow = true;
+                return false;
+            }
+        }
+    }
+
+    function testNet() {
+        var connectionType = api.connectionType;
+        if (connectionType == 'none') {//无网络
+            hidePlayBtn = true;
+            currentPlayer.pause();
+            vm.list[currentPlayingVideoIndex].itemNet = false;
+            vm.list[currentPlayingVideoIndex].isWaiting = false;
+            vm.list[currentPlayingVideoIndex].isControl = false;
+            // vm.list[currentPlayingVideoIndex].imgShow = true;
+            vm.$forceUpdate();
+            return false;
+        } else {//如果有网络
+            testWifi();
+        }
+    }
+
+    var videoType = 0;//筛选参数
+    function fnFilterVideoList(_videoType) {
+        //关掉播放的视频
+        if (currentPlayer !== null) {
+            currentPlayer.pause();
+            vm.list[currentPlayingVideoIndex].isWaiting = false;
+            vm.list[currentPlayingVideoIndex].playing = false;
+            vm.list[currentPlayingVideoIndex].isControl = true;
+            vm.list[currentPlayingVideoIndex].isDuration = false;
+        }
+        videoType = _videoType;
+        pageIndex = 1;
+        currentPlayingVideoIndex = "";
+        currentPlayer = null;
+        playerArr = [];
+        vm.list = [];
+        //回到顶部
+        fnScrollTop();
+        getVideoListData(true);
+        api.closeWin({
+            name: 'my_label_list'
+        });
+        api.execScript({
+            name: api.winName,
+            script: 'fnCurrentVideoType(' + videoType + ');'
+        });
+    }
+
+    function fnScrollTop() {
+        document.body.scrollTop = document.documentElement.scrollTop = 0;
+    }
+
+    function fnOpenLogin() {
+        $event.callRNEvent(1, 1, {
+            toPageName: 'Login'
+        });
+        if (currentPlayer != null) {
+            currentPlayer.pause();
+        }
+    }
+
+    function fnShareNative(platformType) {
+        var storyContent = vm.fnReplaceComment(shareTopicInfo.summary);
+        var url = SHARE_HOST + '/topic_details_frame.html?' + fnGetShareUrl();
+        var title = shareTopicInfo.title ? shareTopicInfo.title + '-顺逛微社区' : shareTopicInfo.userName + '的话题-顺逛微社区'; //分享标题
+        var content = storyContent ? storyContent.substr(0, 30) : '马上进入，参与话题讨论吧...';
+        var pic = shareTopicInfo.mainImg && shareTopicInfo.mainImg.indexOf('../') == '-1' ? shareTopicInfo.mainImg : 'http://www.ehaier.com/mstatic/wd/v2/img/sg.png';//分享图片，写绝对路径  是否后台获取
+        if ($app.isEmpty(pic)) {
+            pic = 'http://www.ehaier.com/mstatic/wd/v2/img/sg.png';
+        }
+        api.showProgress();
+        $event.callRNEvent(3, 1, {
+            command: [title, content, pic, url, 0, platformType]
+        })
+    }
+
+    function fnCopy() {
+        var clipBoard = api.require('clipBoard');
+        clipBoard.set({
+            value: SHARE_HOST + '/topic_details_frame.html?' + fnGetShareUrl()
+        }, function (ret, err) {
+            if (ret && ret.status) {
+                $app.toast('复制成功');
+                fnSuccess()
+            } else {
+                $app.toast('复制失败');
+            }
+        });
+    }
+
+    function fnGetShareUrl() {
+        var memberId = api.readFile({
+            sync: true,
+            path: api.boxDir + '/userid.txt'
+        });
+        if ($app.isEmpty(memberId)) {
+            memberId = shareTopicInfo.userCode;
+        }
+        var params = {
+            type: shareTopicInfo.dataTypeNew,
+            id: shareTopicInfo.id,
+            memberId: memberId
+        };
+        return new Base64().encode(JSON.stringify(params));
+    }
+
+    //工具函数
+    function fnDuration(duration) {
+        if (duration) {
+            duration = parseInt(duration);
+            var second = parseInt(duration) % 60;
+            var min = parseInt(duration / 60);
+            if (min < 10) {
+                min = '0' + min;
+            }
+            if (second < 10) {
+                second = '0' + second;
+            }
+            return min + ":" + second;
+        }
+        return '00:00';
+    }
+
+    function fnHideTabBar() {
+        $event.isShowHomeTab(false)
+    }
+
+    function fnSwitchScrollTopBtn() {
+        var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        if (scrollTop > api.winHeight * 3) {
+            api.execScript({
+                name: 'root',
+                script: 'fnOpenScrollTopBtnFrame();'
+            });
+            api.setPrefs({
+                key: 'scroll_frame_name',
+                value: api.frameName
+            });
+            isOpen = true;
+        } else {
+            api.execScript({
+                name: 'root',
+                script: 'fnCloseScrollTopBtnFrame();'
+            });
+            isOpen = false;
+        }
+    }
+</script>
+</html>

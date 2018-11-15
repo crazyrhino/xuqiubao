@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>选择精华位置-弹窗</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/select_best_position.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+			body, html {
+				background: rgba(0,0,0,0);
+			}
+			.operation_div {
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="warp">
+			<div class="share_position">
+				<div class="main" tapmode onclick="fnCloseFram()"></div>
+				<div class="_share">
+					<div class="share">
+						<div class="share-title popup-flex popup-flex-h">
+							<div class="line popup-flex-flex1"></div>
+							<div class="title">
+								分享
+							</div>
+							<div class="line popup-flex-flex1"></div>
+						</div>
+						<div class="share-content">
+							<div class="first-line popup-flex popup-flex-h">
+								<div class="item popup-flex-flex1" tapmode="meui_click" onclick="fnShare(1)">
+									<div class="item-img">
+										<img src="../../image/rank/im-pyq@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										朋友圈
+									</div>
+								</div>
+								<div class="null-con"></div>
+								<div class="item popup-flex-flex1" tapmode="meui_click" onclick="fnShare(0)">
+									<div class="item-img">
+										<img src="../../image/rank/im-wx@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										微信
+									</div>
+								</div>
+								<div class="null-con"></div>
+								<div class="item popup-flex-flex1" tapmode="meui_click" onclick="fnShare(3)">
+									<div class="item-img">
+										<img src="../../image/rank/qq@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										QQ
+									</div>
+								</div>
+								<div class="null-con"></div>
+								<div class="item popup-flex-flex1" tapmode="meui_click" onclick="fnShare(4)">
+									<div class="item-img">
+										<img src="../../image/rank/im-qzone@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										QQ空间
+									</div>
+								</div>
+								<div class="null-con"></div>
+								<div class="item popup-flex-flex1" tapmode="meui_click" onclick="fnShare(2)">
+									<div class="item-img">
+										<img src="../../image/rank/im-wb@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										微博
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="second-line">
+							<div class="item" onclick="fnCopy()">
+								<div class="item-img">
+									<img src="../../image/rank/htdx1@2x.png" alt="">
+								</div>
+								<div class="item-name">
+									复制
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="share operation_div">
+						<div class="share-title popup-flex popup-flex-h">
+							<div class="line popup-flex-flex1"></div>
+							<div class="title">
+								操作
+							</div>
+							<div class="line popup-flex-flex1"></div>
+						</div>
+						<div class="share-content opertion operation_div_inner">
+							<div class="first-line popup-flex popup-flex-h">
+								<div class="item popup-flex-flex1" tapmode onclick="fnHide()">
+									<div class="item-img">
+										<img src="../../image/rank/htdx2@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										隐藏
+									</div>
+								</div>
+								<div class="null-con"></div>
+								<div class="item popup-flex-flex1">
+									<div class="item-img">
+										<img src="../../image/rank/htdx3@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										置顶
+									</div>
+								</div>
+								<div class="null-con"></div>
+								<div class="item popup-flex-flex1">
+									<div class="item-img">
+										<img src="../../image/rank/htdx4@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										精华
+									</div>
+								</div>
+								<div class="null-con"></div>
+								<div class="item popup-flex-flex1" tapmode onclick="fnDelete()">
+									<div class="item-img">
+										<img src="../../image/rank/htdx5@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										删除
+									</div>
+								</div>
+								<div class="null-con-max"></div>
+							</div>
+						</div>
+						<div class="share-content opertion only_delete">
+							<div class="first-line popup-flex popup-flex-h">
+								<div class="item" tapmode onclick="fnDelete()">
+									<div class="item-img">
+										<img src="../../image/rank/htdx5@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										删除
+									</div>
+								</div>
+								<div class="null-con-max"></div>
+							</div>
+						</div>
+					</div>
+					<div class="share-btn" tapmode onclick="fnCloseFram()">
+						取消
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script>
+		apiready = function() {
+			//fnRefreshOpen();
+			fnAddNativeListener();
+		}
+		
+		function fnAddNativeListener() {
+			api.addEventListener({
+				name : 'NaviteCallAPICloudMethod'
+			}, function(rets, err) {
+				var ret  = rets.value;
+				if (ret.type == 3) {
+				    api.hideProgress();
+					if (ret.success == 1) {
+						fnToast('分享成功','middle');
+						api.sendEvent({
+	                        name:'shrare_success'
+                        });
+					} else {
+						fnToast(ret.message,'middle');
+					}
+				}else if(ret.type == 13){
+                    api.hideProgress();
+                    if(ret.tag == 'resume'){
+                        api.sendEvent({
+                            name:'shrare_fail'
+                        });
+                    }
+                }
+			});
+		}
+		
+		function fnCopy(){
+			var clipBoard = api.require('clipBoard');
+			clipBoard.set({
+			    value: api.pageParam.shareUrl
+			}, function(ret, err) {
+			    if(ret &&　ret.status){
+			    	fnToast('复制成功','middle');
+                    api.closeFrame();
+			    }else{
+			    	fnToast('复制失败','middle');
+			    }
+			});
+		}
+		
+		function fnShare(platformType) {
+			var url = api.pageParam.shareUrl;
+			var title = api.pageParam.title;
+			var content = api.pageParam.content;
+			if(platformType == 2 ){
+				if(content && content.length >30){
+					content = content.substring(0,30);
+				}
+//				content += ' '+url;
+			}
+            var pic;
+            if(typeof api.pageParam.pic != 'undefined' && api.pageParam.pic.indexOf('../') == -1){
+                pic = api.pageParam.pic;
+            }else{
+                pic = 'http://www.ehaier.com/mstatic/wd/v2/img/sg.png';
+            }
+            // var pic = api.pageParam.pic.indexOf('../') == -1 ? api.pageParam.pic : 'http://www.ehaier.com/mstatic/wd/v2/img/sg.png';
+			var type = 0;
+            api.showProgress();
+            api.sendEvent({
+				name : 'APICloudCallNaviteMethod',
+				extra : {
+					type : 3,
+					canCallBack : 1,
+					command : [title, content, pic, url, type, platformType]
+				}
+			});
+		}
+
+		function fnCloseFram() {
+			api.closeFrame();
+		}
+	</script>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>我的发布</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/ranking_list_win.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+	</head>
+	<body>
+		<header id="header" class="rank_header">
+			<p class="rank_content"><img class="rank_back" src="../../image/rank/rank_back.png" tapmode onclick="fnBack()">我的发布
+			</p>
+		</header>
+		<div class="tabs" id="tabs">
+			<div class="tab tab_left" :class="(index==0)&&'tab_active'" tapmode="meui_click" onclick="fnChangeFrame(0)">
+				全部（<span class="all_count">0</span>）
+			</div>
+			<div class="tab tab_right" :class="(index==1)&&'tab_active'" tapmode="meui_click" onclick="fnChangeFrame(1)">
+				视频（<span class="video_count">0</span>）
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript">
+		var myVue = null;
+		apiready = function() {
+			//fnRefreshOpen();
+			fnInitVue();
+			var header = $api.byId('header');
+			fnSysHeaderStyleById();
+			var headerH = $api.offset(header).h;
+			var tabsH = $api.offset(tabs).h;
+			fnLog($api.offset(header),'header');
+			fnLog($api.offset(tabs),'tabs');
+			api.openFrameGroup({
+				name : 'comments_win',
+				rect : {
+					x : 0,
+					y : headerH + tabsH,
+					w : 'auto',
+					h : 'auto'
+				},
+				frames : [{
+					name : 'my_publis_all_frame',
+					url : 'my_publis_all_frame.html?v=' + new Date().getTime(),
+				}, {
+					name : 'my_publish_video_frame',
+					url : 'my_publish_video_frame.html?v=' + new Date().getTime(),
+				}]
+			}, function(ret, err) {
+				var index = ret.index;
+				myVue.index = index;
+			});
+            // setTimeout(fnRefreshOpen, 300);
+            fnBackListener(fnBack);
+        };
+		function fnInitVue() {
+			myVue = new Vue({
+				el : "#tabs",
+				data : {
+					index : 0,
+				}
+			})
+		}
+
+		var timeout;
+		function fnChangeFrame(index) {
+			myVue.index = index;
+			api.setFrameGroupIndex({
+				name : "comments_win",
+				index : index,
+				scroll : true,
+			});
+//			fnControlVideoPlay(index);
+		}
+
+		function fnControlVideoPlay(index) {
+			if (index == 0) {
+				api.execScript({
+					frameName : 'my_publish_video_frame',
+					script : 'fnPauseOnDisappear();'
+				});
+			} else {
+				timeout = setTimeout(function() {
+					api.execScript({
+						frameName : 'my_publish_video_frame',
+						script : 'fnPlayCurrentVideo();'
+					});
+				}, 1000);
+			}
+		}
+
+		function fnClearTimeout() {
+			clearTimeout(timeout);
+		}
+
+		function fnSetTotalCount(type, count) {
+			fnSetTxt('.' + type, count)
+		}
+	</script>
+</html>

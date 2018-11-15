@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta content="yes" name="apple-touch-fullscreen">
+  <meta content="telephone=no,email=no" name="format-detection">
+  <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <title>需求宝</title>
+  <link rel="stylesheet" href="css/skin.css">
+  <style>
+  .search-text{
+    color: red;
+  }
+</style>
+</head>
+
+<body>
+  <div class="wrap" id="askDemand">
+   <div id="topTitle" style="background:#f6f6f7">
+     <div class="topTitle">
+        <span @click="backHome()">取消</span>
+        <span>提需求</span>
+        <span :style="numbers > 4 ? 'color: #ff9500' : 'color: #a7a7a7'" id="toptest" @click="backNext()">
+          下一步
+        </span>
+     </div>
+   </div>
+  </div>
+</body>
+<script src="./js/jquery-1.11.1.min.js"></script>
+<script src="./js/js.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js?v=0"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script>
+  apiready = function () {
+    $event.isShowHomeTab(false);
+      $app.fixStatusBar('#topTitle');
+      var o = $api.dom('#topTitle');
+        var titleTop = $api.offset(o).h;
+      // if ($app.SYSTEM_TYPE() === 'ios') {
+      //   var titleTop = $('#topTitle').height()+14
+      // }else{
+      //   var titleTop = $('#topTitle').height()
+      // }
+      api.openFrame({
+          name: 'index_frame',
+          url: './index_frame.html',
+          rect: {
+              x: 0,
+              y: titleTop,
+              w: 'auto',
+              h: 'auto'
+          },
+          softInputBarEnabled:true,  //可以设置是否去掉键盘上的工具条
+      });
+      api.addEventListener({
+          name: 'indexsFrame'
+      }, function(ret, err) {
+          askDemand.numbers = ret.value.numberbb,
+          askDemand.keyWords = ret.value.numberContent,
+          askDemand.hanziN = ret.value.YesHanz
+          askDemand.hanNum = ret.value.YesNumber
+          askDemand.hanFh = ret.value.YesFhao
+          askDemand.hanBiao = ret.value.YesBiao
+      });
+      api.addEventListener({
+          name: 'keyback'
+      }, function(ret, err) {
+        askDemand.backHome()
+      });
+    };
+   var askDemand = new Vue({
+    el:'#askDemand',
+    data:{
+      showList:false,
+      numbers:'0',
+      hanziN:'',
+      hanNum:'',
+      hanFh:'',
+      hanBiao:'',
+      keyWords: '',//输入框
+      results: [],
+    },
+    methods:{
+      clearTimer:function() {
+        if (this.timer) {
+          clearTimeout(this.timer)
+        }
+      },
+      backHome:function(){
+            var jsfun = 'funcGotoBack();';
+            api.execScript({
+                frameName: 'index_frame',
+                script: jsfun
+            });
+            var isRoot = api.readFile({
+                sync : true,
+                path : api.boxDir + '/isRoot.txt'
+            });
+            if(isRoot == 'isRoot'){
+                api.writeFile({
+                    path : api.boxDir + '/isRoot.txt',
+                    data : ''
+                });
+                api.writeFile({
+                    path : api.boxDir + '/topicId.txt',
+                    data : ''
+                });
+                api.sendEvent({
+                    name : 'APICloudCallNaviteMethod',
+                    extra : {
+                        type : 6
+                    }
+                });
+            }else{
+                api.execScript({
+                    frameName: api.winName + '_frame',
+                    script: 'fnHideKeyBoard();'
+                });
+                api.openFrame({
+                    name : 'exit_hints',
+                    url : '../popup/exit_hints.html',
+                    rect : {
+                        x : 0,
+                        y : 0,
+                        w : 'auto',
+                        h : 'auto'
+                    },
+                    pageParam : api.pageParam,
+                    bgColor : 'rgba(0,0,0,0)',
+                    bounces : false
+                });
+        }
+      },
+      backNext:function(){
+        // 是否大于5字符
+        if(this.numbers >= 5){
+          // 是否大于一个汉字
+          if(this.hanziN || this.hanNum || this.hanFh || this.hanBiao){
+            api.openWin({
+            name:'supplement',
+            url:'./supplement.html',
+            slidBackEnabled:false,
+            pageParam:{
+                name:this.keyWords
+              }
+            })
+          }else{
+            api.toast({
+              msg: '请正确输入需求内容',
+              duration: 2000,
+              location: 'middle'
+            });
+          }
+        }else{
+          api.toast({
+            msg: '请正确输入需求内容',
+            duration: 2000,
+            location: 'middle'
+          });
+        }
+            
+      }
+    }
+  })
+</script>
+</html>

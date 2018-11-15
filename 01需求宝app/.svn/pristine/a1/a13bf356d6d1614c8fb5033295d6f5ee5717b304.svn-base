@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta content="telephone=no,email=no" name="format-detection">
+    <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <title>提创意 - 我的需求宝 - 顺逛</title>
+    <link rel="stylesheet" href="css/public.css">
+    <style type="text/css">
+        .box {
+            background: #f6f6f6;
+            height: 90vh;
+        }
+
+        .top {
+            width: 100%;
+            position: relative;
+            background-color: #f6f6f6;
+            height: 2.8rem;
+            line-height: 2.8rem;
+            border-bottom: 1px solid #e1e1e1;
+            position: relative;
+            background-color: #f6f6f6;
+        }
+
+        .t_left {
+            width: 20%;
+            text-align: left;
+            padding-left: 15px;
+            float: left;
+        }
+
+        .t_left img {
+            width: 1.2rem;
+        }
+
+        .title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #555;
+            width: 100%;
+            float: left;
+            margin-left: 30%;
+        }
+
+        .t_right {
+            position: absolute;
+            right: 15px;
+            top: 0;
+            color: #f60;
+            font-weight: bold;
+            width: 100px;
+            text-align: right;
+            height: 30px;
+            padding-right: 15px;
+        }
+
+        .idea {
+            height: 100%;
+            background-color: #fff;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .idea h4 {
+            padding: 5px;
+            color: #666;
+        }
+
+        .idea textarea {
+            width: 90%;
+            margin: 0 auto;
+            height: 150px;
+            border: 1px solid #eee;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .idea li {
+            padding: 5px 10px;
+            position: relative;
+            clear: both;
+        }
+
+        .idea input {
+            width: 90%;
+            height: 36px;
+            line-height: 36px;
+            margin-left: 5px;
+            padding-left: 10px;
+            border: 1px solid #eee;
+        }
+
+        .idea p {
+            position: absolute;
+            top: 50px;
+            left: 25px;
+            color: #999;
+        }
+
+        .idea dd {
+            width: 20%;
+            height: 30px;
+            line-height: 30px;
+            float: left;
+            margin-right: 10px;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .idea .curr {
+            background-color: #f60;
+            color: #fff;
+            border: 1px solid #f60;
+        }
+
+        .idea dl {
+            margin-bottom: 10px;
+        }
+
+        .idea input[type=submit] {
+            background-color: #f60;
+            color: #fff;
+            border: 1px solid #f60;
+            height: 40px;
+            line-height: 40px;
+            border-radius: 5px;
+            margin-top: 30px;
+        }
+
+        #info {
+            width: 90%;
+            overflow: auto;
+            height: 150px;
+            border: 1px solid #eee;
+            padding: 10px 0px 10px 10px;
+            font-size: 16px;
+            word-wrap: break-word;
+            word-break: break-all;
+            white-space: normal;
+        }
+
+        .top ul {
+            display: flex;
+            height: 2.8rem;
+            line-height: 2.8rem;
+        }
+    </style>
+</head>
+<body>
+<div class="box" id="idea">
+    <div class="idea">
+        <ul>
+            <li><input placeholder="你想发布的创意标题？" maxlength="42" id="title" v-model="title"/></li>
+            <li id="info_pk">
+                <h4>创意描述</h4>
+                <textarea maxlength="2000" placeholder="创意灵感来自什么场景？&#13;&#10;创意能解决什么问题？&#13;&#10;如何能将创意变成现实？" rows="4"
+                          cols="20" name="ideaDesc" v-model="ideaDesc" id="ideaDesc"></textarea>
+            </li>
+            <li><h4>创意分类</h4>
+                <dl id="tags">
+                    <dd :class="index ==0?'curr':''" v-for="(item,index) in tatsList" @click="settats(item)">{{item}}
+                    </dd>
+                </dl>
+            </li>
+            <li>
+                <input type="submit" @click="submitIdea()" value="提交创意 "/>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+<script src="./js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/common.js?v=0"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script>
+  function funcGotoBack(){
+      $('textarea').blur()
+      $('input').blur()
+  }
+  FastClick.prototype.onTouchEnd = function (event) {
+    if (event.target.hasAttribute("type") && event.target.getAttribute("type") == "text") {
+      event.preventDefault();
+      return false;
+    }
+  }
+
+
+  apiready = function () {
+    $event.isShowHomeTab(false);    
+  }
+  var box = new Vue({
+    el: '.box',
+    data: {
+      ideaDesc: "",
+      title: "",
+      tats: "",
+      tatsList: ['工业设计', '家居设计', '生活创意', '其他']
+    },
+    computed: {},
+    methods: {
+      settats: function (itme) {
+        this.tats = itme
+
+      },
+      blur: function (itme) {
+        // alert("设置焦点")
+      },
+
+      //数据提交接口
+      submitIdea: function (params) {
+
+
+//	     var a = new RegExp("[\\u4E00-\\u9FFF]+","g");
+//	     var b = a.test(that.title);//true,说明有汉字
+//	     var c = /[a-zA-Z0-9_\u4e00-\u9fa5]+/i;
+//	     var d = c.test(that.title)//true,有数字和字母
+//	     var e = /[`~%!@#^=''?~！@#￥……&——‘”“'？*()（），,。.、]+/i;
+//	     var f = e.test(that.title)//true,有特殊符号
+//	       	 
+//     	 alert(that.title)   	 
+//     	 alert(that.title.length)
+
+        if (this.Trim(this.title) == "") {
+          api.toast({
+            msg: '标题不能为空！',
+            duration: 1000,
+            location: 'middle'
+          });
+          return false
+        }
+
+        if (this.Trim(this.title).length < 5) {
+
+          api.toast({
+            msg: '标题不能少于5个字！',
+            duration: 1000,
+            location: 'middle'
+          });
+          return false
+        }
+
+        if (this.Trim(this.title).length > 42) {
+          api.toast({
+            msg: '标题不能大于42个字！',
+            duration: 1000,
+            location: 'middle'
+          });
+          return false
+        }
+
+        if (this.Trim(this.ideaDesc).length < 10) {
+          api.toast({
+            msg: '创意描述不能少于10个字！',
+            duration: 1000,
+            location: 'middle'
+          });
+          return false
+        }
+        if (this.Trim(this.ideaDesc).length > 2000) {
+          api.toast({
+            msg: '创意描述不能为空！',
+            duration: 1000,
+            location: 'middle'
+          });
+          return false
+        }
+
+        var jsons = {
+          "ideaTitle": this.Trim(this.title),
+          "ideaDesc": this.Trim(this.ideaDesc),
+          "ideaTag": this.tats,
+          "ideaImages": ""
+        }
+        $app.showProgress("提交中...", "")
+        //HOST
+        // $http.POST('http://mobiletest.ehaier.com:38080/v5/sgcommunity/tUcIdea/addIdea.ajax', {     
+
+        $http.POST(HOST + UrlRouter.addIdea, {
+          body: jsons
+        }, function (ret) {         
+          if (ret.ok == '1') {
+            $app.hideProgress()
+            fnToast('创意提交成功，我们会尽快回复...', 'middle')
+            api.closeWin();
+          } else {
+            api.toast({
+              msg: '提交失败,请重新提交..',
+              duration: 1000,
+              location: 'middle'
+            });
+            $app.hideProgress()
+          }
+
+        }, function (err) {
+          $app.hideProgress();
+          $app.toast(err.msg, 'middle');
+        });
+
+      },
+      Trim: function (str) {
+        return str.replace(/(^\s*)|(\s*$)/g, "");
+      }
+
+    }
+  })
+
+
+  $(function ($) {
+
+    $("#tags dd").click(function () {
+      $(this).attr('class', 'curr').siblings().attr('class', '');
+    })
+
+  })
+
+</script>
+</html>

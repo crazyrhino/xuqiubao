@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+		<style type="text/css">
+			body, html {
+				background: #fff;
+			}
+			.back{
+				height: 1.4rem;
+				width: 1.4rem;
+				background: url("../../image/edit_topic/edit_cancle.png") no-repeat center;
+				background-size: .8rem;
+			}
+
+			.save{
+				color: #999;
+				border: 1px solid #E4E4E4;
+				border-radius: .65rem;
+				width: 2.8rem;
+				height: 1.3rem;
+				transform: translateY(.5rem);
+				line-height: 1.3rem;
+			}
+			.publish{
+				background: #FF6026;
+				border-radius: .65rem;
+				width: 2.8rem;
+				height: 1.3rem;
+				color: #fff;
+				transform: translateY(.5rem);
+				line-height: 1.3rem;
+			}
+
+		</style>
+	</head>
+	<body>
+	<header class="aui-bar aui-bar-nav">
+		<a class="aui-pull-left aui-btn">
+			<span class="back" tapmode onclick="fnCancel()"></span>
+		</a>
+		<div class="aui-pull-right ">
+			<!--<div class="save aui-font-size-12 aui-margin-r-10" tapmode onclick="fnConfirm(0)">存草稿</div>-->
+			<div class="publish aui-font-size-12 aui-margin-r-5" tapmode onclick="fnConfirm(1)">发表</div>
+		</div>
+	</header>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/fastclick.js"></script>
+	<script type="text/javascript" src="../../script/common.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+            $app.fixStatusBar();
+            $api.fixTabBar($api.dom('footer'));
+            fnOpenFrame();
+			api.addEventListener({
+				name : 'keyback'
+			}, function(ret, err) {
+				api.execScript({
+            		frameName : 're_edit_topic_frame',
+	                script: 'fnBack();'
+                });
+			});
+		};
+		function fnOpenFrame() {
+            $app.openFrame('re_edit_topic_frame','header',null,null,{
+                bounces : false,
+                softInputMode : 'pan',
+                reload : true,
+                allowEdit : true,
+                softInputDismissMode:['tap','drag'],
+                url:'re_edit_topic_frame.html'
+            });
+		}
+
+		function fnCancel() {
+			api.execScript({
+			    frameName: api.winName + '_frame',
+			    script: 'fnHideKeyBoard();'
+			});
+			api.openFrame({
+				name : 'exit_hints',
+				url : '../popup/exit_hints.html',
+				rect : {
+					x : 0,
+					y : 0,
+					w : 'auto',
+					h : 'auto'
+				},
+				bgColor : 'rgba(0,0,0,0)',
+				bounces : false
+			});
+		}
+
+		function fnConfirm() {
+			api.execScript({
+				name : api.winName,
+				frameName : api.winName + '_frame',
+				script : 'fnCheck();'
+			});
+		}
+	</script>
+</html>

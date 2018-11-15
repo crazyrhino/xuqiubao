@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+ <html>
+   <head>
+        <meta charset="UTF-8">
+        <meta content="yes" name="apple-mobile-web-app-capable">
+        <meta content="yes" name="apple-touch-fullscreen">
+        <meta content="telephone=no,email=no" name="format-detection">
+        <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <title>知道</title>
+        <link rel="stylesheet" href="css/content.css">
+        <!-- <link rel="stylesheet" href="css/contentNews.css"> -->
+        <script src="./js/jquery.js"></script>
+        <style>
+        </style>
+   </head>
+   <body v-cloak>
+     <div v-cloak class="content">
+       <!-- 标题 -->
+       <div v-cloak class="nr" style="overflow: scroll;-webkit-overflow-scrolling: touch">
+           <div v-cloak class="tips">
+            <p v-cloak style="position: relative;">             
+                 <img @click="openPersonal(message.userCode)" :src="typeof(message.userImg) !== 'undefined' ?message.userImg : './images/tmp_default_header.png'" alt="">
+                 <!-- 大v标记 -->
+                 <img style="width: .9rem;height: .9rem;position: absolute;left:1.6rem;top: 1.2rem;" v-if="message.talentFlag==1" src="./images/red_vip.png" alt="">
+                  <img style="width: .9rem;height: .9rem;position: absolute;left:1.6rem;top: 1.2rem;" v-else-if="message.talentFlag==2" src="./images/yellow_vip.png" alt="">
+                  <img style="width: .9rem;height: .9rem;position: absolute;left:1.6rem;top: 1.2rem;" v-else-if="message.talentFlag==3" src="./images/purple_vip.png" alt="">
+                <!-- {{message.userImg}} -->
+            </p>
+                <p>
+                    <span @click="openPersonal(message.userCode)">{{message.userName | ellipsiss}}</span><br>
+                    <span class="cols">{{message.dynamicTimePostTime}}</span>
+                </p>
+                <!-- 关注 -->
+                <p v-show="currentLandholderFlag==1" ref="vch" @click="Notice()">{{notice}}</p>
+        </div>
+        <div v-cloak>
+            <!-- 问题内容展示 -->
+            <div v-cloak href="#" @click="fuzhi()" class="con" v-html="message.answersCommentNoStyle"></div>
+            <div v-cloak style="padding:0 1.13777778rem">
+                <span>
+                    <img style="object-fit: cover;width:7.2rem;height: 7.2rem;margin-right: .8rem;" v-for="(imgs,index) in message.imgArray" @click="fnPreviewPictureContent(message.imgArray,index)" :src='imgs' alt="">
+                </span>
+            </div>
+            <!-- 问题标题展示 -->
+            <div v-cloak class="reward">
+                <a @click="openChat(message.issueId)" class="a" href="#" v-html="message.title"></a>
+                <span class="shunguang">
+                <!-- {{message.title}} -->
+                </span>
+                <br>
+            </div>
+        </div>
+    <!-- 回答部分 -->
+        <div v-cloak class="answer">
+            <div v-cloak class="top">全部评论({{msg.length}})</div>
+            <!-- 没评论显示图片-->
+            <div v-cloak v-if="msg.length==0" class="pinglunFa"><img class="pinglun" src="./images/icon@3x.png" alt=""><br><span>暂无评论，来抢沙发吧</span></div>
+            <!-- 有评论显示内容  -->
+            <div v-cloak class="answertips" v-for="(value,index) in msg">
+                <div class="liuyan">
+                    <!-- 头像 -->
+                    <span style="position: relative;" @click=openPersonal(value.userCode) class="head">
+                        <img :src="typeof(value.userImg) !== 'undefined' ?value.userImg : './images/tmp_default_header.png'" alt="">
+                        <!-- 大v标记 -->
+                         <img style="width: .9rem;height: .9rem;position: absolute;left:1.6rem;top: 1.2rem;" v-if="value.talentFlag==1" src="./images/red_vip.png" alt="">
+                          <img style="width: .9rem;height: .9rem;position: absolute;left:1.6rem;top: 1.2rem;" v-else-if="value.talentFlag==2" src="./images/yellow_vip.png" alt="">
+                          <img style="width: .9rem;height: .9rem;position: absolute;left:1.6rem;top: 1.2rem;" v-else-if="value.talentFlag==3" src="./images/purple_vip.png" alt="">
+                          <!-- 网名 -->
+                          <!--  -->
+                    </span>
+                    <span @click="openPersonal(message.userCode)" style="display:inline-block;color:#333;font-family:PingFang-SC-Medium;font-size:1.13777778rem;margin-top:2.13333333rem;">{{value.userName | ellipsiss}}</span>
+                    <div class="ans_con">
+                        
+                        <p href="#" class="ly" v-html="value.answersComment">
+                            <!-- {{}} -->
+                        </p>
+                        <!-- 点赞等 -->
+                        <p class="sj" style="height: 1.8rem;overflow: hidden;text-align:right;">
+                            <!-- <span></span> -->
+                            <span @click="clickAdds(value)">
+                                <img style="width: 1.60888889rem;height: 1.5rem" :src="value.isAnswersPraise == 0 ? img3 : img2" alt="">
+                                <a style="color:#aba2a2;" href="javascript:;">{{value.isAnswersPraise}}</a>
+                            </span>
+                        </p>
+                    </div>
+                    </div>
+                </div>
+                <div v-show="msg.length>2" style="color:#ccc;text-align: center;margin-top:1rem;">没有更多评论</div>
+                <div style="height:4rem;"></div>
+            </div>
+       </div>
+       <div style=" width:100%;position: relative;height: 3rem;background: #fff;">
+            <footer style="padding-left:1rem;margin-left:0;width:750rem;position: fixed;height: 3rem; left: 0; right: 0;bottom: 0rem;" ref="foot" class="footers">
+                <div style="height:2rem;line-height:2rem;margin-right: 1rem;">
+                    <textarea  rows="1" id="my_input" placeholder="我要评论" style=" resize: none;width: 18rem;margin-right:1.5rem;" ref="ipts" v-model="iptval" @blur="huidaF()" @focus="huida()"></textarea>
+                </div>
+                <span style="display: inline-block;width: 2.5rem;height:4rem;text-align: center;line-height: 4rem;" v-show="show" @click="dianzan()">
+                    <img style="width: 1.60888889rem;height: 1.5rem" :src="Praise == 0 ? img3 : img2" alt=""><br> 
+                </span>
+                <p v-show="!show" style="background: #ddd;border-radius: 8px;box-shadow: 0px 0px 2px #ccc,-1px -1px 2px #ccc;color:#007ACC;" class="fabu" @click="daan()">发布</p>
+                <div style="height:2rem;"></div>
+            </footer>
+       </div>
+     </div>
+   </body>
+    <script src="./js/js.js"></script>
+    <script type="text/javascript" src="../../script/vue.js"></script>
+    <script type="text/javascript" src="../../script/api.js"></script>        
+    <script type="text/javascript" src="../../script/fastclick.js"></script>        
+    <script type="text/javascript" src="../../script/common.js?v=0"></script>
+   <script type="text/javascript">
+     $(function() {
+        //  alert(22)
+       $('input').on('click', function () {
+         var target = this;
+         // 使用定时器是为了让输入框上滑时更加自然
+         setTimeout(function(){
+           target.scrollIntoView(true);
+         },100);
+       });
+
+        var height=$(window).height();
+        $(".nr").css({
+            "height":height
+        })
+
+       
+     })
+       
+     apiready = function() {
+            var header = document.querySelector('#title');
+            $api.fixStatusBar(header);
+            content.getVal(api.pageParam.id, api.pageParam.issueId, api.pageParam.userName, api.pageParam.userCode, api.pageParam.isAnswersPraise);
+            // alert(api.pageParam.isAnswersPraise)
+            content.zan();
+            content.jiazai();
+            content.status();
+         
+        }
+        Vue.filter('ellipsiss', function (value) {
+           if (!value) return ''
+                if (value.length > 10) {
+                  return value.slice(0,10) + '...'
+                }
+                return value
+        })
+        var content = new Vue({
+            el: '.content',
+            data: {
+                message: {}, //获取详情评论
+                msg: {}, //获取对话题的评论详情
+                show: true,
+                iptval: "", //输入框内容绑定
+                now: "",
+                showImgs: true,
+                clickAdd: true,
+                clickAddNumber: '30',
+                guanzhu: 0,
+                three: "",
+                img: [], //显示图片数组
+                accept: { //接受所传的值
+                    answersCommentTo: '',
+                    answersCommentToCode: "",
+                    answersCommentId: '',
+                    issueId: ''
+                },
+                follow: "", //关注状态
+                img2: "./images/zang@3x.png",
+                img3: "./images/zan@3x.png",
+                img4: "./images/zan@3x.png",
+                img5:"./pic/u04.jpg",
+                notice: "+关注", //关注内容,
+                Praise: "",
+                btn:false,
+                currentLandholderFlag:""
+            },
+            computed:{
+            },
+            methods: {
+                load:function(){
+                    // alert(111)
+                },
+                //获取内容
+                /*HOST+UrlRouter
+                syTuijian:'/v5/sgcommunity/issue/getIssueListTops.ajax',//首页推荐
+                syTopthree:'/v5/sgcommunity/issue/getIssueListTopThree.ajax',//首页top3
+                myList:'/v5/sgcommunity/issue/getIssueList.ajax',//我的需求列表
+                myAnswer:'/v5/sgcommunity/issueAnswers/getIssueAnswersList.ajax',//我的回答列表
+                create:'/v5/sgcommunity/issue/getIssueListCreateDate.ajax',//解决需求页面
+                hdVal:'/v5/sgcommunity/issueAnswers/getQueryIssueAnswers.ajax',//回答详情页面
+                hdZan:'/v5/sgcommunity/issueAnswers/praiseIssueAnswers.ajax',//回答详情点赞
+                hdNotice:'/v5/sgcommunity/user/follow.ajax',//回答关注
+                plTwo:'/v5/sgcommunity/issueAnswers/addIssueAnswers.ajax',//二级评论
+            */
+                getVal:function(id, issid, name, code, par) {
+                    this.accept.answersCommentId = id
+                    this.accept.issueId = issid
+                    this.accept.answersCommentTo = name
+                    this.accept.answersCommentToCode = code
+                    this.Praise = par
+                    var that = this
+                    $http.GET(HOST+UrlRouter.hdVal, {
+                        values: {
+                            id: id
+                        }
+                    }, function(ret, err) {
+                        that.msg = ret.data.issueAnswersList;   
+                        that.message = ret.data.issueAnswers;
+                        // that.img = ret.data.issueAnswers.issueAnswersImgs.split(',');
+                        that.follow = ret.data.issueAnswers.isFollow;
+                        that.Praise=ret.data.issueAnswers.isAnswersPraise;
+                        that.currentLandholderFlag=ret.data.issueAnswers.currentLandholderFlag;
+                        // alert(ret.data.issueAnswers.userImg)
+                        that.changed()
+                        api.sendEvent({
+                            name: 'contentList',
+                            extra: {
+                                lists: ret.data
+                            }
+                        });
+                    })
+                    
+                },
+                getFormatCode:function(strValue){
+                    return strValue.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, ' ');
+                },
+                //二级回复
+                daan:function() {
+                    var aa=''
+                     var patt=/[\ud800-\udbff][\udc00-\udfff]/g; // 检测utf16字符正则
+                        aa = this.iptval.replace(patt, function(char){
+                            var H, L, code;
+                            if (char.length===2) {
+                                H = char.charCodeAt(0); // 取出高位
+                                L = char.charCodeAt(1); // 取出低位
+                                code = (H - 0xD800) * 0x400 + 0x10000 + L - 0xDC00; // 转换算法
+                                return "&#" + code + ";";
+                            } else {
+                                return char;
+                            }
+                        });
+
+                    this.btn=true
+                    var that = this
+                    var a = new RegExp("[\\u4E00-\\u9FFF]+","g");
+                    var b = a.test(that.iptval);//true,说明有汉字
+                    var c = /[a-zA-Z0-9_\u4e00-\u9fa5]+/i;
+                    var d = c.test(that.iptval)//true,有数字和字母
+                    var e = /[`~%!@#^=''?~！@#￥……&——‘”“'？*()（），,。.、]+/i;
+                    var f = e.test(that.iptval)//true,有特殊符号
+                    var g= /(\ud83c[\udf00-\udfff])|(\ud83d[\udc00-\ude4f])|(\ud83d[\ude80-\udeff])/;
+                    var h=g.test(that.iptval)
+                    // alert(this.iptval.length)
+                        if(b||d||f||h){
+                            var token = api.readFile({
+                                sync: true,
+                                path: api.boxDir + '/token.txt'
+                            });
+                            api.ajax({
+                                url: HOST+UrlRouter.plTwo,
+                                method: 'post',
+                                headers: {
+                                    'Content-Type': 'application/json;charset=utf-8',
+                                    'TokenAuthorization': token
+                                },
+                                data: {
+                                    body: {
+                                        answersComment: this.getFormatCode(aa),
+                                        answersCommentTo: this.accept.answersCommentTo,
+                                        answersCommentToCode: this.accept.answersCommentToCode,
+                                        answersCommentId: this.accept.answersCommentId,
+                                        issueId: this.accept.issueId
+                                    }
+                                },
+                            }, function(ret, err) {
+                                //让输入框内容清空
+                                that.iptval = "";
+                                this.show = true
+                                //
+                                var value;
+                                if (ret.data=="保存成功") {
+                                    value="发布成功"
+                                }else{
+                                    value="发布失败"
+                                }
+                                api.toast({
+                                    msg:value,
+                                    duration: 2000,
+                                    location: 'bottom' //'bottom'
+                                });
+                                //页面刷新
+                                location.reload();
+                            });
+                        }else{
+                            api.toast({
+                                msg:'请输入正确内容',
+                                duration: 2000,
+                                location: 'bottom' //'bottom'
+                            });
+                        }
+                },
+                //返回
+                backHome:function() {
+                    api.closeWin({})
+                },
+                //打开新页面
+                openChat:function(id) {
+                    api.openWin({
+                        name: 'details',
+                        url: './details.html',
+                        pageParam:{
+                            listId:id
+                        }
+                    })
+                },
+                //获取关注状态
+                changed:function() {
+                    if (this.follow == 1) {
+                        this.notice = "取消关注"
+                    } else {
+                        this.notice = "+关注"
+                    }
+                },
+                //关注和取消关注
+                Notice:function(con) {
+                    var that=this
+                    var token = api.readFile({
+                        sync: true,
+                        path: api.boxDir + '/token.txt'
+                    });
+                    if(token.indexOf("#") == -1){
+                        $event.callRNEvent(1, 1, {
+                            toPageName: 'Login'
+                        });
+                    }else{
+                    if (that.follow == 1) {
+                        // var _this = this
+                        $http.GET(HOST+UrlRouter.hdNotice, {
+                            values: {
+                                followId: that.accept.answersCommentToCode,
+                                type: "UnFollow"
+                            }
+                        }, function(ret, err) {
+                            that.follow = 0;
+                            that.notice = "+关注"
+                        })
+                    } else if (this.follow == 0) {
+                        // var _this = this
+                        $http.GET(HOST+UrlRouter.hdNotice, {
+                            values: {
+                                followId: this.accept.answersCommentToCode,
+                                type: "Follow"
+                            }
+                        }, function(ret, err) {
+                            that.follow = 1;
+                            that.notice = "取消关注"
+                        })
+                    }
+                   }
+                },
+                huida:function() {
+                    if ($app.SYSTEM_TYPE() === 'ios') {
+                        var height=$(window).height();
+                        setTimeout( $(".nr").css({
+                                "height":height-300
+                            }),100)
+                    }
+                   
+                    var token = api.readFile({
+                        sync: true,
+                        path: api.boxDir + '/token.txt'
+                    });
+                    if(token.indexOf("#") != -1){
+                       this.show = false;
+                        var my_input = document.getElementById('my_input');
+                        setInterval(function(){
+                          my_input.scrollIntoView(false);
+                        },0)
+                        // this.show = false;
+                        // var input = document.getElementById('my_input');
+                        //     var hasFocus = document.hasFocus() &&
+                        //     document.activeElement === input;
+                        // // if (hasFocus == true) {
+                            this.show = false
+                        
+                            if ($app.SYSTEM_TYPE() === 'ios') {
+                                document.querySelector("footer").style.position = "absolute"
+                                document.querySelector("footer").style.bottom = "1rem"
+                            }
+                    }else{
+                        // 跳转登录页面
+                        $event.callRNEvent(1, 1, {
+                            toPageName: 'Login'
+                        });
+                        document.querySelector("textarea").blur()
+                        // this.huida()
+                    }
+                    // alert(111)
+                 
+                        // }
+                
+                },
+                huidaF:function() {
+                    if ($app.SYSTEM_TYPE() === 'ios') {
+                        var height=$(window).height();
+                        $(".nr").css({
+                            "height":height
+                        })
+                    }
+                    
+                     // alert($(window).offset().top)  
+                    var that=this
+                    if ($app.SYSTEM_TYPE() === 'ios') {
+                            document.querySelector("footer").style.position = "fixed"
+                            document.querySelector("footer").style.bottom = "0rem"
+                        }
+                   
+                    setTimeout(function (){
+                        that.show = true
+                        
+                    },500)
+                }, 
+
+                clickAdds:function(item) {
+                    // var token = api.readFile({
+                    //     sync: true,
+                    //     path: api.boxDir + '/token.txt'
+                    // });
+                    // if(token.indexOf("#") != -1){
+                       this.praiseIssue(item)
+                //     }else{
+                //         // 跳转登录页面
+                //         $event.callRNEvent(1, 1, {
+                //         toPageName: 'Login'
+                //     });
+                // }
+                },
+                praiseIssue:function(a) { //方案点赞接口
+                    // alert( this.accept.answersCommentId)
+                    var _this = this
+                    $http.GET(HOST+UrlRouter.hdZan, {
+                        values: {
+                            issueAnswersId: a.id
+                        }
+                    }, function(ret, err) {
+                        if (ret.data == '点赞成功') {
+                            a.praiseNumber++
+                            a.isAnswersPraise = 1
+                        } else {
+                            a.praiseNumber--
+                            a.isAnswersPraise = 0
+                        }
+                    })
+                },
+                //底部回答点赞
+                dianzan:function(value) {
+                    var _this = this
+                    $http.GET(HOST+UrlRouter.hdZan, {
+                        values: {
+                            issueAnswersId: this.accept.answersCommentId
+                        }
+                    }, function(ret, err) {
+                        if (ret.data == '点赞成功') {
+                            _this.Praise = 1
+                        } else {
+                            _this.Praise = 0
+                        }
+                    })
+                },
+                openPersonal:function(a) { //跳转个人中心
+                // alert(111)
+                    api.readFile({
+                        path: api.boxDir + '/userid.txt'
+                    }, function(ret, err) {
+                        if (ret) {
+                            var _userid = ret.data;
+                            if (_userid === '') {
+                                $event.callRNEvent(1, 1, {
+                                    toPageName: 'Login'
+                                });
+                                return;
+                            }
+                            // this.fnHideTabBar();
+                            if (a === _userid) { //item.userId 
+                                $app.openWin('mine', null, {
+                                    url: './../mine/mine.html'
+                                })
+                            } else {
+                                $app.openWin('ta_page', {
+                                    userId: a
+                                }, {
+                                    url: './../ta_page/ta_page.html'
+                                })
+                            }
+                        }
+                    });
+                },
+                //查看大图
+                fnPreviewPictureContent:function(vals,index){
+                  $event.isShowHomeTab(false);
+                    // alert()
+                    $app.openWin('preview_picture', {
+                        urlArr: vals,
+                        activeIndex: index
+                    }, {
+                        url: '../topic/preview_picture.html'
+                    })
+                },
+                fuzhi:function(){
+                    console.log("111")
+                }
+            }
+        })
+   </script>
+ </html>

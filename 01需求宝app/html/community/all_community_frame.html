@@ -1,0 +1,192 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>全部圈子</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/all_community.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+			body, html {
+				overflow: scroll;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="warp">
+			<div class="frame-group">
+				<div class="right_community">
+					<div v-for="(item,index) in list" class="recommendation_list" tapmode="meui_click" v-on:click="fnOpenCommunityDetail(item.id,index)">
+						<div class="list_header"><img v-bind:src="item.topicImg+'@100_100'">
+						</div>
+						<div class="list_cont">
+							<p class="cont_name" v-text="item.topicName"></p>
+							<p class="cont_num">
+								<span>{{item.storyCount}}个话题 &nbsp;&nbsp;{{item.followCount}}人</span>
+								<span class="join-btn" v-show="item.isJoin == 0 && (item.id != 665 && item.id != 662)" v-on:click.stop="fnJoin(item,index)">+加入</span>
+							</p>
+						</div>
+						<img v-show="item.isJoin != 0 || item.id == 665 || item.id == 662" class="list_arrow" src="../../image/home/right_arrow.png" alt="" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript">
+		var dataIndex;
+		apiready = function() {
+			//fnRefreshOpen();
+			fnGetTopicCategoryList(api.pageParam.id);
+			fnRefreshJoinStatusListener();
+            fnInitEventListener();
+		};
+
+		var vue = new Vue({
+			el : ".right_community",
+			data : {
+				list : []
+			},
+			methods : {
+				fnChange : function(index) {
+					fnChange(index);
+				},
+				fnJoin : function(item, index) {
+					fnJoinInTopic(item, index);
+				},
+				fnOpenCommunityDetail : function(id,index) {
+					dataIndex = index;
+                    api.writeFile({
+                        path: api.boxDir + '/isRoot.txt',
+                        data: ''
+                    });
+                    api.writeFile({
+                        path : api.boxDir + '/topicId.txt',
+                        data : ''
+                    });
+					fnOpenWin('community_detial', '../community/', {
+						id : id,
+						needRefreshJoin : true,
+						index : index
+					});
+				}
+			}
+		})
+		var currentId;
+		function fnGetTopicCategoryList(id) {
+            currentId = id;
+			$service.get('topic/getTopicListByCategoryId.ajax', {
+				categoryId : id
+			}, function(ret, err) {
+				if (ret.ok == 1) {
+					vue.list = [];
+					fnAppendData(vue.list, ret.data);
+				}
+			});
+		}
+        var isNeedLogin = false;
+        function fnInitEventListener() {
+            api.addEventListener({
+                name : 'NaviteCallAPICloudMethod'
+            }, function(rets, err) {
+                api.hideProgress();
+                var ret = rets.value;
+                if (ret.type == 1) {
+                    isNeedLogin = false;
+                    isShareing = false;
+                    if (ret.success == 1) {
+                        var token = ret.token;
+                        api.writeFile({
+                            path : api.boxDir + '/token.txt',
+                            data : token
+                        }, function(ret, err) {
+                            if(fnRefreshInfo) {
+                                fnRefreshInfo();
+                            }
+                        });
+                    } else {
+                        fnToast('登录失败', 'middle');
+                    }
+                }
+            })
+		}
+        function fnRefreshInfo(){
+            fnSetTokenFlag();
+            fnGetTopicCategoryList(currentId);
+        }
+        function fnSetTokenFlag(){
+            var token = api.readFile({
+                sync : true,
+                path : api.boxDir + '/token.txt'
+            });
+            if (fnIsEmpty(token) || token.indexOf('#') == -1) {
+
+            }else{
+
+            }
+        }
+		function fnRefreshJoinStatusListener() {
+			api.addEventListener({
+	            name:'join_status'
+            },function(ret,err){
+//          	var userId = api.readFile({
+//					sync : true,
+//					path: api.boxDir + '/userid.txt'
+//				});
+//				if(!fnIsEmtpy(userId)){
+	            	fnRefreshList(ret.value.topicId,ret.value.isJoin);
+//				}
+            });
+		}
+		
+		function fnRefreshList(topicId,status) {
+			for(var i = 0; i < vue.list.length; i++) {
+				if(vue.list[i].id == topicId){
+					vue.$set(vue.$data.list[i], 'isJoin', status);
+//					api.closeWin({
+//						name : 'community_detial'
+//		            });
+		            break;
+				}
+			}
+		}
+		function fnRefreshStatus(index_){
+			vue.$set(vue.$data.list[index_], 'isJoin', 1);
+		}
+		function fnJoinInTopic(item, index) {
+			$service.get('topic/joinInTopic.ajax', {
+				topicId : item.id
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						fnToast('加入圈子成功','middle');
+						vue.$set(vue.$data.list[index], 'isJoin', 1);
+					}else {
+					    if (ret.data.content === '需要登录') {
+					        return;
+						}
+                        fnToast(ret.data.content,'middle');
+                    }
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+
+		function fnAppendData(oldArr, data) {
+			for (var i = 0; i < data.length; i++) {
+				if (fnIsEmpty(data[i].topicImg)) {
+					data[i].topicImg = '../../image/home/tmp_default_header.png';
+				}
+				oldArr.push(data[i]);
+			}
+			return oldArr;
+		}
+	</script>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>我的发布(全部)</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/swiper.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/concern_frame.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+			html, body, section, .no-data {
+				height: 100%;
+				background-color: #fff;
+			}
+			[v-cloak] {
+				display: none;
+			}
+			.writer_headIcon {
+				width: 16px;
+				height: 16px;
+				border-radius: 16px;
+				background: url(../../image/home/tmp_default_header.png) no-repeat;
+				background-size: 16px;
+			}
+			.no-data {
+				text-align: center;
+				height: 100%;
+				overflow: hidden;
+			}
+			.no-data img {
+				height: 97px;
+				width: 124px;
+				margin: 64px 0 12px 0;
+			}
+			.no-data p {
+				font-size: 14px;
+				color: #999;
+				margin-bottom: 24px;
+			}
+			.no-data div {
+				height: 38px;
+				width: 126px;
+				margin: 0 auto;
+				border-radius: 100px;
+				border: 1px solid #FF6026;
+				color: #FF6026;
+				font: 16px/38px '';
+			}
+			.top {
+				display: inline-block;
+				width: 0.480000 rem;
+				height: 0.480000 rem;
+				line-height: 0.533333 rem;
+				margin-right: 0.213333 rem;
+				background: #2979FF;
+				border-radius: 0.106667 rem;
+				font-size: 0.320000 rem;
+				color: white;
+				text-align: center;
+			}
+			.video_img {
+				position: absolute;
+				top: 0;
+				left: 0;
+				background-color: #8FA8CC;
+				background-repeat: no-repeat;
+				background-size: cover;
+				background-position: center;
+			}
+			.img_bg{
+				background-color: #8FA8CC;
+				background-size: cover;
+				background-position: center;
+				background-repeat: no-repeat;
+			}
+			.one_img {
+				border-radius: 4px;
+			}
+			.img_third{
+				margin-top: 3px;
+			}
+            .video_title{
+                position: relative;
+                text-shadow: #000 0 1px 2px;
+                color: #fff;
+                margin-left: 15px;
+            }
+
+            .two_img,.three_img{
+                margin-top: .5rem;
+            }
+		</style>
+	</head>
+	<body>
+		<section class="list_wrap" v-cloak>
+			<div class="no-data" v-if="list.length == 0">
+				<img src="../../image/mine/noht@2x.png" alt="">
+				<p>
+					字写出来才值千金
+				</p>
+				<div tapmode onclick="fnOpenMain();">
+					挥毫泼墨
+				</div>
+			</div>
+			<div v-for="(item,index) in list" @click="openDetails(item.dataTypeNew,item.id)" class="item">
+				<div class="list">
+					<!--一图-->
+					<div v-if="fnImgCount(item) == 1 && item.dataTypeNew != 3"  class="flex_container">
+						<div>
+							<div class="title line">
+								<span v-if="item.isChoice != 0" class="fine-label"></span>
+								<!--<span v-if="item.indexTop == 1" class="top">顶</span>-->
+								{{item.title}}
+							</div>
+							<div class="describe line2" v-text="item.summary"></div>
+						</div>
+						<div class="one_img img_bg" :style="{'background-image':'url('+item.storyImgs[0]+')'}">
+							<!--<img v-bind:src="fnSizeImg1(item.storyImgs[0])" />-->
+						</div>
+					</div>
+					<!--2图-->
+					<div v-if="fnImgCount(item) == 2 && item.dataTypeNew != 3" class="flex_container imgs_title_wrap">
+						<div class="title2 noBreak">
+							<span v-if="item.isChoice != 0" class="fine-label"></span>
+							<!--<span v-if="item.indexTop == 1" class="top">顶</span>-->
+							{{item.title}}
+						</div>
+						<div class="describe2 noBreak" v-text="item.summary"></div>
+						<div class="two_img flex_container">
+							<div class="img_first img_bg" :style="{'background-image':'url('+item.storyImgs[0]+')'}">
+								<!--<img class="img_first" v-bind:src="fnSizeImg2(item.storyImgs[0])" />-->
+							</div>
+							<div class="img_second img_bg" :style="{'background-image':'url('+item.storyImgs[1]+')'}">
+								<!--<img class="img_second" v-bind:src="fnSizeImg2(item.storyImgs[1])" />-->
+							</div>
+						</div>
+					</div>
+					<!--大于3图-->
+					<div v-if="fnImgCount(item) >= 3 && item.dataTypeNew != 3" class="flex_container imgs_title_wrap">
+						<div class="title2 noBreak">
+							<span v-if="item.isChoice != 0" class="fine-label"></span>
+							<!--<span v-if="item.indexTop == 1" class="top">顶</span>-->
+							{{item.title}}
+						</div>
+						<div class="describe2 noBreak" v-text="item.summary"></div>
+						<div class="three_img flex_container">
+							<div class="three_img_first img_bg" :style="{'background-image':'url('+item.storyImgs[0]+')'}"></div>
+							<!--<img class="three_img_first" v-bind:src="fnSizeImg3(item.storyImgs[0])" />-->
+							<div class="right_twoImgs">
+								<div class="img_second img_bg" :style="{'background-image':'url('+item.storyImgs[1]+')'}"></div>
+								<div class="img_third img_bg" :style="{'background-image':'url('+item.storyImgs[2]+')'}"></div>
+								<!--<img class="img_second" v-bind:src="fnSizeImg4(item.storyImgs[1])" />
+								<img class="img_third" v-bind:src="fnSizeImg4(item.storyImgs[2])" />-->
+							</div>
+						</div>
+					</div>
+					<!--无图无封面-->
+					<div v-if="fnImgCount(item) == 0 && item.dataTypeNew != 3 && !item.mainImg" class="flex_container imgs_title_wrap">
+						<div class="title2 noBreak">
+							<span v-if="item.isChoice != 0" class="fine-label"></span>
+							<!--<span v-if="item.indexTop == 1" class="top">顶</span>-->
+							{{item.title}}
+						</div>
+						<div class="describe2 meui_2_line" v-text="item.summary"></div>
+					</div>
+					<!--无图有封面-->
+					<div v-if="fnImgCount(item) == 0 && item.dataTypeNew != 3 && item.mainImg" class="flex_container">
+						<div>
+							<div class="title line2">
+								<span v-if="item.isChoice != 0" class="fine-label"></span>
+								<!--<span v-if="item.indexTop == 1" class="top">顶</span>-->
+								{{item.title}}
+							</div>
+							<div class="describe line2" v-text="item.summary"></div>
+						</div>
+						<div class="one_img img_bg" :style="{'background-image':'url('+item.mainImg+')'}">
+							<!--<img v-bind:src="fnSizeImg5(item.mainImg)"/>-->
+						</div>
+					</div>
+					<!--视频-->
+					<div v-if="item.dataTypeNew == 3" class="video_div">
+						<div class="video_title meui_2_line">
+							<span v-if="item.isChoice != 0" class="fine-label"></span>
+							<!--<span v-if="item.indexTop == 1" class="top">顶</span>-->
+							{{item.title}}
+						</div>
+						<div class="video_img" v-bind:id="'id_'+item.id" :data-url="item.mainImg" :style="{'background-image':'url('+item.storyMediaList[0].url+'?x-oss-process=video/snapshot,t_3000,f_jpg )'}">
+							<!--<img class="video_img" v-bind:id="'id_'+item.id" v-on:load="fnLoadImage('id_'+item.id);" :data-url="item.mainImg" src="../../image/tmp.jpg"/>-->
+							<img class="play_btn" src="../../image/edit_topic/play.png" alt="" />
+							<div class="video_time" v-text="item.duration"></div>
+						</div>
+					</div>
+					<div class="flex_container bottom_bar">
+						<div class="flex_container left_bar"></div>
+						<div class="right_bar flex_container">
+							<div class="bottom_icon icon1"></div>
+							<div class="bottom_num" v-text="item.browserNumber"></div>
+							<div class="bottom_icon icon2"></div>
+							<div class="bottom_num" v-text="item.commentNumber"></div>
+							<div v-if="item.userPraiseFlag == 0" class="bottom_icon icon3" tapmode="meui_click" v-on:click.stop="fnPraise(item,index)"></div>
+							<div v-else class="bottom_icon icon4" tapmode="meui_click" v-on:click.stop="fnPraise(item,index)"></div>
+							<div class="bottom_num" v-text="item.praiseNumber"></div>
+						</div>
+					</div>
+				</div>
+				<div style="height: 5px; background: #EEE;"></div>
+			</div>
+		</section>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.min.js"></script>
+	<script type="text/javascript" src="../../script/swiper.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript">
+		var pageIndex = 1;
+		apiready = function() {
+			//fnRefreshOpen();
+			fnGetData();
+			fnSetRefresh(function() {
+				fnGetData(false, true);
+			});
+			addBottomListener(function() {
+				pageIndex++;
+				fnGetData(true, false);
+			});
+		};
+		var vue = new Vue({
+			el : '.list_wrap',
+			data : {
+				list : []
+			},
+			methods : {
+				fnImgCount : function(item) {
+					if (item.storyImgs) {
+						return item.storyImgs.length;
+					}
+					return 0;
+				},
+				openDetails : function(_dataTypeNew, _id) {
+					fnOpenWin('topic_details', '../topic/', {
+						type : _dataTypeNew,
+						id : _id
+					});
+				},
+				fnLoadImage : function(url) {
+					fnLoadImage(url);
+				},
+				fnPraise : function(item, index) {
+					fnPraise(item, index);
+				}
+			}
+		});
+		function fnOpenMain() {
+            if(api.winName == 'root'){
+                api.sendEvent({
+                    name : 'APICloudCallNaviteMethod',
+                    extra : {
+                        type : 6
+                    }
+                });
+            }else{
+                api.closeToWin({
+                    name: 'root',
+                    animation: {
+                        type: 'push',
+                        subType: 'from_left',
+                        duration: 300
+                    }
+                });
+            }
+		}
+
+		function fnGetData(isLoadMore, isRefresh) {
+			$service.get('story/getStoryIndexByCondition.ajax', {
+				searchType : 7,
+				pageIndex : pageIndex,
+				pageSize : 20
+			}, function(ret, err) {
+				api.refreshHeaderLoadDone();
+				if (ret.ok == 1) {
+					if (ret.data.list && ret.data.list.length > 0) {
+						fnSetTotalCount(ret.data.totalCount);
+						if (isRefresh) {
+							vue.list = [];
+						}
+						fnAppendData(vue.list, ret.data.list);
+					} else {
+						if (isLoadMore) {
+							fnToast("没有更多");
+						}
+					}
+				}
+			}, isRefresh, true);
+		}
+
+		function fnSetTotalCount(count) {
+			api.execScript({
+				name : api.winName,
+				script : 'fnSetTotalCount("all_count",' + count + ');'
+			});
+		}
+
+		function fnAppendData(oldArr, data) {
+			for (var i = 0; i < data.length; i++) {
+				if (!fnIsEmpty(data[i].storyImgs)) {
+					data[i].storyImgs = data[i].storyImgs.split(",");
+					var lengths = data[i].storyImgs.length;
+					if (data[i].storyImgs[lengths - 1] == '') {
+						data[i].storyImgs.splice(-1);
+					}
+				}
+				if (fnIsEmpty(data[i].userHead)) {
+					data[i].userHead = '../../image/home/tmp_default_header.png';
+				}
+				if (fnIsEmpty(data[i].userName)) {
+					data[i].userName = data[i].userId;
+				}
+				var ext;
+				if (data[i].storyMediaList) {
+					ext = data[i].storyMediaList[0].ext;
+				}
+				var duration = 0;
+				if (ext) {
+					duration = JSON.parse(ext).duration;
+				}
+				data[i].durationTime = fnDuration(duration);
+				data[i].duration = data[i].durationTime;
+				oldArr.push(data[i]);
+			}
+			return oldArr;
+		}
+
+		function fnPraise(item, index) {
+			$service.get('story/praiseStory.ajax', {
+				storyId : item.id,
+				userCode : item.userId
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						if (item.userPraiseFlag == 0) {
+							vue.$set(vue.$data.list[index], 'userPraiseFlag', 1);
+							vue.$set(vue.$data.list[index], 'praiseNumber', item.praiseNumber + 1);
+						} else {
+							vue.$set(vue.$data.list[index], 'userPraiseFlag', 0);
+							vue.$set(vue.$data.list[index], 'praiseNumber', item.praiseNumber - 1);
+						}
+					} else {
+					}
+				} else {
+					fnToast(err.msg, 'middle')
+				}
+			}, true)
+		}
+
+		function fnDuration(duration) {
+			if (duration) {
+				duration = parseInt(duration);
+				var second = parseInt(duration) % 60;
+				var min = parseInt(duration / 60);
+				if (min < 10) {
+					min = '0' + min;
+				}
+				if (second < 10) {
+					second = '0' + second;
+				}
+				return min + ":" + second;
+			}
+			return '00:00';
+		}
+	</script>
+</html>

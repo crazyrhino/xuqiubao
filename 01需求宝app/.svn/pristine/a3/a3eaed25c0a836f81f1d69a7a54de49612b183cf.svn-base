@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+	<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+	<title>发私信</title>
+	<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../../css/ranking_list_win.css" />
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+</head>
+<body>
+	<header id="header" class="rank_header">
+		<p class="rank_content">
+			<img class="rank_back" src="../../image/rank/rank_back.png" tapmode onclick="api.closeWin()">
+			<span class="title">发私信</span>
+			<span class="rule next" tapmode="" onclick="fnMassMessWin()">群发</span>
+		</p>
+	</header>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript">
+apiready = function() {
+	var header = $api.byId('header');
+	fnSysHeaderStyle()
+	var headerH = $api.offset(header).h+1;
+	api.openFrame({
+		name: 'send_mess',
+		url: 'send_mess.html',
+		rect: {
+			x: 0,
+			y: headerH,
+			w: 'auto',
+			h: 'auto'
+		},
+		pageParam:api.pageParam,
+		bounces: true
+	});
+};
+function fnMassMessWin(){
+	api.openWin({
+		name: 'mass_message_win',
+		url: 'mass_message_win.html'
+	});
+}
+</script>
+</html>

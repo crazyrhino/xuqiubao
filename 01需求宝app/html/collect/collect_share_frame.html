@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>选择精华位置-弹窗</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/select_best_position.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+			body,html{
+				background: rgba(0,0,0,0);
+			}
+		</style>
+	</head>
+	<body>
+		<div id="warp">
+			<div class="share_position">
+				<div class="main" tapmode onclick="fnCloseFram()"></div>
+				<div class="_share">
+					<div class="share">
+						<div class="share-title popup-flex popup-flex-h">
+							<div class="line popup-flex-flex1"></div>
+							<div class="title">
+								分享
+							</div>
+							<div class="line popup-flex-flex1"></div>
+						</div>
+						<div class="share-content">
+							<div class="first-line popup-flex popup-flex-h">
+								<div class="item popup-flex-flex1" tapmode onclick="fnShareNative(1)">
+									<div class="item-img">
+										<img src="../../image/rank/im-pyq@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										朋友圈
+									</div>
+								</div>
+								<div class="null-con"></div>
+								<div class="item popup-flex-flex1" tapmode onclick="fnShareNative(0)">
+									<div class="item-img">
+										<img src="../../image/rank/im-wx@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										微信
+									</div>
+								</div>
+								<div class="null-con"></div>
+								<div class="item popup-flex-flex1" tapmode onclick="fnShareNative(3)">
+									<div class="item-img">
+										<img src="../../image/rank/qq@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										QQ
+									</div>
+								</div>
+								<div class="null-con"></div>
+								<div class="item popup-flex-flex1" tapmode onclick="fnShareNative(4)">
+									<div class="item-img">
+										<img src="../../image/rank/im-qzone@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										QQ空间
+									</div>
+								</div>
+								<div class="null-con"></div>
+								<div class="item popup-flex-flex1" tapmode onclick="fnShareNative(2)">
+									<div class="item-img">
+										<img src="../../image/rank/im-wb@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										微博
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="second-line">
+							<div class="item" tapmode onclick="fnCopy()">
+								<div class="item-img">
+									<img src="../../image/rank/htdx1@2x.png" alt="">
+								</div>
+								<div class="item-name">
+									复制
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="share operation_div">
+						<div class="share-title popup-flex popup-flex-h">
+							<div class="line popup-flex-flex1"></div>
+							<div class="title">
+								操作
+							</div>
+							<div class="line popup-flex-flex1"></div>
+						</div>
+						<div class="share-content opertion operation_div_inner">
+							<div class="first-line popup-flex popup-flex-h">
+								<div class="item popup-flex-flex1" tapmode onclick="fnHide()">
+									<div class="item-img">
+										<img src="../../image/rank/htdx2@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										隐藏
+									</div>
+								</div>
+								<div class="null-con"></div>
+								<div class="item popup-flex-flex1">
+									<div class="item-img">
+										<img src="../../image/rank/htdx3@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										置顶
+									</div>
+								</div>
+								<div class="null-con"></div>
+								<div class="item popup-flex-flex1">
+									<div class="item-img">
+										<img src="../../image/rank/htdx4@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										精华
+									</div>
+								</div>
+								<div class="null-con"></div>
+								<div class="item popup-flex-flex1" tapmode onclick="fnDelete()">
+									<div class="item-img">
+										<img src="../../image/rank/htdx5@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										删除
+									</div>
+								</div>
+								<div class="null-con-max"></div>
+							</div>
+						</div>
+						<div class="share-content opertion only_delete">
+							<div class="first-line popup-flex popup-flex-h">
+								<div class="item" tapmode onclick="fnDelete()">
+									<div class="item-img">
+										<img src="../../image/rank/htdx5@2x.png" alt="">
+									</div>
+									<div class="item-name">
+										删除
+									</div>
+								</div>
+								<div class="null-con-max"></div>
+							</div>
+						</div>
+					</div>
+					<div class="share-btn" tapmode onclick="fnCloseFram()">
+						取消
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script>
+		var topicDetails;
+		apiready = function() {
+			//fnRefreshOpen();
+			fnInit();
+		}
+
+		function fnInit(){
+			topicDetails = api.pageParam.topicDetails;
+			if(topicDetails){
+				if(topicDetails.isManager == 0){
+					if($api.getStorage('userId') == topicDetails.userCode){
+						fnSetDisplay('.operation_div_inner',false);
+					}else{
+						fnSetDisplay('.operation_div',false);
+					}
+				}else{
+					fnSetDisplay('.only_delete',false);
+				}
+
+
+				if(topicDetails.isHidden == 1) {
+
+				}
+				if(topicDetails.isTop == 1) {
+
+				}
+				if(topicDetails.isChoice == 1) {
+
+				}
+			}else{
+				fnSetDisplay('.operation_div',false);
+			}
+		}
+
+		function fnCloseFram() {
+			api.closeFrame();
+		}
+
+		function fnHide(){
+			$service.get('story/hiddenStory.ajax', {
+				storyId : topicDetails.id
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						fnToast('隐藏成功');
+						setTimeout(fnCloseFram,1000);
+					} else {
+						fnToast(ret.data);
+					}
+				} else {
+					fnToast(err.msg, 'middle');
+				}
+			});
+		}
+
+		function fnCancleHide(){
+			$service.get('story/cancleHiddenStory.ajax', {
+				storyId : topicDetails.id
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						fnToast('取消隐藏成功');
+						setTimeout(fnCloseFram,1000);
+					} else {
+						fnToast(ret.data);
+					}
+				} else {
+					fnToast(err.msg, 'middle');
+				}
+			});
+		}
+
+		function fnDelete(){
+			$service.get('story/deleteStory.ajax', {
+				storyId : topicDetails.id
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						fnToast('删除成功');
+						setTimeout(fnCloseFram,1000);
+					} else {
+						fnToast(ret.data);
+					}
+				} else {
+					fnToast(err.msg, 'middle');
+				}
+			});
+		}
+		function fnShareNative(type_){
+			var jsfun = 'fnShareNativeCollect('+type_+')';
+			api.execScript({
+			    frameName: 'collect_detail_frame',
+			    script: jsfun
+			});
+		}
+		
+		function fnCopy(){
+			api.sendEvent({
+				name:'copyCollect',
+				extra:{
+					
+				}
+			})
+		}
+	</script>
+</html>

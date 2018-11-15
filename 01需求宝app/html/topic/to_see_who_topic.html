@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>@谁看</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/to_see_who_topic.css?v=1"/>
+</head>
+<body>
+<header id="header">
+    <div class="header_title" >
+        <div class="c_back_btn" tapmode="meui_click" tapmode onclick="api.closeWin()">
+            取消
+        </div>
+        <div class="c_who_btn" tapmode="meui_click" tapmode>
+            @谁看
+        </div>
+        <div class="c_complete_btn" tapmode="meui_click" tapmode>
+            完成
+            <span class="c_complete_number">(3)</span>
+        </div>
+    </div>
+    <div class="header_seartch">
+        <input class="header_seartch_input" type="search" placeholder="搜索">
+        <img class="header_seartch_img" src="../../image/Search@2x.png" alt="">
+    </div>
+    <div class="header_seartch" style="display: none">
+        <ul>
+            <li>
+                <img src="../../image/edit_topic_btn.png" alt="">
+            </li>
+            <li>
+                <img src="../../image/edit_topic_btn.png" alt="">
+            </li>
+            <li>
+                <img src="../../image/edit_topic_btn.png" alt="">
+            </li>
+            <li>
+                <img src="../../image/edit_topic_btn.png" alt="">
+            </li>
+            <span>搜索</span>
+        </ul>
+    </div>
+
+</header>
+</body>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script>
+    apiready = function () {
+        //fnRefreshOpen();
+        // fnBackListener(fnBack)
+        var header = $api.byId('header');
+        // fnSysHeaderStyle();
+        var headerH = $api.offset(header).h;
+        api.openFrame({
+            name: 'to_see_who_frame',
+            url: 'to_see_who_frame.html',
+            rect: {
+                x: 0,
+                y: headerH,
+                w: 'auto',
+                h: 'auto'
+            },
+            pageParam: api.pageParam,
+            bounces: true
+        });
+        $app.fixStatusBar('#header')
+    };
+
+    $('.header_seartch_input').focus(function () {
+        $('.header_seartch_img').addClass('show');
+        $('.header_seartch_input').addClass('paddLeft');
+    })
+    $('.header_seartch input[type="search"]').blur(function () {
+        $('.header_seartch_img').removeClass('show');
+        $('.header_seartch_input').removeClass('paddLeft');
+    })
+    $('.header_seartch input[type="search"]').change(function () {
+        if ($(this).val() == "") {
+            $('.header_seartch_img').removeClass('show');
+        }
+    })
+    $(".c_complete_btn").on("click", function () {
+        $(this).css('color', '#FF6026');
+        $('.c_complete_number').show();
+    })
+
+</script>
+
+</html>

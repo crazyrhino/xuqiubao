@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>圈子详情</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<style>
+		</style>
+	</head>
+	<body></body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript">
+        var params;
+		apiready = function() {
+			//fnRefreshOpen();
+			api.addEventListener({
+				name : 'keyback'
+			}, function(ret, err) {
+				api.execScript({
+					frameName : 'community_detial_frame',
+	                script: 'fnBacks();'
+                });
+			});
+            if (api.winName == 'root' && api.systemType == 'android') {
+                fnAddNativeListener();
+                fnGetAndroidParams();
+            } else {
+                params = api.pageParam;
+                api.openFrame({
+                    name : 'community_detial_frame',
+                    url : 'community_detial_frame.html?v=' + new Date().getTime(),
+                    useWKWebView : true,
+                    pageParam : params,
+                    reload : true
+                });
+            }
+            fnSaveBackWinName();
+			api.addEventListener({
+				name : 'viewappear'
+			}, function(ret, err) {
+				fnSaveBackWinName();
+				api.execScript({
+					frameName : 'community_detial_frame',
+	                script: 'fnShowEditBtn();'
+                });
+			});
+            fnAddNativeListener();
+		};
+		
+		function fnSaveBackWinName() {
+	    	api.writeFile({
+		        path : api.boxDir + '/backWinName.txt',
+				data : api.winName
+	        });
+	    }
+		
+        function fnAddNativeListener() {
+            api.addEventListener({
+                name : 'NaviteCallAPICloudMethod'
+            }, function(rets, err) {
+                var ret = rets.value;
+                if (ret.type == 8) {
+                    params = {
+                        id : ret.id,
+                        userToken : ret.userToken
+                    };
+                    api.openFrame({
+                        name : 'community_detial_frame',
+                        url : 'community_detial_frame.html?v=' + new Date().getTime(),
+                        useWKWebView : true,
+                        pageParam : params,
+                        reload : true
+                    });
+                } else if (ret.type == 1) {
+                    if (ret.success == 1) {
+                        var token = ret.token;
+                        api.writeFile({
+                            path : api.boxDir + '/token.txt',
+                            data : token
+                        }, function(ret, err) {
+                            if (token.indexOf('#') != -1) {
+                                api.execScript({
+                                    frameName : 'community_detial_frame',
+                                    script: 'fnGetTopicInfo();'
+                                });
+                            }
+                        });
+                    } else {
+                        fnToast('登录失败', 'middle');
+                    }
+                }
+            });
+        }
+        function fnGetAndroidParams() {
+            api.sendEvent({
+                name : 'APICloudCallNaviteMethod',
+                extra : {
+                    type : 8,
+                    canCallBack : 1
+                }
+            });
+        }
+	</script>
+</html>

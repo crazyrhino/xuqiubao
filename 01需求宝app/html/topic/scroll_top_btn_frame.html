@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<style>
+			body, html {
+				background: rgba(0,0,0,0);
+			}
+			.scroll_top_btn {
+				width: 48px;
+				height: 48px;
+				background: url(../../image/home/scroll_top.png) no-repeat center;
+				background-size: 48px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="scroll_top_btn" tapmode="meui_click" onclick="fnScrollTop()"></div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+		};
+		function fnScrollTop() {
+			var frameName = api.getPrefs({
+				sync : true,
+				key : 'scroll_frame_name'
+			});
+			if (frameName == 'community_detial_frame' || frameName == 'business_school' || frameName == 'search_result_user' || frameName == 'search_result_video' || frameName == 'search_result' || frameName == 'search_community_frame') {
+				api.execScript({
+					frameName : frameName,
+					script : 'fnScrollTop();'
+				});
+			}else if(frameName == "video_frame"){
+			    //关掉视频
+				setTimeout(function () {
+                    api.execScript({
+                        frameName : frameName,
+                        script : 'closeVideo()'
+                    });
+                },700);
+
+                api.execScript({
+					name:'root',
+                    frameName : frameName,
+                    script : 'fnScrollTop();'
+                });
+			} else {
+				api.execScript({
+					name : 'root',
+					frameName : frameName,
+					script : 'fnScrollTop();'
+				});
+			}
+		}
+	</script>
+</html>

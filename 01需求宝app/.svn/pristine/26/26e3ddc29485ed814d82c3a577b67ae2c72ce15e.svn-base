@@ -1,0 +1,106 @@
+.flex_container {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+}
+.line2 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	word-wrap:break-word;
+}
+
+.title{
+	position: absolute;
+	top: 0.426667rem;
+	left: 0.880000rem;
+	width: 8.266667rem;
+	line-height: 0.586667rem;
+	color: white;
+	font-size: 0.426667rem;
+	z-index: 1000000;
+}
+.play{
+	width: 1.066667rem;
+	height: 1.066667rem;
+	position: absolute;
+	left: 4.480000rem;
+	top: 2.053333rem;
+	z-index: 1000000;
+	
+}
+.play img{
+	width: 1.066667rem;
+	height: 1.066667rem;
+	z-index: 1000000;
+	
+}
+.time{
+	width: 0.853333rem;
+	height: 0.373333rem;
+	position: absolute;
+	top: 4.320000rem;
+	left: 8.640000rem;
+	font-size: 0.320000rem;
+	color: white;
+}
+.bottom_bar {
+	-webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+	padding: 0.480000rem 0.293333rem 0.480000rem 0.400000rem;
+	background: #FFF;
+}
+
+.left_bar {
+	margin-right: auto;
+}
+
+.right_bar {
+	-webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+}
+
+.writer_headIcon {
+	width: 0.426667rem;
+	height: 0.426667rem;
+	border-radius: 0.426667rem;
+	background: #EEE;
+}
+
+.writer_name {
+	height: 0.426667rem;
+	font-size: 0.320000rem;
+	color: #999999;
+	margin-left: 0.160000rem;
+}
+
+.bottom_icon {
+	width: 0.640000rem;
+	height: 0.640000rem;
+	margin-left: 0.320000rem;
+	background-size: cover;
+}
+
+.icon1 {
+	background-image: url(../image/community/gk@3x.png);
+}
+
+.icon2 {
+	background-image: url(../image/community/Message@3x.png);
+}
+
+.icon3 {
+	background-image: url(../image/community/zan@3x.png);
+}
+.icon4 {
+	background-image: url(../image/home/share_grad@3x.png);
+}
+
+.bottom_num {
+	font-size: 0.320000rem;
+	color: #999999;
+}

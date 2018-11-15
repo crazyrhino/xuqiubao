@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/search_result_total.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/search_list.css"/>
+    <style>
+        html, body, .details_conts, .no-data {
+            height: 100%;
+        }
+
+        .no-data {
+            background-color: #fff;
+            text-align: center;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .no-data img {
+            height: 97px;
+            width: 124px;
+            margin: 156px 0 12px 0;
+        }
+
+        .no-data p {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 24px;
+        }
+
+        .no-data div {
+            height: 38px;
+            width: 126px;
+            margin: 0 auto;
+            border-radius: 100px;
+            border: 1px solid #FF6026;
+            color: #FF6026;
+            font: 16px/38px '';
+        }
+
+        .key {
+            color: #FF6026;
+            font-style: normal;
+        }
+        .wrap {
+            margin-right: 0.613333rem;
+            position: relative;
+            width: 1.173333rem;
+            height: 1.173333rem;
+        }
+
+        .wrap img.red_vip,.wrap img.yellow_vip,.wrap img.purple_vip {{
+            position :absolute;
+            right: 0;
+            bottom : 0;
+            width : 12px;
+            height : 12px;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="details_conts" v-cloak>
+    <div v-if="list.length == 0" class="no-data">
+        <img src="../../image/empty/no_search_results.png" alt="">
+        <p>换个词试一下</p>
+    </div>
+    <div v-else id="search_community_warp">
+        <div class="community-title">
+            <div class="community-title-circle">
+                圈子
+            </div>
+        </div>
+        <div class="community-content-list">
+            <div v-for="(item,index) in list" class="community-item" @click="fnOpenCommunityDetail(item.id,index)">
+                <div class="community-item-top list-flex list-flex-h">
+                    <div class="wrap">
+                        <div class="left-img">
+                            <img v-bind:src="item.topicImg" alt="">
+                        </div>
+                        <img v-if="item.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png">
+                        <img v-if="item.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png">
+                        <img v-if="item.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png">
+                    </div>
+                    <div class="right-content meui_flex_con_no_w">
+                        <div class="title-right" v-html="fnChangeKeyColor(item.topicName)"></div>
+                        <div class="subtitle-right list-flex line1"  v-html="fnChangeKeyColor(item.topicDescription)"></div>
+                    </div>
+                    <div class="add-community">
+                        <div v-if="item.isJoin == 0" class="add-community-btn" v-on:click.stop="fnJoin(item,index)">
+                            加入
+                        </div>
+                        <span v-else class="add-community-jump"></span>
+                    </div>
+                </div>
+                <div class="community-item-bottom list-flex list-flex-center">
+                    <span class="view">{{item.storyCount}}个话题</span><span class="circle-community"></span><span
+                        class="view">{{item.followCount}}个成员</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/service.js"></script>
+<script type="text/javascript" src="../../script/flexible.js"></script>
+<script type="text/javascript">
+    var pageIndex = 1;
+    var currentKeyword;
+    apiready = function () {
+    	//fnRefreshOpen();
+        currentKeyword = api.pageParam.keyword;
+        fnSearch(currentKeyword);
+        fnSetRefresh(function () {
+            pageIndex = 1;
+            fnSearch(currentKeyword, false, true);
+        });
+        addBottomListener(function () {
+            pageIndex++;
+            fnSearch(currentKeyword, true);
+        });
+        fnRefreshJoinStatusListener();
+        fnScrollListener();
+    };
+
+    var vue = new Vue({
+        el: '.details_conts',
+        data: {
+            list: [],
+        },
+        methods: {
+            fnOpenCommunityDetail: function (id,index) {
+                api.writeFile({
+                    path: api.boxDir + '/isRoot.txt',
+                    data: ''
+                });
+                api.writeFile({
+                    path : api.boxDir + '/topicId.txt',
+                    data : ''
+                });
+                fnOpenWin('community_detial', '../community/', {
+                    id: id,
+                    index: index,
+                    needRefreshJoin: true
+                });
+            },
+            fnJoin: function (item, index) {
+                fnJoinInTopic(item, index);
+            },
+            fnChangeKeyColor: function (content) {
+                var resultHtml = content.replace(new RegExp("(" + currentKeyword + ")", "g"), '<i class="key">' + currentKeyword + '</i>');
+                return resultHtml;
+            }
+        }
+    });
+    function fnRefreshStatus(index) {
+        vue.$set(vue.$data.list[index], 'isJoin', 1);
+    }
+    var isOpen = false;
+    function fnScrollListener() {
+        $(document).scroll(function (e) {
+            var scrollTop = $(this).scrollTop();
+            if (scrollTop > api.winHeight * 3) {
+                if (!isOpen) {
+                    fnOpenScrollTopBtnFrame();
+                    api.setPrefs({
+                        key: 'scroll_frame_name',
+                        value: api.frameName
+                    });
+                }
+                isOpen = true;
+            } else {
+                if (isOpen) {
+                    fnCloseScrollTopBtnFrame();
+                }
+                isOpen = false;
+            }
+        });
+    }
+    function fnOpenScrollTopBtnFrame() {
+        api.openFrame({
+            name: 'scroll_top_btn_frame',
+            url: '../topic/scroll_top_btn_frame.html',
+            rect: {
+                w: 48,
+                h: 48,
+                marginLeft: api.winWidth - 64,
+                marginTop: api.winHeight - 114
+            },
+            bgColor: 'rgba(0,0,0,0)'
+        });
+    }
+    function fnCloseScrollTopBtnFrame() {
+        api.closeFrame({
+            name: 'scroll_top_btn_frame'
+        });
+    }
+    function fnScrollTop() {
+        document.body.scrollTop = document.documentElement.scrollTop = 0;
+    }
+    function fnRefreshJoinStatusListener() {
+        api.addEventListener({
+            name: 'join_status'
+        }, function (ret, err) {
+            fnRefreshList(ret.value.topicId, ret.value.isJoin);
+        });
+    }
+
+    function fnRefreshList(topicId, status) {
+        for (var i = 0; i < vue.list.length; i++) {
+            if (vue.list[i].id == topicId) {
+                vue.$set(vue.$data.list[i], 'isJoin', status);
+                api.closeWin({
+                    name: 'community_detial'
+                });
+                break;
+            }
+        }
+    }
+
+    function fnJoinInTopic(item, index) {
+        $service.get('topic/joinInTopic.ajax', {
+            topicId: item.id
+        }, function (ret, err) {
+            if (ret) {
+                if (ret.ok == 1) {
+                    fnToast('加入圈子成功','middle');
+                    vue.$set(vue.$data.list[index], 'isJoin', 1);
+                }
+            } else {
+                // fnToast(err.msg);  客户要求登录不提示，直接跳转
+            }
+        });
+    }
+
+    function fnReSearch(keyword) {
+        pageIndex = 1;
+        api.showProgress();
+        vue.list = [];
+        fnSearch(keyword, false, true);
+        currentKeyword = keyword;
+    }
+
+    function fnSearch(keyword, isLoadMore, isRefresh) {
+        if (isOpen) {
+            fnCloseScrollTopBtnFrame();
+            isOpen = false;
+        }
+        $service.get('topic/listByCondition.ajax', {
+            keywords: keyword,
+            pageIndex: pageIndex,
+            pageSize: 20
+        }, function (ret, err) {
+            api.refreshHeaderLoadDone();
+            if (ret) {
+                if (ret.data && ret.data.length > 0) {
+                    if (isRefresh) {
+                        vue.list = [];
+                    }
+                    fnAppendData(vue.list, ret.data);
+                } else {
+                    if (isLoadMore) {
+                        fnToast("没有更多");
+                    }else {
+                        vue.list = [];
+                    }
+                }
+            } else {
+                fnToast(err.msg);
+            }
+        }, isRefresh);
+    }
+
+    function fnAppendData(oldArr, data) {
+        for (var i = 0; i < data.length; i++) {
+            if (fnIsEmpty(data[i].topicImg)) {
+                data[i].topicImg = '../../image/home/tmp_default_header.png';
+            }
+            oldArr.push(data[i]);
+        }
+        return oldArr;
+    }
+</script>
+</html>

@@ -1,0 +1,1909 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/swiper.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/topic_all_comments.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/edit_topic_frame.css"/>
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+			.header {
+				padding-top: 0;
+			}
+			[v-cloak] {
+				display: none;
+			}
+			.red_vip,.yellow_vip,.purple_vip {
+				position: absolute;
+				right: 12px;
+				top: 32px;
+				width: 12px;
+				height: 12px;
+			}
+			.comment_head_div {
+				position: relative;
+			}
+			.input_div {
+				padding-right: 0.4rem;
+			}
+			.overfolw_hidden {
+				overflow: hidden;
+			}
+			.overfolw_scroll {
+				overflow: auto;
+			}
+			.reply_content {
+				-webkit-overflow-scrolling: touch;
+			}
+			.comment_div {
+				-webkit-overflow-scrolling: touch;
+			}
+			.space {
+				width: 100%;
+				height: 80px;
+				background: rgba(0,0,0,0);
+			}
+            .ellipsis-6 {
+                display: -webkit-box;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                word-wrap: break-word;
+                word-break: break-all;
+                /*white-space: normal !important;*/
+                -webkit-line-clamp: 6;
+                -webkit-box-orient: vertical;
+            }
+			.comment_expand{
+				text-align: left;
+				font-size: 14px;
+				color: blue;
+                padding-bottom: 10px;
+			}
+            pre{
+                margin: 0;
+            }
+            .comment_content{
+                display: flex;
+            }
+			.gray-color{
+				color: #999;
+			}
+			#no_login_input{
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="header">
+			<div class="header_div meui_border_b">
+				<div class="back_btn" tapmode="meui_click" onclick="fnBack()"></div>
+				全部评论
+			</div>
+		</header>
+		<div class="comment_div" v-cloak>
+			<div class="comment_title meui_border_b">
+				评论（<span class="comment_num"></span>）
+			</div>
+			<!--评论列表-->
+			<div class="comment_list">
+				<div v-for="(item,index) in commentsList" class="comment_item meui_flex_wrap meui_border_b">
+					<div class="comment_head_div">
+						<img class="comment_head_img" v-bind:src="item.userImg" alt=""  tapmode v-on:click="fnOpenUser(item)"/>
+						<img v-show="item.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png" alt="" />
+						<img v-show="item.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png" alt="" />
+						<img v-show="item.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png" alt="" />
+					</div>
+					<div class="comment_right_div meui_flex_con_no_w">
+						<div class="comment_top meui_flex_wrap">
+							<div class="comment_user_name meui_flex_con"><span v-text="item.userName" v-on:click="fnOpenUser(item)"></span></div>
+							<div class="comment_praise_div" tapmode v-on:click="fnPraiseComment(item, index)">
+								<img v-if="item.commentPraiseFlag == 0" class="comment_praise_img" src="../../image/mine/zan.png" alt="" />
+								<img v-else class="comment_praise_img" src="../../image/mine/zans.png" alt="" />
+							</div>
+							<div class="comment_praise_num" v-text="item.praiseNumber"></div>
+						</div>
+						<div class="comment_content" >
+							<img v-if="fnIsItemExpression(item)" class="comment_expression_img" v-bind:src="item.comment.substring(19)" alt="" ref="comment"/>
+							<span v-else> <pre class="ellipsis-6" v-html="item.comment" ref="comment"></pre> </span>
+						</div>
+            <div class="comment_expand" v-show="isShowExpand[index]" @click="fnExpand($event)">展开</div>
+						<div v-if="item.commentImgs" class="comment_imgs">
+							<img v-for="(imgUrl,index) in item.commentImgs" class="comment_imgs_item" v-bind:src="imgUrl" alt="" v-on:click="fnPreviewCommentImgs(item.commentImgs,index)"/>
+						</div>
+						<div class="comment_bottom meui_flex_wrap">
+							<div class="comment_time" v-text="item.commentTimeStr"></div>
+							<div class="comment_floor">
+								<span v-text="item.floor"></span>楼
+							</div>
+							<div v-if="item.type != 4" class="comment_reply" tapmode v-on:click="fnOpenAllReply(item,true)">
+								<span class="reply_num" v-text="item.replyNumber">0</span>回复
+							</div>
+							<div class="meui_flex_con"></div>
+							<div :id="'all_comment_'+item.id" class="reply_more" tapmode="meui_click" v-on:click="fnOpenReplyMoreOperation('all_comment_'+item.id,item,true)"></div>
+						</div>
+						<div v-if="type != 4 &&　item.replyNumber > 0" class="comment_sub_reply_div">
+							<div v-for="item in item.replyCommentList" class="comment_sub_reply_item">
+                                <span  v-if="item.comment && item.comment.indexOf('comment_expression:') != -1" >
+								    <span class="comment_sub_reply_item_user" v-text="fnLongUserName(item)"></span><span class="gray-color">:</span>
+								    <img class="comment_expression_img" v-bind:src="item.comment.substring(19)" alt="" />
+                                </span>
+                                <pre v-else><span class="comment_sub_reply_item_user" v-text="fnLongUserName(item)"></span><span class="gray-color">:</span><span v-html="item.comment"></span></pre>
+                                <!--<pre style="display: inline-block" v-else v-html="item.comment">-->
+								<!--</pre>-->
+                                <div v-if="item.commentImgs" class="comment_imgs">
+                                    <img v-for="(imgUrl,index) in item.commentImgs.split(',')" class="comment_imgs_item" v-bind:src="imgUrl" alt="" v-on:click="fnPreviewCommentImgs(item.commentImgs.split(','),index)"/>
+                                </div>
+							</div>
+							<div v-if="item.replyNumber > 2" class="meui_flex_wrap" tapmode v-on:click="fnOpenAllReply(item)">
+								<div class="comment_sub_reply_div_all_replay">
+									查看全部 {{item.replyNumber}} 回复
+								</div><div class="reply_right_arrow"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div v-if="isNoMore" class="reply_list_no_more">
+					已经到底了
+				</div>
+			</div>
+		</div>
+		<div class="chat_close_div"></div>
+		<!--发布评论布局-->
+		<div class="chat_div">
+			<!--评论上传图片布局-->
+			<div v-if="list.length > 1" class="upload_img_div" v-cloak>
+				<div class="slide-box">
+					<div v-for="(item,index) in list" class="slide-item">
+						<div v-if="item.thumbPath" class="c_add_img hidden"></div>
+						<div v-else class="c_add_img" tapmode="meui_click" onclick="fnOpenSelectPicture()"></div>
+						<div v-if="item.thumbPath" class="c_upload_img_layout">
+							<img class="c_upload_img" v-bind:src="item.thumbPath" alt="" v-on:click="fnPreviewCommentImgs(index)"/>
+						</div>
+						<div class="c_upload_progress_layout hidden">
+							<div class="c_upload_progress">
+								<div class="c_upload_label">
+									上传中
+								</div>
+								<div class="c_upload_label">
+									85%
+								</div>
+							</div>
+						</div>
+						<div v-if="item.thumbPath" class="c_delete" id="delete" tapmode="meui_click" v-on:click="fnDelete(index)"></div>
+					</div>
+				</div>
+			</div>
+			<!--评论输入框布局-->
+			<div class="input_div meui_flex_wrap">
+				<div class="input_div_inner meui_flex_con_no_w meui_flex_wrap">
+					<div class="edit_img"></div>
+					<!--<div class="comment_input meui_flex_con" contenteditable="true" onblur="fnOnInputBlur()" onfocus="fnOnInputFocus(this)"  onkeyup="fnOnkeyup(this)">
+					来说点什么吧…
+					</div>-->
+					<textarea id="login_input" class="comment_input meui_flex_con" rows="1" onpaste="onPaste(this)" onblur="fnOnInputBlur()"
+                              onfocus="fnOnInputFocus(this)" onkeyup="fnOnkeyup(this)"  onchange="fnChangeActive()" placeholder="来说点什么吧…"></textarea>
+					<div id="no_login_input" class="comment_input meui_flex_con" onclick="fnOpenLogin();">来说点什么吧…</div>
+				</div>
+				<!--暂时隐藏-->
+				<div class="input_operations meui_flex_wrap">
+					<div class="praise_img_div"  style="display: none;">
+						<img class="praise_img" src="../../image/mine/zan.png" alt="" tapmode onclick="fnInputPraise()"/>
+						<div class="praise_num"></div>
+					</div>
+					<div class="small_money_img"  style="display: none;" tapmode="meui_click" onclick="fnOpenMoneyFrame()"></div>
+				</div>
+				<div class="send_div" tapmode onclick="fnClickSendBtn()">
+					<div class="send_btn">
+						发布
+					</div>
+				</div>
+			</div>
+			<!--输入框下方布局-->
+			<div class="comment_other_operation meui_flex_wrap">
+				<div class="select_img" tapmode="meui_click" onclick="fnOpenSelectPicture()"></div>
+				<div class="select_expression" tapmode="meui_click" onclick="fnSwitchExpression()"></div>
+				<div class="meui_flex_con"></div>
+				<div class="hide_keyboard" tapmode="meui_click" onclick="fnSwitchExpression()"></div>
+			</div>
+			<!--选择表情布局-->
+			<div class="expression_div">
+				<div class="expression_swiper">
+					<div class="swiper-wrapper expression_wrapper">
+						<div class="swiper-slide">
+							<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier1.gif" alt="" tapmode onclick="fnExprComment(this)"/>
+							<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier2.gif" alt="" tapmode onclick="fnExprComment(this)"/>
+							<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier3.gif" alt="" tapmode onclick="fnExprComment(this)"/>
+							<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier4.gif" alt="" tapmode onclick="fnExprComment(this)"/>
+							<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier5.gif" alt="" tapmode onclick="fnExprComment(this)"/>
+							<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier6.gif" alt="" tapmode onclick="fnExprComment(this)"/>
+							<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier7.gif" alt="" tapmode onclick="fnExprComment(this)"/>
+							<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier8.gif" alt="" tapmode onclick="fnExprComment(this)"/>
+						</div>
+						<div class="swiper-slide">
+							<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier9.gif" alt="" tapmode onclick="fnExprComment(this)"/>
+							<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier10.gif" alt="" tapmode onclick="fnExprComment(this)"/>
+							<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier11.gif" alt="" tapmode onclick="fnExprComment(this)"/>
+							<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier12.gif" alt="" tapmode onclick="fnExprComment(this)"/>
+							<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier13.gif" alt="" tapmode onclick="fnExprComment(this)"/>
+							<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier14.gif" alt="" tapmode onclick="fnExprComment(this)"/>
+							<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier15.gif" alt="" tapmode onclick="fnExprComment(this)"/>
+							<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier16.gif" alt="" tapmode onclick="fnExprComment(this)"/>
+						</div>
+						<div class="swiper-slide">
+							<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier17.gif" alt="" tapmode onclick="fnExprComment(this)"/>
+						</div>
+					</div>
+					<div class="swiper-pagination"></div>
+				</div>
+				<!--切换表情组-->
+				<div class="expression_bottom">
+					<img id="expression_page_1" class="expression_bottom_img active" onclick="fnSelectExpr(1)" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier1.gif" alt="" />
+					<img id="expression_page_2" class="expression_bottom_img" onclick="fnSelectExpr(2)" src="http://cdn09.ehaier.com/shunguang/expression/SGjun/sg2.gif" alt="" />
+				</div>
+			</div>
+		</div>
+		<div class="reply_more_operation_div">
+			<div class="reply_more_operation">
+				<div class="triangle-bottomright"></div>
+				<div class="triangle-topright"></div>
+				<div id="replayReward"　 class="reply_more_operation_item meui_border_b meui_flex_wrap" tapmode onclick="fnOpenMoneyFrame(event)">
+					<img class="reply_more_operation_img" src="../../image/mine/small_money.png" alt="" />
+					<div class="reply_more_operation_txt">
+						打 赏
+					</div>
+				</div>
+				<div class="reply_more_operation_item meui_border_b meui_flex_wrap"  tapmode onclick="fnDeleteComment()">
+					<img class="reply_more_operation_img" src="../../image/mine/delete_icon.png" alt="" />
+					<div class="reply_more_operation_txt">
+						删 除
+					</div>
+				</div>
+				<div id="replyHide" class="reply_more_operation_item meui_flex_wrap"  tapmode onclick="fnHideComment()">
+					<img id="hideCommentImg" class="reply_more_operation_img" src="../../image/mine/eye_iocn.png" alt="" />
+					<div id="hideCommentTxt" class="reply_more_operation_txt">
+						隐 藏
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--全部回复-->
+		<div class="reply_div" v-cloak>
+			<div class="reply_div_inner meui_flex_wrap meui_flex_vertical">
+				<div class="reply_div_inner_title meui_border_b">
+					回复(<span v-text="comment.replyNumber"></span>) <div class="reward_close" tapmode="meui_click" onclick="fnCloseAllReply()"></div>
+				</div>
+				<div class="reply_content meui_flex_con">
+					<div class="reply_comment meui_border_b">
+						<div class="comment_item meui_flex_wrap meui_border_b">
+							<div class="comment_head_div">
+								<img class="comment_head_img" v-bind:src="comment.userImg" alt=""  tapmode v-on:click="fnOpenUser(comment)"/>
+								<img v-show="comment.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png" alt="" />
+								<img v-show="comment.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png" alt="" />
+								<img v-show="comment.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png" alt="" />
+							</div>
+							<div class="comment_right_div meui_flex_con_no_w">
+								<div class="comment_top meui_flex_wrap">
+									<div class="comment_user_name meui_flex_con"><span v-text="comment.userName" v-on:click="fnOpenUser(comment)"></span></div>
+									<div class="comment_praise_div" v-on:click="fnPraiseComment(comment)">
+										<img v-if="comment.commentPraiseFlag == 0" class="comment_praise_img" src="../../image/mine/zan.png" alt="" />
+										<img v-else class="comment_praise_img" src="../../image/mine/zans.png" alt="" />
+									</div>
+									<div class="comment_praise_num" v-text="comment.praiseNumber"></div>
+								</div>
+								<div class="comment_content" >
+									<img v-if="fnIsExpression()" class="comment_expression_img" v-bind:src="fnExpressionPath()" alt="" />
+									<pre v-else v-html="comment.comment">
+									</pre>
+								</div>
+                                <div v-if="comment.commentImgs" class="comment_imgs">
+                                    <img v-for="(imgUrl,index) in comment.commentImgs" class="comment_imgs_item" v-bind:src="imgUrl" alt="" v-on:click="fnPreviewCommentImgs(comment.commentImgs,index)"/>
+                                </div>
+								<div class="comment_bottom meui_flex_wrap">
+									<div class="comment_time meui_flex_con" v-text="comment.commentTimeStr"></div>
+									<div :id="'comment_'+comment.id" class="reply_more" tapmode="meui_click" v-on:click="fnOpenReplyMoreOperation('comment_'+comment.id,comment,true)"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="all_reply">
+						<div class="all_reply_title">
+							评论回复
+						</div>
+						<div class="reply_list">
+							<div v-for="(item,index) in replysList" class="comment_item meui_flex_wrap meui_border_b">
+								<div class="comment_head_div">
+									<img class="comment_head_img" v-bind:src="item.userImg" alt=""  tapmode v-on:click="fnOpenUser(item)"/>
+									<img v-show="item.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png" alt="" />
+									<img v-show="item.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png" alt="" />
+									<img v-show="item.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png" alt="" />
+								</div>
+								<div class="comment_right_div meui_flex_con_no_w">
+									<div class="comment_top meui_flex_wrap">
+										<div class="comment_user_name meui_flex_con"><span v-text="item.userName" v-on:click="fnOpenUser(item)"></span></div>
+									</div>
+									<div class="comment_content" >
+										<img ref="comment" v-if="fnIsItemExpression(item)" class="comment_expression_img" v-bind:src="item.comment.substring(19)" alt="" />
+										<pre ref="comment" class="ellipsis-6" v-else v-html="item.comment"></pre>
+									</div>
+                                    <div class="comment_expand" v-show="isShowExpand[index]" @click="fnExpand($event)">展开</div>
+                                    <div v-if="item.commentImgs" class="comment_imgs">
+                                        <img v-for="(imgUrl,index) in item.commentImgs" class="comment_imgs_item" v-bind:src="imgUrl" alt="" v-on:click="fnPreviewCommentImgs(item.commentImgs,index)"/>
+                                    </div>
+									<div class="comment_bottom meui_flex_wrap">
+										<div class="comment_time meui_flex_con" v-text="item.commentTimeStr"></div>
+										<div class="reply_more" :id="'reply_'+item.id" tapmode="meui_click" v-on:click="fnOpenReplyMoreOperation('reply_'+item.id,item)"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div v-if="isNoMore" class="reply_list_no_more">
+							已经到底了
+						</div>
+						<div class="space"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--打赏列表对话框-->
+		<div class="reward_div">
+			<div class="reward_dialog">
+				<div class="reward_header meui_border_b">
+					选择打赏金币数 <div class="reward_close" tapmode="meui_click" onclick="fnCloseRewardDialog(event)"></div>
+				</div>
+				<div class="reaward_select_list meui_border_b">
+					<div v-for="(item,index) in list" class="reward_item" v-bind:class="{ active: item.isActive }" v-on:click="fnSelect(item,index)">
+						{{item.num}}个
+					</div>
+				</div>
+				<div class="reward_custom_num meui_flex_wrap meui_border_b">
+					<div class="reward_other_num_label">
+						其他数量
+					</div>
+					<div class="reward_v_line"></div>
+					<input class="reward_custom_num_input meui_flex_con_no_w" type='text' oninput="fnOnRewardInputChange(this);" />
+				</div>
+				<div class="reward_confirm" tapmode="meui_click" onclick="fnConfirmReward()">
+					确定打赏
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/swiper.js"></script>
+	<script type="text/javascript" src="../../script/upload_img.js"></script>
+	<script type="text/javascript" src="../../script/sha1.js"></script>
+	<script type="text/javascript" src="../../script/jquery.js"></script>
+	<script type="text/javascript">
+		var topicId;
+		var type;
+		var replyIndex = 1;
+		var topicDetails;
+		var storageUserId;
+		apiready = function() {
+			fnSysHeaderStyle();
+			$api.fixTabBar($api.dom('.chat_div'));
+			$api.fixTabBar($api.dom('.comment_div'));
+			$api.fixTabBar($api.dom('.all_reply'));
+			if (api.systemType === 'ios') {
+				$api.css($api.dom('.reply_div_inner'), 'top:' + api.safeArea.top + 'px');
+			}
+			$api.css($api.dom('.comment_div'), 'padding-top:' + $api.dom('header').offsetHeight + 'px');
+			$api.css($api.dom('.comment_div'), 'padding-bottom:' + $api.dom('header').offsetHeight + 'px');
+			//fnRefreshOpen();
+			topicId = api.pageParam.id;
+			type = api.pageParam.type;
+			topicDetails = api.pageParam.topicDetails;
+			storageUserId = api.pageParam.userId;
+			fnGetComments();
+			fnKeyBoardListener();
+			fnShowSendBtn();
+			fnScrollListener();
+			fnHideReward();
+			fnAddNativeListener();
+			fnInitEventListener();
+			fnIsDelayShowInput();
+            fnSetTokenFlag();
+		};
+        function fnRefreshInfo(){
+            fnSetTokenFlag();
+            fnGetUserInfo();
+            fnGetUserType();
+        }
+        function fnSetTokenFlag(){
+            var token = api.readFile({
+                sync : true,
+                path : api.boxDir + '/token.txt'
+            });
+            if (fnIsEmpty(token) || token.indexOf('#') == -1) {
+                fnSetDisplay('no_login_input',true);
+                fnSetDisplay('login_input',false);
+            }else{
+                fnSetDisplay('no_login_input',false);
+                fnSetDisplay('login_input',true);
+            }
+        }
+
+        function fnGetUserInfo() {
+            $service.get('user/getUserInfo.ajax', {}, function(ret, err) {
+                if (ret.ok == 1) {
+                    api.writeFile({
+                        path : api.boxDir + '/userid.txt',
+                        data : ret.data.userInfoCount.userId
+                    }, function(ret, err) {
+                    });
+                    fnGetUserIsBlackAndFocus(ret.data.userInfoCount.userId);
+                }
+                fnReGetTopicInfo();
+            });
+        }
+        function fnGetUserType() {
+            $service.get('user/getShopkeepersInfo.ajax', null, function(ret, err) {
+                if (ret) {
+                    if (ret.ok == 1) {
+                        api.writeFile({
+                            path : api.boxDir + '/userType.txt',
+                            data : ret.data
+                        }, function(ret, err) {
+
+                        });
+                    } else {
+                        api.writeFile({
+                            path : api.boxDir + '/userType.txt',
+                            data : ''
+                        }, function(ret, err) {
+
+                        });
+                        fnToast('获取身份信息失败', 'middle');
+                    }
+                }
+            }, true);
+        }
+        var isDelayShowInput = false;
+		function fnIsDelayShowInput(){
+			if(api.systemType == 'ios') {
+				var version = api.systemVersion.split('.');
+				if(version[0] < 11){
+					isDelayShowInput = true;
+				}
+			}
+		}
+        var isNeedLogin = false;
+        var isShareing = false;
+        var uploadAgain = 0;
+		function fnInitEventListener() {
+			api.addEventListener({
+				name : 'NaviteCallAPICloudMethod'
+			}, function(rets, err) {
+				api.hideProgress();
+				var ret = rets.value;
+				if (ret.type == 4) {
+					if (uploadAgain == 1) {
+						return;
+					}
+					uploadAgain = 1;
+                    if (ret.subType !== 'progress' && ret.success == 1) {
+                        uploadUrls = ret.data.urls.join(',');
+                        if (replyVue.isReply) {
+                            fnCommentTopic(uploadUrls, replyVue.comment.id);
+                        } else {
+                            fnCommentTopic(uploadUrls);
+                        }
+                    } else if (ret.success != 1) {
+                        fnToast(ret.message, 'middle');
+                    }
+				} else if (ret.type == 9) {
+					if (ret.tag == api.frameName && ret.success == 1) {
+						if (uploadImgVue.list.length == 10) {
+							fnToast('最多只能选择9张图片', 'middle');
+							return;
+						}
+						fnOpenWin("select_picture", null, {
+							winName : api.winName,
+							frameName : api.frameName,
+							canSelectNum : 10 - uploadImgVue.list.length
+						});
+					} else {
+						// fnToast('没有相应权限', 'middle');
+						api.alert({
+							title : '提示',
+							msg : '没有相机权限，请进入设置添加应用的相机/相册权限',
+							buttons : ['确定']
+						}, function(ret, err) {
+						});
+					}
+				}else if(ret.type == 1){
+                    isNeedLogin = false;
+                    isShareing = false;
+                    if (ret.success == 1) {
+                        var token = ret.token;
+                        api.writeFile({
+                            path : api.boxDir + '/token.txt',
+                            data : token
+                        }, function(ret, err) {
+                            if(fnRefreshInfo) {
+                                fnRefreshInfo();
+                            }
+                            api.sendEvent({
+                                name: 'refreshToken'
+                            });
+                        });
+                    } else {
+                        fnToast('登录失败', 'middle');
+                    }
+                }
+			});
+		}
+
+		function fnHideReward() {
+			if (type == 4) {
+				fnSetDisplay('replayReward', false);
+				fnSetDisplay('replyHide', false);
+				fnSetDisplay('.small_money_img', false);
+			}
+		}
+
+		//当展示全部评论界面时，隐藏点赞，收藏，打赏按钮，且不显示发布按钮
+		function fnShowSendBtn() {
+			fnSetDisplay('.input_operations', false);
+			fnSetDisplay('.send_div', false);
+		}
+
+		//当打开某条评论的全部回复时，显示点赞，打赏，隐藏发布按钮
+		function fnShowInputReplyOperation() {
+			fnSetFlex('.input_operations');
+			fnSetDisplay('.send_div', false);
+		}
+
+		var commentsVue = new Vue({
+			el : '.comment_div',
+			data : {
+				commentsList : [],
+				type : type,
+				isNoMore : false,
+                isShowExpand:[]
+			},
+			methods : {
+				//打开全部回复界面
+				fnOpenAllReply : function(comment, isFocus) {
+					fnShowAllReply(comment, isFocus);
+				},
+				fnLongUserName : function(item) {
+					if (!fnIsEmpty(item.userName)) {
+						if (item.userName.length > 10) {
+							item.userName = item.userName.substring(0, 10) + '...';
+						}
+					}
+					return item.userName;
+				},
+				fnIsExpression : function() {
+					return this.comment.comment && this.comment.comment.indexOf('comment_expression:') != -1;
+				},
+				fnIsItemExpression : function(item) {
+					return item.comment && item.comment.indexOf('comment_expression:') != -1;
+				},
+				fnPraiseComment : function(item, index) {
+					fnPraiseComment(item, index);
+				},
+				fnOpenReplyMoreOperation : function(id, comment, isClose) {
+					fnOpenReplyMoreOperation($api.byId(id), comment, isClose);
+				},
+				fnOpenUser : function(item) {
+					var token = api.readFile({
+						sync : true,
+						path : api.boxDir + '/token.txt'
+					});
+					if (fnIsEmpty(token)) {
+						fnOpenLogin();
+					} else {
+						if (token.indexOf('#') === -1) {
+							fnOpenLogin();
+							return;
+						}
+						api.readFile({
+							path : api.boxDir + '/userid.txt'
+						}, function(ret, err) {
+							if (ret) {
+								var _userid = ret.data;
+								if (_userid === '') {
+									fnOpenLogin();
+									return;
+								}
+								if (item.userCode == _userid) {
+									fnOpenWin('mine', '../mine/');
+								} else {
+									fnOpenWin('ta_page', '../ta_page/', {
+										userId : item.userCode
+									});
+								}
+							}
+						});
+					}
+				},
+				fnPreviewCommentImgs : function(imgs, index) {
+					/*fnOpenWin('photo_viewer', null, {
+						urlArr : imgs,
+						activeIndex : index
+					});*/
+                    api.openWin({
+                        name: 'preview_picture',
+                        url: 'preview_picture.html',
+                        pageParam : {
+                            urlArr : imgs,
+                            activeIndex : index
+                        }
+                    });
+                },
+                fnExpand:function (event) {
+                    console.log(event)
+                    if(event.target.innerText === '展开'){
+                        $api.removeCls($api.dom($api.closest(event.target,'.comment_right_div'),'.comment_content pre'), 'ellipsis-6');
+                        event.target.innerText = '收起';
+                    }else {
+                        $api.addCls($api.dom($api.closest(event.target,'.comment_right_div'),'.comment_content pre'), 'ellipsis-6');
+                        event.target.innerText = '展开';
+                    }
+                }
+            },
+            mounted:function (){
+                this.isShowExpand = []
+                var comments = this.$refs.comment;
+                if(typeof comments ==='undefined'){
+                    return;
+                }
+                for (var i = 0; i < comments.length ; i++){
+                    if (comments[i].scrollHeight > comments[i].clientHeight) {
+                        this.isShowExpand.push(true);
+                    }else {
+                        this.isShowExpand.push(false);
+                    }
+                }
+            },
+            watch:{
+                commentsList:function () {
+                    commentsVue.$mount();
+                }
+            }
+		});
+		function fnOpenLogin() {
+			api.sendEvent({
+				name : 'APICloudCallNaviteMethod',
+				extra : {
+					type : 1,
+					canCallBack : 1,
+					toPageName : 'Login'
+				}
+			});
+		}
+
+		//打开全部回复界面
+		function fnShowAllReply(comment, isFocus) {
+			replyVue.comment = comment;
+			replyIndex = 1;
+			fnGetAllReply(comment.id);
+			fnSetDisplay('.reply_div', true);
+			fnShowInputReplyOperation();
+			fnSetReplyPraiseNum();
+			replyVue.isReply = true;
+			if (isFocus) {
+				$api.dom('.comment_input').focus();
+			}
+			bodyScollHeight = document.documentElement.scrollTop || document.body.scrollTop;
+			$api.addCls($api.dom('body'), 'overfolw_hidden');
+			$api.addCls($api.dom('html'), 'overfolw_hidden');
+		}
+
+		function fnBack() {
+			if (replyVue.isReply) {
+				fnCloseAllReply();
+			} else {
+				api.closeWin();
+			}
+		}
+
+		var replyVue = new Vue({
+			el : '.reply_div',
+			data : {
+				comment : {},
+				replysList : [],
+				isReply : false,
+				isNoMore : false,
+                isShowExpand:[]
+			},
+			methods : {
+				fnIsExpression : function() {
+					return this.comment.comment && this.comment.comment.indexOf('comment_expression:') != -1;
+				},
+				fnIsItemExpression : function(item) {
+					return item.comment && item.comment.indexOf('comment_expression:') != -1;
+				},
+				fnExpressionPath : function() {
+					if (this.comment.comment)
+						return this.comment.comment.substring(19);
+					return '';
+				},
+				fnPraiseComment : function(comment) {
+					fnPraiseComment(comment);
+				},
+				fnOpenReplyMoreOperation : function(id, comment, isClose) {
+					fnOpenReplyMoreOperation($api.byId(id), comment, isClose);
+				},
+				fnOpenUser : function(item) {
+					var token = api.readFile({
+						sync : true,
+						path : api.boxDir + '/token.txt'
+					});
+					if (fnIsEmpty(token)) {
+						fnOpenLogin();
+					} else {
+						if (token.indexOf('#') === -1) {
+							fnOpenLogin();
+							return;
+						}
+						api.readFile({
+							path : api.boxDir + '/userid.txt'
+						}, function(ret, err) {
+							if (ret) {
+								var _userid = ret.data;
+								if (_userid === '') {
+									fnOpenLogin();
+									return;
+								}
+								if (item.userCode == _userid) {
+									fnOpenWin('mine', '../mine/');
+								} else {
+									fnOpenWin('ta_page', '../ta_page/', {
+										userId : item.userCode
+									});
+								}
+							}
+						});
+					}
+				},
+				fnPreviewCommentImgs : function(imgs, index) {
+					fnLog(imgs);
+                    api.openWin({
+                        name: 'preview_picture',
+                        url: 'preview_picture.html',
+                        pageParam : {
+                            urlArr : imgs,
+                            activeIndex : index
+                        }
+                    });
+					/*fnOpenWin('photo_viewer', null, {
+						urlArr : imgs,
+						activeIndex : index
+					});*/
+                },
+                fnExpand:function (event) {
+                    console.log(event)
+                    if(event.target.innerText === '展开'){
+                        $api.removeCls($api.dom($api.closest(event.target,'.comment_right_div'),'.comment_content pre'), 'ellipsis-6');
+                        event.target.innerText = '收起';
+                    }else {
+                        $api.addCls($api.dom($api.closest(event.target,'.comment_right_div'),'.comment_content pre'), 'ellipsis-6');
+                        event.target.innerText = '展开';
+                    }
+                }
+            },
+            mounted:function (){
+                this.isShowExpand = []
+                var comments = this.$refs.comment;
+                if(typeof comments ==='undefined'){
+                    return;
+                }
+                for (var i = 0; i < comments.length ; i++){
+                    if (comments[i].scrollHeight > comments[i].clientHeight) {
+                        this.isShowExpand.push(true);
+                    }else {
+                        this.isShowExpand.push(false);
+                    }
+                }
+            },
+            watch:{
+                replysList:function () {
+                    replyVue.$mount();
+                }
+			}
+		});
+		//评论上传图片列表vue
+		var uploadImgVue = new Vue({
+			el : '.upload_img_div',
+			data : {
+				list : [{}]
+			},
+			methods : {
+				fnDelete : function(index) {
+					uploadImgVue.list.splice(index, 1);
+				},
+				fnPreviewCommentImgs : function(index) {
+					var imgs = [];
+					for (var i = 0; i < uploadImgVue.list.length - 1; i++) {
+						imgs.push(uploadImgVue.list[i].path);
+					}
+//                  api.openWin({
+//                      name: 'preview_picture',
+//                      url: 'preview_picture.html',
+//                      pageParam : {
+//                          urlArr : imgs,
+//                          activeIndex : index
+//                      }
+//                  });
+					fnOpenWin('photo_viewer', null, {
+						urlArr : imgs,
+						activeIndex : index
+					});
+				}
+			}
+		});
+		//打赏列表对话框vue
+		var rewardNumVue = new Vue({
+			el : '.reaward_select_list',
+			data : {
+				list : [{
+					num : 1,
+					isActive : false
+				}, {
+					num : 5,
+					isActive : false
+				}, {
+					num : 10,
+					isActive : false
+				}, {
+					num : 30,
+					isActive : false
+				}, {
+					num : 50,
+					isActive : false
+				}, {
+					num : 100,
+					isActive : false
+				}],
+				selectIndex : -1,
+				isShow : false
+			},
+			methods : {
+				fnSelect : function(item, index) {
+					$api.dom('.reward_custom_num_input').value = '';
+					if (rewardNumVue.selectIndex != -1) {
+						rewardNumVue.$set(rewardNumVue.$data.list[rewardNumVue.selectIndex], 'isActive', false);
+					}
+					rewardNumVue.$set(rewardNumVue.$data.list[index], 'isActive', true);
+					rewardNumVue.selectIndex = index;
+				}
+			}
+		});
+		function fnScrollBottom() {
+			pageIndex++;
+			fnGetComments();
+		}
+
+		var pageIndex = 1;
+		//获取评论列表
+		function fnGetComments() {
+			var url = 'comment/getStoryComment.ajax';
+			if (type == 4) {
+				url = 'schoolstory/getStoryComments.ajax';
+			}
+			$service.get(url, {
+				pageIndex : pageIndex,
+				pageSize : 20,
+				storyId : topicId
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						if (pageIndex == 1) {
+							commentsVue.commentsList = [];
+							document.body.scrollTop = document.documentElement.scrollTop = 0;
+						}
+						if (type == 4) {
+							if (ret.data.list.length < 20) {
+								commentsVue.isNoMore = true;
+							}
+							fnSetTxt('.comment_num', ret.data.totalCount);
+							fnAppendCommentData(commentsVue.commentsList, ret.data.list);
+						} else {
+							fnSetTxt('.comment_num', ret.data.count);
+							if (ret.data.list.length < 20) {
+								commentsVue.isNoMore = true;
+							}
+							fnAppendCommentData(commentsVue.commentsList, ret.data.list);
+						}
+					}
+				}
+			}, true);
+		}
+
+		//为获取到的评论列表数据解析评论图片列表
+		function fnAppendCommentData(oldArr, data) {
+			for (var i = 0; i < data.length; i++) {
+				if (!fnIsEmpty(data[i].commentImgs)) {
+					data[i].commentImgs = data[i].commentImgs.split(",");
+				}
+				if (fnIsEmpty(data[i].userImg)) {
+					data[i].userImg = '../../image/home/tmp_default_header.png';
+				}
+				if (!fnIsEmpty(data[i].userName)) {
+					if (data[i].userName.length > 10) {
+						data[i].userName = data[i].userName.substring(0, 10) + '...';
+					}
+				}
+				if (type == 4) {
+					data[i].commentPraiseFlag = data[i].commentPraiseNumberFlag;
+					data[i].praiseNumber = data[i].commentPraiseNumber;
+					if (!data[i].praiseNumber) {
+						data[i].praiseNumber = 0;
+					}
+				}
+				data[i].type = type;
+				oldArr.push(data[i]);
+			}
+			return oldArr;
+		}
+
+		function fnScrollListener() {
+			$(document).scroll(function(e) {
+			    console.log(e)
+				var scrollTop = $(this).scrollTop();
+				var scrollHeight = $(document).height();
+				mScrollHeight = scrollTop;
+				var windowHeight = api.winHeight;
+				if (scrollTop + windowHeight == scrollHeight) {
+					fnScrollBottom();
+				}
+			});
+			$('.reply_content').scroll(function(e) {
+				var h = $(this).height();
+				var sh = $(this)[0].scrollHeight;
+				var st = $(this)[0].scrollTop;
+				if (h + st > sh - 50) {
+					if (isGetAllReply) {
+						return;
+					}
+					replyIndex++;
+					fnGetAllReply(replyVue.comment.id);
+				}
+			});
+		}
+
+		function fnSetReplyPraiseNum() {
+			if (replyVue.comment.praiseNumber > 0) {//如果点赞数大于0，显示点赞数布局
+				fnSetDisplay('.praise_num', true);
+				fnSetTxt('.praise_num', replyVue.comment.praiseNumber);
+			} else {
+				fnSetDisplay('.praise_num', false);
+				fnSetTxt('.praise_num', replyVue.comment.praiseNumber);
+			}
+			if (replyVue.comment.commentPraiseFlag == 0) {
+				fnSetImgSrc('.praise_img', '../../image/mine/zan.png');
+			} else {
+				fnSetImgSrc('.praise_img', '../../image/mine/zans.png');
+			}
+		}
+
+		//初始化评论表情轮播布局
+		var expressionsSwiper;
+		function fnInitExpressionSwiper() {
+			expressionsSwiper = new Swiper('.expression_swiper', {
+				pagination : {
+					el : '.swiper-pagination',
+					renderBullet : function(index, className) {
+						return '<span class="' + className + '"></span>';
+					}
+				}
+			});
+		}
+
+		//要打赏，删除，隐藏和取消隐藏的评论或回复id
+		var replyMoreOperationId;
+		//要打赏，删除，隐藏和取消隐藏的评论或回复用户id
+		var replyMoreOperationUserId;
+		//当前滚动的高度
+		var mScrollHeight = 0;
+		//删除后是否关闭全部回复界面（删除的是全部回复界面的评论，则关闭全部回复界面；删除的是回复，则刷新回复列表）
+		var isCloseAllReplyAfterDelete;
+		var currentOperationComment;
+		var replyId;
+		function fnOpenReplyMoreOperation(el, comment, isClose) {
+			currentOperationComment = comment;
+            replyId = el.id;
+			fnSaveReplayFlag(comment, isClose);
+			fnSetMoreOperationTop(el);
+			fnSetMoreOperationHideTxt(comment.isHide);
+			var userType = api.getPrefs({
+				sync : true,
+				key : 'userType'
+			});
+			if (userType == 1) {
+				fnSetDisplay('replayReward', false);
+				fnSetDisplay('replyHide', false);
+			}
+			fnShowReplyMoreOperation();
+		}
+
+		function fnSaveReplayFlag(comment, isClose) {
+			isCloseAllReplyAfterDelete = isClose;
+			replyMoreOperationId = comment.id;
+			replyMoreOperationUserId = comment.userCode;
+		}
+
+		function fnSetMoreOperationTop(el) {
+			var offset = $api.offset(el);
+			var operation = $api.dom('.reply_more_operation');
+			mScrollHeight = fnIsEmpty(mScrollHeight) ? 0 : mScrollHeight;
+			var top = offset.t + offset.h + 10 - mScrollHeight;
+			if (top + 120 + 48 > api.winHeight) {
+				fnSetDisplay('.triangle-bottomright', false);
+				fnSetDisplay('.triangle-topright', true);
+				operation.style.top = top - 140 + 'px';
+			} else {
+				fnSetDisplay('.triangle-bottomright', true);
+				fnSetDisplay('.triangle-topright', false);
+				operation.style.top = top + 'px';
+			}
+		}
+
+		function fnSetMoreOperationHideTxt(isHide) {
+			if (isHide) {
+				fnSetImgSrc('hideCommentImg', '../../image/mine/eye_close.png');
+				fnSetTxt('hideCommentTxt', '取 消');
+			} else {
+				fnSetImgSrc('hideCommentImg', '../../image/mine/eye_iocn.png');
+				fnSetTxt('hideCommentTxt', '隐 藏');
+			}
+		}
+
+		function fnShowReplyMoreOperation() {
+			fnSetDisplay('.reply_more_operation_div', true);
+		}
+
+		function fnCloseReplyMoreOperation() {
+			setTimeout(function(){
+				fnSetDisplay('.reply_more_operation_div', false);
+			},100);
+
+		}
+
+		function fnDeleteComment() {
+			api.hideProgress();
+			fnCloseReplyMoreOperation();
+			var commentId = replyMoreOperationId;
+			replyMoreOperationId = null;
+			var url = 'comment/deleteComment.ajax';
+			var params = {
+				commentId : commentId
+			};
+			if (type == 4) {
+				url = 'schoolstory/deleteComment.ajax';
+				params = {
+					commentId : commentId,
+					userCode : replyMoreOperationUserId,
+				}
+			}
+			$service.get(url, params, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						fnToast('删除成功', 'middle');
+						fnRefreshReplyList(commentId);
+						fnRefreshContent(commentId);
+						fnReCetComments();
+						if (isCloseAllReplyAfterDelete) {
+							fnSetDisplay('.reply_div', false);
+						}
+					} else {
+						if (ret.data.content) {
+							if (ret.data.content == '需要登录') {
+								return;
+							}
+							fnToast(ret.data.content, 'middle');
+						} else {
+							fnToast('删除失败', 'middle');
+						}
+					}
+				}
+			}, true);
+		}
+
+		function fnReCetComments() {
+			api.execScript({
+				name : api.pageParam.winName,
+				frameName : api.pageParam.frameName,
+				script : 'fnGetComments();'
+			});
+		}
+
+		function fnRefreshReplyList(commentId) {
+			for (var i = 0; i < replyVue.replysList.length; i++) {
+				if (commentId == replyVue.replysList[i].id) {
+					replyVue.replysList.splice(i, 1);
+					replyVue.comment.replyNumber--;
+				}
+			}
+		}
+
+		function fnRefreshContent(commentId) {
+			for (var i = 0; i < commentsVue.commentsList.length; i++) {
+				if (commentId == commentsVue.commentsList[i].id) {
+					commentsVue.commentsList.splice(i, 1);
+					fnSetTxt('.comment_num', commentsVue.commentsList.length);
+				}
+			}
+		}
+
+		function fnHideComment() {
+			api.showProgress();
+			fnCloseReplyMoreOperation();
+			var commentId = replyMoreOperationId;
+			replyMoreOperationId = null;
+			$service.get('comment/updateCommentDisplayStatus.ajax', {
+				commentId : commentId
+			}, function(ret, err) {
+				api.hideProgress();
+				if (ret) {
+					if (ret.ok == 1) {
+						fnOnHideReply(commentId, true);
+					} else {
+						if (ret.data.content == '需要登录') {
+							return;
+						}
+						fnToast(ret.data.content, 'middle');
+					}
+				}
+			}, true);
+		}
+
+		function fnOnHideReply(commentId) {
+			if (replyVue.isReply) {
+                if(replyId.indexOf('comment') == 0){
+                    var isHide = replyVue.comment.isHide;
+                    if(isHide){
+                        fnToast('取消隐藏成功', 'middle');
+                    }else{
+                        fnToast('隐藏成功', 'middle');
+                    }
+                    replyVue.comment.isHide = !replyVue.comment.isHide;
+                    return;
+                }
+				for (var i = 0; i < replyVue.replysList.length; i++) {
+					if (commentId == replyVue.replysList[i].id) {
+						if (replyVue.replysList[i].isHide) {
+							fnToast('取消隐藏成功', 'middle');
+							replyVue.$set(replyVue.$data.replysList[i], 'isHide', false);
+						} else {
+							fnToast('隐藏成功', 'middle');
+							replyVue.$set(replyVue.$data.replysList[i], 'isHide', true);
+						}
+						break;
+					}
+				}
+			} else {
+				for (var i = 0; i < commentsVue.commentsList.length; i++) {
+					if (commentId == commentsVue.commentsList[i].id) {
+						if (commentsVue.commentsList[i].isHide) {
+							fnToast('取消隐藏成功', 'middle');
+							commentsVue.$set(commentsVue.$data.commentsList[i], 'isHide', false);
+						} else {
+							fnToast('隐藏成功', 'middle');
+							commentsVue.$set(commentsVue.$data.commentsList[i], 'isHide', true);
+						}
+						break;
+					}
+				}
+			}
+		}
+
+		var isExpressionInit = false;
+		var isExpression = false;
+		var isClickExPression = false;
+		//切换选择表情布局的可见度
+		function fnSwitchExpression() {
+			$api.dom('.comment_input').blur();
+			if (!isExpressionInit) {
+				fnSetDisplay('.expression_div', !isExpression);
+				fnSetDisplay('.select_expression', false);
+				isExpression = true;
+				fnInitExpressionSwiper();
+				isExpressionInit = true;
+				setTimeout(function() {
+					fnSetFlex('.comment_other_operation');
+					fnSetFlex('.hide_keyboard');
+					isClickExPression = true;
+				}, 100);
+			} else {
+				fnSetDisplay('.select_expression', isExpression);
+				setTimeout(function() {
+					fnSetDisplay('.expression_div', !isExpression);
+					if (!isExpression) {
+						fnSetFlex('.hide_keyboard');
+					} else {
+						fnSetDisplay('.hide_keyboard', false);
+					}
+					if (!isExpression) {
+						fnSetFlex('.comment_other_operation', true);
+					} else {
+						fnSetDisplay('.comment_other_operation', false);
+					}
+					isExpression = !isExpression;
+					isClickExPression = true;
+				}, 100);
+			}
+		}
+
+		//切换表情类型
+		function fnSelectExpr(index) {
+			if (index == 1) {
+				$api.addCls($api.byId('expression_page_1'), 'active');
+				$api.removeCls($api.byId('expression_page_2'), 'active');
+				expressionsSwiper.removeAllSlides();
+				expressionsSwiper.appendSlide('<div class="swiper-slide">' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier1.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier2.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier3.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier4.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier5.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier6.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier7.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier8.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '</div>');
+				expressionsSwiper.appendSlide('<div class="swiper-slide">' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier9.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier10.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier11.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier12.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier13.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier14.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier15.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier16.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '</div>');
+				expressionsSwiper.appendSlide('<div class="swiper-slide">' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/haier/haier17.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '</div>');
+			} else {
+				$api.addCls($api.byId('expression_page_2'), 'active');
+				$api.removeCls($api.byId('expression_page_1'), 'active');
+				expressionsSwiper.removeAllSlides();
+				expressionsSwiper.appendSlide('<div class="swiper-slide">' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/SGjun/sg2.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/SGjun/sg3.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/SGjun/sg4.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/SGjun/sg5.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/SGjun/sg6.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/SGjun/sg7.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/SGjun/sg8.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/SGjun/sg9.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '</div>');
+				expressionsSwiper.appendSlide('<div class="swiper-slide">' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/SGjun/sg10.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/SGjun/sg11.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '<img class="expression_img" src="http://cdn09.ehaier.com/shunguang/expression/SGjun/sg12.gif" alt="" tapmode onclick="fnExprComment(this)"/>' + '</div>');
+			}
+		}
+
+		function fnKeyBoardListener() {
+			api.addEventListener({
+				name : 'keyboardshow'
+			}, function(ret, err) {
+				fnLog(ret);
+				$api.dom('.chat_div').style.bottom = ret.h - api.safeArea.bottom - mScrollHeight + 'px';
+				//TODO
+			});
+			api.addEventListener({
+				name : 'keyboardhide'
+			}, function(ret, err) {
+				$api.dom('.chat_div').style.bottom = 0 + 'px';
+			});
+			var winHeight = $(window).height();
+			$(window).resize(function() {
+				var heigth = $(this).height();
+				if (winHeight - heigth > 50) {
+				} else {
+					if (api.systemType == 'android') {
+						$api.dom('.comment_input').blur();
+					}
+				}
+			});
+		}
+
+		//评论输入框获取焦点事件
+		var isEdit = false;
+		function fnOnInputFocus(el) {
+			if(isDelayShowInput){
+				$api.dom('.chat_div').style.left = 1000 + 'px';
+				setTimeout(function(){
+					$api.dom('.chat_div').style.left = 0 + 'px';
+				},300);
+			}
+			if (api.systemType == 'ios') {
+				$api.dom('.chat_div').style.position = 'absolute';
+			}
+			if (api) {
+				api.readFile({
+					path : api.boxDir + '/isBlackAndFocus.txt',
+				}, function(ret, err) {
+					if (ret.value == -200) {
+						fnToast('您已经被禁言，不能进行该操作');
+						$api.dom('.comment_input').blur();
+						return;
+					}
+				});
+			}
+			setTimeout(function() {
+				if (!isEdit) {
+					el.innerHTML = '';
+				}
+				if (oldInputValue) {
+					el.innerHTML = oldInputValue;
+					$api.addCls($api.dom('.send_btn'), 'active');
+					$api.addCls($api.dom('.comment_input'), 'active');
+					isEdit = true;
+				} else {
+					$api.removeCls($api.dom('.send_btn'), 'active');
+				}
+				fnSetDisplay('.input_operations', false);
+				fnSetDisplay('.send_div', true);
+			}, 100);
+			fnShowInputOtherOperation();
+			fnSetDisplay('.expression_div', false);
+			isExpression = false;
+		}
+
+		//显示输入框下方布局
+		function fnShowInputOtherOperation() {
+			fnSetFlex('.comment_other_operation', true);
+			fnSetDisplay('.chat_close_div', true);
+			fnSetDisplay('.select_expression', true);
+			$api.dom('.reply_div_inner').style.paddingBottom = '100px';
+		}
+
+		//隐藏输入框下方布局
+		function fnHideInputOtherOperation() {
+			fnSetDisplay('.comment_other_operation', false);
+			fnSetDisplay('.chat_close_div', false);
+			fnSetDisplay('.expression_div', false);
+			$api.dom('.reply_div_inner').style.paddingBottom = '50px';
+		}
+
+		//重置评论输入框状态
+		function fnResetInput() {
+			$api.dom('.comment_input').blur();
+			if (type == 4 || !replyVue.isReply) {
+				fnSetDisplay('.send_div', true);
+				fnSetDisplay('.input_operations', false);
+			} else {
+				fnSetDisplay('.send_div', false);
+				fnSetFlex('.input_operations', true);
+			}
+			$api.val($api.dom('.comment_input'), '');
+			// fnSetTxt('.comment_input', '来说点什么吧…');
+			$api.removeCls($api.dom('.send_btn'), 'active');
+			$api.removeCls($api.dom('.comment_input'), 'active');
+			isEdit = false;
+		}
+
+		var oldInputValue;
+		//评论输入框失去焦点事件
+		function fnOnInputBlur() {
+			$api.dom('.chat_div').style.position = 'fixed';
+			setTimeout(function() {
+				if (isClickSend) {
+					isClickSend = false;
+					return;
+				}
+				var txt = fnGetValue('.comment_input');
+				if (fnIsEmpty(txt)) {
+					fnSetFlex('.input_operations', true);
+					fnSetDisplay('.send_div', false);
+					// fnSetTxt('.comment_input', '来说点什么吧…');
+					// $api.val($api.dom('.comment_input'),'');
+					$api.removeCls($api.dom('.comment_input'), 'active');
+				} else {
+					oldInputValue = txt;
+					fnSetFlex('.input_operations', true);
+					fnSetDisplay('.send_div', false);
+					// fnSetTxt('.comment_input', '来说点什么吧…');
+					// $api.val($api.dom('.comment_input'),'');
+					$api.removeCls($api.dom('.comment_input'), 'active');
+				}
+			}, 100);
+			if (type == 4 || !replyVue.isReply) {
+				fnSetDisplay('.send_div', true);
+				fnSetDisplay('.input_operations', false);
+				$api.removeCls($api.dom('.send_btn'), 'active');
+			} else {
+				fnSetDisplay('.send_div', false);
+				fnSetFlex('.input_operations', true);
+			}
+			setTimeout(function() {
+				if (!isClickExPression) {
+					fnSetDisplay('.comment_other_operation', false);
+				}
+				isClickExPression = false;
+			}, 300);
+		}
+
+		//输入框获取焦点期间，键盘点击事件
+		function fnOnkeyup(el) {
+			var txt = fnGetValue('.comment_input');
+			if (fnIsEmpty(txt)) {
+				$api.removeCls($api.dom('.send_btn'), 'active');
+				$api.removeCls($api.dom('.comment_input'), 'active');
+				isEdit = false;
+			} else {
+				$api.addCls($api.dom('.send_btn'), 'active');
+				$api.addCls($api.dom('.comment_input'), 'active');
+				isEdit = true;
+			}
+		}
+
+		//去标签
+		function onPaste(context) {
+			setTimeout(function() {
+				context.value = context.value.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, '');
+				// fnReplaceComment(context.value)
+			}, 0)
+		}
+
+		function fnCloseAllReply() {
+			uploadImgVue.list = [{}];
+			fnSetDisplay('.reply_div', false);
+			replyVue.replysList = [];
+			replyVue.isNoMore = false;
+			replyVue.isReply = false;
+			fnScrollBack();
+			fnShowSendBtn();
+		}
+
+		var bodyScollHeight;
+		function fnScrollBack() {
+			$api.removeCls($api.dom('body'), 'overfolw_hidden');
+			$api.removeCls($api.dom('html'), 'overfolw_hidden');
+			document.body.scrollTop = document.documentElement.scrollTop = bodyScollHeight;
+		}
+
+		var isClickSend = false;
+		//点击发布按钮
+		function fnClickSendBtn() {
+			isClickSend = true;
+			transImgs = [];
+			uploadAgain = 0;
+			if (uploadImgVue.list.length > 1) {
+				for(var i = 0; i < uploadImgVue.list.length -1; i++){
+					transImgs.push(uploadImgVue.list[i].path);
+				}
+				api.showProgress({
+                });
+				fnUploadImg();
+			} else {
+				if (replyVue.isReply) {
+					fnCommentTopic(null, replyVue.comment.id);
+				} else {
+					fnCommentTopic();
+				}
+			}
+		}
+
+		function fnReplaceComment(comment) {
+			if (!fnIsEmpty(comment)) {
+				comment = comment.replace(/\r\n/g, '<br/>');
+				comment = comment.replace(/\n/g, '<br/>');
+				comment = comment.replace(/\s/g, ' ');
+				fnLogStr(comment);
+				return comment;
+			}
+			return '';
+		}
+
+		//图文评论
+		function fnCommentTopic(commentImgs, commentId) {
+			var comment = fnGetValue('.comment_input');
+			// comment = fnReplaceComment(comment);
+			if (fnIsEmpty(commentImgs) && fnIsEmpty(comment)) {
+				fnToast('评论内容不能为空', 'middle');
+				return;
+			}
+			var params = {
+				storyId : topicDetails.id,
+				commentToUserCode : topicDetails.userCode,
+				commentToCode : topicDetails.userCode,
+				topicId : topicDetails.topicId,
+				comment : comment
+			}
+			if (!fnIsEmpty(commentImgs)) {
+				params.commentImgs = commentImgs;
+			}
+			if (commentId) {
+				params.commentId = commentId;
+				params.commentToUserCode = replyVue.comment.userCode;
+				params.commentToCode = replyVue.comment.userCode;
+			}
+			var url = 'comment/insertStoryComment.ajax';
+			if (type == 4) {
+				url = 'schoolstory/addComment.ajax';
+			}
+			$service.get(url, params, function(ret, err) {
+				if (ret) {
+					uploadImgVue.list = [{}];
+					uploadUrls = '';
+					fnResetInput();
+					if (ret.ok == 1) {
+						fnToast('评论成功', 'middle');
+						oldInputValue = null;
+						pageIndex = 1;
+						fnGetComments();
+						if (commentId) {
+							replyVue.comment.replyNumber++;
+							replyIndex = 1;
+							$api.dom('.reply_content').scrollTop = 0;
+							fnGetAllReply(commentId);
+						}
+					} else {
+						if (ret.data.content == '需要登录') {
+							return;
+						}
+						fnToast(ret.data.content, 'middle');
+					}
+				} else {
+					fnToast(err.msg, 'middle')
+				}
+			}, false)
+		}
+
+		//表情评论
+		function fnExprComment(el) {
+			var comment = el.src;
+			var params = {
+				storyId : topicDetails.id,
+				commentToUserCode : topicDetails.userCode,
+				commentToCode : topicDetails.userCode,
+				topicId : topicDetails.topicId,
+				comment : '',
+				commentImgs : comment
+			}
+			if (replyVue.isReply) {
+				params.commentId = replyVue.comment.id;
+				params.commentToUserCode = replyVue.comment.userCode;
+				params.commentToCode = replyVue.comment.userCode;
+			}
+			var url = 'comment/insertStoryComment.ajax';
+			if (type == 4) {
+				url = 'schoolstory/addComment.ajax';
+			}
+			$service.get(url, params, function(ret, err) {
+				if (ret) {
+					uploadImgVue.list = [{}];
+					fnResetInput();
+					if (ret.ok == 1) {
+						fnToast('评论成功', 'middle');
+						oldInputValue = null;
+						pageIndex = 1;
+						fnGetComments();
+						fnHideInputOtherOperation();
+						fnSetDisplay('.expression_div', false);
+						if (params.commentId) {
+							replyVue.comment.replyNumber++;
+							replyIndex = 1;
+							$api.dom('.reply_content').scrollTop = 0;
+							fnGetAllReply(params.commentId);
+						}
+					} else {
+						if (ret.data.content == '需要登录') {
+							return;
+						}
+						fnToast(ret.data.content, 'middle');
+					}
+				} else {
+					fnToast(err.msg, 'middle')
+				}
+			}, false)
+		}
+
+		//打开选择相片界面
+		function fnOpenSelectPicture() {
+			if (api.systemType === 'android') {
+				api.sendEvent({
+					name : 'APICloudCallNaviteMethod',
+					extra : {
+					    tag : api.frameName,
+						type : 9, // 权限管理
+						canCallBack : 1, // 返回1时，说明有权限，可进行下一步操作
+						command : ['android.permission.WRITE_EXTERNAL_STORAGE', 'android.permission.READ_EXTERNAL_STORAGE', 'android.permission.CAMERA'] // 需要哪些权限就在数组中传过来
+					}
+				});
+			} else {
+				if (uploadImgVue.list.length == 10) {
+					fnToast('最多只能选择9张图片', 'middle');
+					return;
+				}
+				fnOpenWin("select_picture", null, {
+					winName : api.winName,
+					frameName : api.frameName,
+					canSelectNum : 10 - uploadImgVue.list.length
+				});
+			}
+		}
+
+		//填充评论上传图片列表，并关闭选择相片界面
+		function fnGetSelectedImgs() {
+			fnAppendData();
+			api.closeToWin({
+				name : api.winName
+			});
+			$api.dom('.comment_input').focus();
+			fnAfterSelectImgs();
+		}
+
+		function fnAfterSelectImgs() {
+			if (oldInputValue) {
+				$api.dom('.comment_input').innerHTML = oldInputValue;
+				$api.addCls($api.dom('.send_btn'), 'active');
+				$api.addCls($api.dom('.comment_input'), 'active');
+				isEdit = true;
+			} else {
+				$api.removeCls($api.dom('.send_btn'), 'active');
+			}
+			fnSetDisplay('.input_operations', false);
+			fnSetDisplay('.send_div', true);
+			fnShowInputOtherOperation();
+		}
+
+		function fnChangeActive() {
+			if ($api.val($api.dom('.comment_input')) != '') {
+				$api.addCls($api.dom('.send_btn'), 'active');
+			} else {
+				$api.removeCls($api.dom('.send_btn'), 'active');
+			}
+		}
+
+		//填充评论上传图片列表
+		function fnAppendData() {
+			var data = JSON.parse(api.readFile({
+				sync : true,
+				path : api.boxDir + '/selectedImgs.txt'
+			}));
+			fnLog(data);
+			if (data && data.length > 0) {
+				for (var i = 0; i < data.length; i++) {
+					uploadImgVue.list.splice(uploadImgVue.list.length - 1, 0, data[i]);
+				}
+			}
+		}
+
+		fnAddChatCloseDivTouchEvent();
+		function fnAddChatCloseDivTouchEvent() {
+			$('.chat_close_div').on('touchstart', function(e) {
+				fnHideInputOtherOperation();
+				$api.dom('.comment_input').blur();
+			});
+			$('.comment_other_operation').on('touchstart', function(e) {
+				$api.dom('.comment_input').blur();
+			});
+			$('.reply_more_operation_div').on('touchend', function(e) {
+				fnCloseReplyMoreOperation();
+			});
+		}
+
+		//评论点赞
+		function fnPraiseComment(item, index) {
+			var visitorCode = $api.getStorage("visitorCode");
+			if (fnIsEmpty(visitorCode)) {
+				visitorCode = guid();
+				$api.setStorage('visitorCode', visitorCode);
+			}
+			var url = 'comment/setCommentPraise.ajax';
+			var params = {
+				commentId : item.id,
+				action : item.commentPraiseFlag == 0 ? 1 : 0,
+				userCode : item.userCode,
+				visitorCode : visitorCode
+			}
+			if (type == 4) {
+				url = 'schoolstory/schoolCommentParise.ajax';
+				params = {
+					commentId : item.id,
+					action : item.commentPraiseNumberFlag == 0 ? 1 : 0
+				}
+			}
+			$service.get(url, params, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						if (item.commentPraiseFlag == 0) {
+							if (index || index == 0) {
+								commentsVue.$set(commentsVue.$data.commentsList[index], 'commentPraiseFlag', 1);
+								commentsVue.$set(commentsVue.$data.commentsList[index], 'praiseNumber', item.praiseNumber + 1);
+							} else {
+								replyVue.$set(replyVue.$data.comment, 'commentPraiseFlag', 1);
+								replyVue.$set(replyVue.$data.comment, 'praiseNumber', item.praiseNumber + 1);
+							}
+						} else {
+							if (index || index == 0) {
+								commentsVue.$set(commentsVue.$data.commentsList[index], 'commentPraiseFlag', 0);
+								commentsVue.$set(commentsVue.$data.commentsList[index], 'praiseNumber', item.praiseNumber - 1);
+							} else {
+								replyVue.$set(replyVue.$data.comment, 'commentPraiseFlag', 0);
+								replyVue.$set(replyVue.$data.comment, 'praiseNumber', item.praiseNumber - 1);
+							}
+						}
+						fnSetReplyPraiseNum();
+					} else {
+						if (ret.ok == 0) {
+							if (ret.data.content == '需要登录') {
+								return;
+							}
+							fnToast(ret.data.content, 'middle');
+						}
+					}
+				} else {
+					fnToast(err.msg, 'middle')
+				}
+			}, true)
+		}
+
+		//确认打赏
+		function fnConfirmReward() {
+			var rewardNum;
+			if (rewardNumVue.selectIndex != -1) {
+				rewardNum = rewardNumVue.list[rewardNumVue.selectIndex].num;
+			} else {
+				rewardNum = fnGetValue('.reward_custom_num_input');
+				if (fnIsEmpty(rewardNum)) {
+					fnToast('请选择打赏金币数', 'middle');
+					return;
+				}
+			}
+			if (rewardNum > 9999) {
+				fnToast('最多可打赏9999金币，请修改打赏金额', 'middle');
+				return;
+			}
+			if (rewardNum > canRewardNum) {
+				fnToast('最多可打赏' + canRewardNum + '金币，请修改打赏金额', 'middle');
+				return;
+			}
+			$service.get('comment/tipComment.ajax', {
+				amount : rewardNum,
+				commentId : replyMoreOperationId,
+				commentUserId : replyMoreOperationUserId
+			}, function(ret, err) {
+				fnCloseRewardDialog();
+				if (ret) {
+					if (ret.ok == 1) {
+						fnToast('打赏成功');
+						$api.dom('.reward_custom_num_input').value = '';
+					} else {
+						if (ret.data.content == '需要登录') {
+							return;
+						}
+						fnToast(ret.data.content);
+					}
+				} else {
+					fnToast(err.msg, 'middle')
+				}
+			}, true);
+		}
+
+		var canRewardNum = 0;
+		//打开打赏选择列表
+		function fnOpenMoneyFrame(event) {
+			fnCloseReplyMoreOperation();
+			api.readFile({
+				path : api.boxDir + '/userid.txt'
+			}, function(ret, err) {
+				if (ret) {
+					var _userid = ret.data;
+					if (currentOperationComment.userCode == _userid) {
+						fnToast('您不能打赏自己的评论', 'middle');
+						return;
+					} else {
+						api.readFile({
+							path : api.boxDir + '/userType.txt',
+						}, function(ret, err) {
+							if (ret.data == 1) {
+								api.openFrame({
+									name : 'upgrade',
+									url : '../popup/upgrade.html',
+									rect : {
+										x : 0,
+										y : 0,
+										w : 'auto',
+										h : 'auto'
+									},
+									bgColor : 'rgba(0,0,0,0)'
+								});
+							} else {
+								$service.get('user/getConsumeCreditNum.ajax', null, function(ret, err) {
+									if (ret) {
+										if (ret.ok == 1) {
+											$api.dom('.reward_custom_num_input').setAttribute("placeholder", '您可打赏币数为' + ret.data);
+											canRewardNum = ret.data;
+											fnSetDisplay('.reward_div', true);
+										} else {
+											if (ret.data.code == -100) {
+												return;
+											}
+                                            fnToast(ret.data.content,'middle');
+                                        }
+									} else {
+										fnToast(err.msg, 'middle')
+									}
+								}, true);
+							}
+						})
+					}
+				}
+			});
+		}
+
+		//关闭打赏列表对话框
+		function fnCloseRewardDialog() {
+			setTimeout(function() {
+				fnSetDisplay('.reward_div', false);
+				$api.dom('.reward_custom_num_input').value = '';
+				replyMoreOperationId = null;
+				replyMoreOperationUserId = null;
+			}, 300);
+		}
+
+		var replyIndex = 1;
+		var isGetAllReply = false;
+		function fnGetAllReply(id) {
+			isGetAllReply = true;
+			$service.get('comment/getStoryComment.ajax', {
+				pageIndex : replyIndex,
+				pageSize : 5,
+				storyId : topicId,
+				commentId : id
+			}, function(ret, err) {
+				isGetAllReply = false;
+				if (ret) {
+					if (ret.ok == 1) {
+						if (ret.data.list && ret.data.list.length > 0) {
+							replyVue.isNoMore = false;
+						} else {
+							replyVue.isNoMore = true;
+						}
+						if (replyIndex == 1) {
+							replyVue.replysList = [];
+							replyVue.isNoMore = false;
+						}
+						fnAppendCommentData(replyVue.replysList, ret.data.list);
+					}
+				}
+			});
+		}
+
+		function fnInputPraise() {
+			if (replyVue.isReply) {
+				fnPraiseComment(replyVue.comment);
+			} else {
+				fnPraiseTopic();
+			}
+		}
+
+		//生成随机数
+		function guid() {
+			function S4() {
+				return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+			}
+
+			return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+		}
+
+		function fnUploadImg() {
+			var url = HOST + '/v3/h5/sg/upLoadCommentPicture.html';
+			var token = api.readFile({
+				sync : true,
+				path : api.boxDir + '/token.txt'
+			});
+			var files = [];
+			for (var i = 0; i < transImgs.length; i++) {
+				files.push(transImgs[i]);
+			}
+			api.sendEvent({
+				name : 'APICloudCallNaviteMethod',
+				extra : {
+					type : 4,
+					canCallBack : 1,
+					command : api.systemType === 'android' ? [url, token, 0, 0, null, files] : [url, token, 0, 0, 80, files,1]
+				}
+			});
+		}
+
+		var transImgs = [];
+		function fnTransImgsUrl(index) {
+			api.showProgress();
+			if (index >= uploadImgVue.list.length - 1) {
+				fnUploadImg();
+				return;
+			}
+			var UIAlbumBrowser = api.require('UIAlbumBrowser');
+			UIAlbumBrowser.transPath({
+				path : uploadImgVue.list[index].path
+			}, function(ret, err) {
+				transImgs.push(ret.path);
+				fnTransImgsUrl(++index);
+			});
+		}
+
+		function fnOnRewardInputChange(el) {
+			el.value = el.value.replace(/[^0-9.]+/, '');
+			rewardNumVue.selectIndex = -1;
+			for (var i = 0; i < rewardNumVue.list.length; i++) {
+				rewardNumVue.$set(rewardNumVue.$data.list[i], 'isActive', false);
+			}
+		}
+	</script>
+</html>

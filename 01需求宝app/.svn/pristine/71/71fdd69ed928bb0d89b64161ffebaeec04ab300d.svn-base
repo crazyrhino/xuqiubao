@@ -1,0 +1,65 @@
+body, html {
+	background: #FFF;
+}
+header {
+	width: 100%;
+	height: 1.173333rem;
+	line-height: 1.173333rem;
+	background: #FFF;
+}
+.rank_content{
+	position: relative;
+	width: 100%;
+	height: 1.173333rem;
+	line-height: 1.173333rem;
+	font-size: 0.453333rem;
+	text-align: center;
+	border-bottom: 1px solid #EEEEEE;
+}
+.rank_back{
+	position: absolute;
+	left: 0.426667rem;
+	top: 0.186667rem;
+	width: 0.640000rem;
+	height: 0.640000rem;
+}
+.rule{
+	position: absolute;
+	right: 0.426667rem;
+	line-height: 1.173333rem;
+	font-size: 0.320000rem;
+	color: #666;
+}
+.color_ff{
+	color: #FF4400 ;
+}
+.next{
+	font-size: 0.426667rem;
+}
+.tabs{
+	padding-left: 0.426667rem;
+	padding-right: 0.426667rem;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+}
+.tab{
+	-webkit-box-flex: 1;
+	    -ms-flex: 1;
+	        flex: 1;
+	font-size: 0.426667rem;
+	color: #999;
+	padding-top: 0.293333rem;
+	padding-bottom: 0.240000rem;
+	height: 0.586667rem;
+	line-height: 0.586667rem;
+	text-align: center;
+	border-bottom: 0.053333rem solid #EEE;
+}
+.tab_active{
+	border-color: #FF6026;
+	color: #FF6026;
+}
+.meui_click{
+	opacity: 0.7;
+}

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>所在位置</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+    <script type="text/javascript" src="../../script/common.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../css/location_select_topic.css?v=xxx"/>
+</head>
+<body>
+<header id="header">
+    <div class="header_title">
+        <div class="c_back_btn" tapmode="meui_click" tapmode onclick="api.closeWin()">
+            取消
+        </div>
+        <div class="c_who_btn" tapmode="meui_click" tapmode>
+            所在位置
+        </div>
+        <div class="c_complete_btn" tapmode v-on:click="completeBtn">
+            完成
+        </div>
+    </div>
+</header>
+</body>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script>
+    apiready = function () {
+        // var header = $api.byId('header');
+        // var headerH = $api.offset(header).h;
+        var headerH =$("#header").height();
+        api.openFrame({
+            name: 'location_select_frame',
+            url: 'location_select_frame.html',
+            rect: {
+                x: "0",
+                y: headerH,
+                w: 'auto',
+                h: 'auto'
+            },
+            pageParam: api.pageParam,
+            bounces: true,
+        });
+        api.addEventListener({
+            name: 'selectListTextId'
+        }, function (ret, err) {
+            // alert(JSON.stringify(ret.value)); //注意赋值时不用JSON.stringify();
+            location_select_frame_vue2.id = ret.value.id;
+            location_select_frame_vue2.address = ret.value.address;
+            location_select_frame_vue2.name = ret.value.name;
+
+        });
+        $app.fixStatusBar('#header')
+    };
+    const location_select_frame_vue2 = new Vue({
+        el: '#header',
+        data: {
+            name: '',//名称
+            address: "", //附近地址
+            id: '',
+        },
+        methods: {
+            completeBtn() {
+                api.sendEvent({
+                    name: 'location_select_content',
+                    extra: {
+                        id: this.id,
+                        address: this.address,
+                        name: this.name,
+                    }
+                })
+                if ('' === this.id.trim()) {
+                    api.toast({
+                        msg: '请选择所在位置',
+                        duration: 1500,
+                        location: 'middle'
+                    });
+                } else {
+                    // var str = this.address + this.name + this.id
+                    // alert(str)
+                    api.closeWin();
+                }
+            }
+        }
+    })
+</script>
+
+</html>

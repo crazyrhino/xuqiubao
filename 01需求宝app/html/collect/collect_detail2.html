@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+	<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+	<title>征集详情</title>
+	<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../../css/collect_list_win.css" />
+</head>
+<body>
+	<header id="header" class="rank_header">
+		<p class="rank_content"><img class="rank_back" src="../../image/rank/rank_back.png" tapmode onclick="fnCloseOpenWin()">征集详情<img class="right" src="../../image/mine/more@2x.png" tapmode onclick="openShare()"></p>
+	</header>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/flexible.js"></script>
+<script type="text/javascript">
+    var params;
+    apiready = function() {
+		//fnRefreshOpen();
+    	var header = $api.byId('header');
+    	fnSysHeaderStyleById();
+		// fnOpenremPaFrame();
+		fnBackListener(fnBack);
+		fnSaveBackWinName();
+        if (api.winName == 'root' && api.systemType == 'android') {
+            fnAddNativeListener();
+            fnGetAndroidParams();
+        } else {
+            params = api.pageParam;
+            fnOpenremPaFrame()
+        }
+        api.addEventListener({
+			name : 'viewappear'
+		}, function(ret, err) {
+            fnSaveBackWinName();
+            api.sendEvent({
+				name:api.winName+'_appear'
+			})
+		});
+        api.addEventListener({
+			name : 'viewdisappear'
+		}, function(ret, err) {
+            api.sendEvent({
+				name:'collect_detail_disappear'
+			})
+		});
+    };
+    function fnGetAndroidParams() {
+        api.sendEvent({
+            name : 'APICloudCallNaviteMethod',
+            extra : {
+                type : 8,
+                canCallBack : 1
+            }
+        });
+    }
+    function fnAddNativeListener() {
+        api.addEventListener({
+            name : 'NaviteCallAPICloudMethod'
+        }, function(rets, err) {
+            var ret = rets.value;
+            if (ret.type == 8) {
+                params = {
+                    id : ret.id
+                };
+                fnOpenremPaFrame()
+            }
+        });
+    }
+    function fnCloseOpenWin() {
+        if (api.winName == 'root') {
+            api.sendEvent({
+                name : 'APICloudCallNaviteMethod',
+                extra : {
+                    type : 6
+                }
+            });
+        }else {
+            api.closeWin();
+		}
+    }
+    function fnSaveBackWinName(){
+    	api.writeFile({
+	        path : api.boxDir + '/backWinName.txt',
+			data : api.winName
+        });
+    }
+	function fnOpenremPaFrame() {
+		api.openFrame({
+		    name: 'collect_detail_frame',
+		    url: 'collect_detail_frame2.html',
+		    rect: {
+		        x: 0,
+		        y: $api.dom('header').offsetHeight + 1,
+		        w: 'auto',
+		        h: 'auto'
+		    },
+            reload:true,
+			useWKWebView: false,
+		    pageParam: params,
+		    bounces: false,
+		    bgColor: 'rgba(0,0,0,0)',
+		    vScrollBarEnabled: true,
+		    hScrollBarEnabled: true,
+		    allowEdit : true,
+            softInputDismissMode:['tap','drag']
+		});
+
+	}
+	function openShare(){
+        api.readFile({
+            path: api.boxDir + '/userid.txt'
+        }, function (ret, err) {
+            if (ret) {
+                var _userid = ret.data;
+                if (_userid === '') {
+                    fnOpenLogin();
+                    return;
+                }
+                api.execScript({
+                    frameName: 'collect_detail_frame',
+                    script: 'openShare();'
+                });
+            }
+        });
+	}
+
+    function fnOpenLogin() {
+        api.sendEvent({
+            name : 'APICloudCallNaviteMethod',
+            extra : {
+                type : 1,
+                canCallBack : 1,
+                toPageName : 'Login'
+            }
+        });
+    }
+
+</script>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <meta name="viewport"
+              content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>筛选标签</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/main.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/labelList.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+		</style>
+	</head>
+	<body>
+		<header class="labelList_header meui_border_b_1">
+			<div class="meui_flex_wrap header">
+				<img tapmode onclick="fnBack()" class="user-header" src="../../image/label/back.png" alt="" />
+				<div class="search-btn meui_flex_con meui_flex_wrap">
+					筛选
+				</div>
+				<div class="msg-btn"></div>
+			</div>
+		</header>
+		<div class="section_labellist" v-cloak>
+			<div class="recommendLabel">
+				<div class="sub_header">
+					<img src="../../image/label/bqc.png" alt=""><span class="name">全部类型</span>
+				</div>
+				<div class="sub_content">
+					<div class="item bgFFF" v-for="item,index in reCommonList" :class="(item.selected)&&'selected'" tapmode @click="fnAddLabel(item,index)">
+						{{item.name}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script src="../../script/mapi.js" charset="utf-8"></script>
+	<script type="text/javascript">
+		var list = [{
+			id : 1,
+			name : '精选',
+			selected : false,
+		}, {
+			id : 2,
+			name : '科技智能',
+			selected : false,
+		}, {
+			id : 3,
+			name : '消费众测',
+			selected : false,
+		}, {
+			id : 4,
+			name : '我的故事',
+			selected : false,
+		}, {
+			id : 5,
+			name : '轻松卖货',
+			selected : false,
+		}, {
+			id : 6,
+			name : '社群争霸赛',
+			selected : false,
+		}];
+		apiready = function() {
+			//fnRefreshOpen();
+			fnSysHeaderStyle();
+			fnInitSelected();
+		};
+		function fnInitSelected() {
+			var type = api.pageParam.type;
+			if(type) {
+				for(var i = 0; i < list.length; i++){
+					if(list[i].id == type) {
+						list[i].selected = true;
+					}
+				}
+			}
+			myVue.reCommonList = list;
+		}
+		
+		var myVue = new Vue({
+			el : '.section_labellist',
+			data : {
+				reCommonList : []
+			},
+			methods : {
+				fnAddLabel : function(item, i) {
+					fnAddLabel(item, i)
+				}
+			}
+		})
+		function fnBack() {
+			api.closeWin();
+		}
+
+		var videoType;
+		function fnAddLabel(item, index) {
+			for (var i = 0; i < myVue.reCommonList.length; i++) {
+				if (i == index) {
+					videoType = myVue.reCommonList[i].id;
+					myVue.$set(myVue.reCommonList[i], 'selected', true);
+					api.execScript({
+						name : api.pageParam.winName,
+						frameName : 'video_frame',
+						script : 'fnFilterVideoList(' + videoType + ');'
+					});
+				} else {
+					myVue.$set(myVue.reCommonList[i], 'selected', false)
+				}
+			}
+		}
+	</script>
+</html>

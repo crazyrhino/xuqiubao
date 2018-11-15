@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="yes" name="apple-touch-fullscreen" />
+    <meta content="telephone=no,email=no" name="format-detection" />
+    <meta
+      name="App-Config"
+      content="fullscreen=yes,useHistoryState=yes,transition=yes"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
+    <title>知道</title>
+    <link rel="stylesheet" href="css/thought.css" />
+    <style></style>
+  </head>
+
+  <body>
+    <div v-cloak class="box">
+      <div class="sort">
+        <div v-show="isA" id="show">
+          <span
+            style="width:12rem;height: 10rem;position: fixed;top: 0;left:0;bottom:0;right:0;margin:auto auto;text-align:center;"
+            v-show="message.length==0"
+          >
+            <img style="width:10rem;" src="images/nodata.png" alt="" />
+          </span>
+          <div class="tiwen" v-for="(value,index) in message">
+            <div class="sor_con">
+              <div>
+                <h3>
+                  <p
+                    style="width:24.66666667rem"
+                    @click="opens(value.id)"
+                    v-html="value.title"
+                  ></p>
+                  <span v-for="(imgs,index) in value.imgArray" :key="index">
+                    <img
+                      style="object-fit: cover;"
+                      @click="fnPreviewPictureTop(value.imgArray,index)"
+                      style="margin-right:1.3rem;"
+                      :src="imgs"
+                      alt=""
+                    />
+                  </span>
+                </h3>
+              </div>
+              <div>
+                <span>{{ value.answersCount }}回答</span> &nbsp;
+                <span>{{ value.praiseNumber }}赞同</span>
+              </div>
+            </div>
+          </div>
+          <div
+            style="color:#ccc;text-align: center;margin:1rem 0;"
+            v-show="message.length>3"
+          >
+            没有更多了...
+          </div>
+        </div>
+        <!-- 我的 -->
+        <div v-show="isB" class="huida">
+          <!--
+            <span style="width:12rem;height: 10rem;position: fixed;top: 0;left:0;bottom:0;right:0;margin:auto auto;text-align:center;" v-show="ans.length==0">
+                 <img style="width:10rem;" src="images/nodata.png" alt="">
+            </span>
+          -->
+          <div class="answers" v-for="(vals,index) in ans">
+            <!-- {{vals}} -->
+            <div>
+              <div
+                style="overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;"
+                class="ans_tit"
+                @click="openAnswer(vals.id,vals.issueId,vals.userName,vals.userCode)"
+                v-html="vals.answersComment"
+              ></div>
+              <div class="ans_con" style="height: 100%;min-height: 5.7rem;">
+                <p
+                  style="position: relative;"
+                  @click="openPersonal(vals.answersCommentToCode)"
+                >
+                  <img
+                    style="border-radius: 50%;"
+                    :src="typeof(vals.userImg) !== 'undefined' ? vals.userImg : './images/tmp_default_header.png'"
+                    alt=""
+                  />
+                  <img
+                    style="width: 1.3rem;height: 1.3rem;position: absolute;top:1.7rem;right:-.2rem;"
+                    v-if="vals.talentFlag==1"
+                    src="./images/red_vip.png"
+                    alt=""
+                  />
+                  <img
+                    style="width: 1.3rem;height: 1.3rem;position: absolute;top:1.7rem;right:-.2rem;"
+                    v-else-if="vals.talentFlag==2"
+                    src="./images/yellow_vip.png"
+                    alt=""
+                  />
+                  <img
+                    style="width: 1.3rem;height: 1.3rem;position: absolute;top:1.7rem;right:-.2rem;"
+                    v-else-if="vals.talentFlag==3"
+                    src="./images/purple_vip.png"
+                    alt=""
+                  />
+                </p>
+                <p
+                  style=" overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;"
+                  @click="opens(vals.issueId)"
+                  v-html="vals.title"
+                >
+                  <!-- {{ | ellipsiss}} -->
+                </p>
+              </div>
+            </div>
+            <div class="ans_tip">
+              <span @click.stop="shares(vals)"
+                ><img
+                  style="width:1.9rem;height: 1.9rem;"
+                  src="./images/share@3x.png"
+                  alt=""
+              /></span>
+              <div style="padding-left:3rem">
+                <span
+                  style="margin:0 .5rem 0 0;display: inline-block;"
+                  @click="openAnswer(vals.id,vals.issueId,vals.userName,vals.userCode)"
+                  ><img
+                    style="width:1.6rem;height: 1.5rem;"
+                    class="two"
+                    src="images/icon_comment@2x.png"
+                    alt=""
+                  /><span style="color:#aba2a2;">{{
+                    vals.commentNumber
+                  }}</span></span
+                >
+                <span
+                  style="display: inline-block;margin:0 1.4rem 0 0;"
+                  @click="clickAdds(vals)"
+                >
+                  <img
+                    style="width:1.6rem;height: 1.5rem;"
+                    :src="vals.isAnswersPraise == 0 ? img2 : img3"
+                    alt=""
+                  />
+                  <a style="color:#aba2a2;" href="javascript:;">{{
+                    vals.praiseNumber
+                  }}</a>
+                </span>
+              </div>
+            </div>
+          </div>
+          <!--
+            <div style="color:#ccc;text-align: center;margin:1rem 0;" v-show="ans.length>3">没有更多了...</div>
+          -->
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="./js/jquery-1.11.1.min.js"></script>
+  <script src="./js/js.js"></script>
+  <script type="text/javascript" src="../../script/vue.js"></script>
+  <script type="text/javascript" src="../../script/api.js"></script>
+  <script type="text/javascript" src="../../script/fastclick.js"></script>
+  <script type="text/javascript" src="../../script/common.js?v=0"></script>
+  <script type="text/javascript" src="../../script/signature.js"></script>
+  <script>
+    apiready = function() {
+      $event.isShowHomeTab(false);
+      box.getVal();
+      // box.getAnswer();
+      $app.fnSetRefresh(function() {
+        //tab切换刷新
+        if (box.isA == true) {
+          box.getVal();
+        } else {
+          box.getAnswer();
+        }
+        api.refreshHeaderLoadDone();
+      });
+    };
+    $(function() {
+      $(".sort>div")
+        .eq(1)
+        .css({
+          display: "none"
+        });
+      $(".tab p").click(function() {
+        var index = $(".tab p").index(this);
+        console.log(index);
+        $(this)
+          .addClass("select")
+          .siblings()
+          .removeClass("select");
+        $(".sort>div")
+          .eq(index)
+          .show()
+          .siblings()
+          .hide();
+      });
+    });
+
+    function answer(a) {
+      box.getAnswer();
+    }
+
+    //分享页面
+    function fnShareNative(platformType) {
+      var shareTopicInfo = {
+        summary: box.num.answersComment,
+        title: box.num.title,
+        userName: box.num.userName,
+        mainImg: "http://www.ehaier.com/mstatic/wd/v2/img/sg.png",
+        userCode: box.num.userCode,
+        dataTypeNew: box.num.answersComment,
+        id: box.num.id
+      };
+      var storyContent = box.fnReplaceComment(shareTopicInfo.summary);
+      var url =
+        SHARE_HOST +
+        "/content.html?ids=" +
+        box.num.id +
+        "&codes" +
+        box.num.userCode;
+      var title = shareTopicInfo.title
+        ? shareTopicInfo.title + "-顺逛微社区"
+        : shareTopicInfo.userName + "的话题-顺逛微社区"; //分享标题
+      var content = storyContent
+        ? storyContent.substr(0, 30)
+        : "马上进入，参与话题讨论吧...";
+      var pic =
+        shareTopicInfo.mainImg && shareTopicInfo.mainImg.indexOf("../") == "-1"
+          ? shareTopicInfo.mainImg
+          : "http://www.ehaier.com/mstatic/wd/v2/img/sg.png"; //分享图片，写绝对路径  是否后台获取
+      if ($app.isEmpty(pic)) {
+        pic = "http://www.ehaier.com/mstatic/wd/v2/img/sg.png";
+      }
+      // $app.showProgress();
+      $event.callRNEvent(3, 1, {
+        command: [title, content, pic, url, 0, platformType]
+      });
+    }
+    function fnGetShareUrl() {
+      var shareTopicInfo = {
+        summary: "123",
+        title: box.title,
+        userName: "h5页面",
+        mainImg: "./images/fbht@2x.png",
+        userCode: "1",
+        dataTypeNew: "2",
+        id: "3"
+      };
+      var memberId = api.readFile({
+        sync: true,
+        path: api.boxDir + "/userid.txt"
+      });
+      if ($app.isEmpty(memberId)) {
+        memberId = shareTopicInfo.userCode;
+      }
+      var params = {
+        type: shareTopicInfo.dataTypeNew,
+        id: shareTopicInfo.id,
+        memberId: memberId
+      };
+      return new Base64().encode(JSON.stringify(params));
+    }
+    // 复制函数
+    function fnCopy() {
+      var clipBoard = api.require("clipBoard");
+      clipBoard.set(
+        {
+          value:
+            SHARE_HOST +
+            "/content.html?ids=" +
+            box.num.id +
+            "&codes" +
+            box.num.userCode
+        },
+        function(ret, err) {
+          if (ret && ret.status) {
+            api.toast({
+              msg: "复制成功",
+              duration: 2000,
+              location: "middle"
+            });
+            api.closeFrame({
+              name: "topic_share_frame"
+            });
+            api.closeFrame({
+              name: "collect_share_frame"
+            });
+          } else {
+            api.toast({
+              msg: "复制失败",
+              duration: 2000,
+              location: "middle"
+            });
+          }
+        }
+      );
+    }
+    // 复制参数
+    function fnGetShareUrlCollect() {
+      var params = {
+        id: "123",
+        memberId: "222"
+      };
+
+      return new Base64().encode(JSON.stringify(params));
+    }
+    function fnInitListener(needId) {
+      $event.isShowHomeTab(false);
+      $event.scrollBottomListener(function() {
+        // $app.showProgress();
+        box.fnGetStoryIndexByCondition();
+      });
+      $event.addEventListener("NaviteCallAPICloudMethod", function(ret) {
+        $app.hideProgress();
+        var ret = ret.value;
+        if (ret.type == 3 && ret.tag == api.frameName) {
+          $app.hideProgress();
+          if (ret.success == 1) {
+            isShare = true;
+            fnSuccess();
+            $app.toast("分享成功");
+          } else {
+            $app.toast("分享失败");
+          }
+        } else if (ret.type == 13) {
+          if (ret.tag == "resume") {
+            fnSuccess();
+          }
+        }
+      });
+    }
+
+    //超过指定长度加...
+    Vue.filter("ellipsis", function(value) {
+      if (!value) return "";
+      if (value.length > 60) {
+        return value.slice(0, 60) + "...";
+      }
+      return value;
+    });
+    Vue.filter("ellipsiss", function(value) {
+      if (!value) return "";
+      if (value.length > 30) {
+        return value.slice(0, 30) + "...";
+      }
+      return value;
+    });
+    var box = new Vue({
+      el: ".box",
+      data: {
+        message: [],
+        isShow: false,
+        ans: [],
+        isA: true,
+        isB: false,
+        picture: [],
+        img2: "./images/zan@3x.png",
+        img3: "./images/zang@3x.png",
+        num: {}
+      },
+      computed: {},
+      methods: {
+        /*HOST+UrlRouter
+                syTuijian:'/v5/sgcommunity/issue/getIssueListTops.ajax',//首页推荐
+                syTopthree:'/v5/sgcommunity/issue/getIssueListTopThree.ajax',//首页top3
+                myList:'/v5/sgcommunity/issue/getIssueList.ajax',//我的需求列表
+                myAnswer:'/v5/sgcommunity/issueAnswers/getIssueAnswersList.ajax',//我的回答列表
+                create:'/v5/sgcommunity/issue/getIssueListCreateDate.ajax',//解决需求页面
+                hdVal:'/v5/sgcommunity/issueAnswers/getQueryIssueAnswers.ajax',//回答详情页面
+                hdZan:'/v5/sgcommunity/issueAnswers/praiseIssueAnswers.ajax',//回答详情点赞
+                hdNotice:'/v5/sgcommunity/user/follow.ajax',//回答关注
+                plTwo:'/v5/sgcommunity/issueAnswers/addIssueAnswers.ajax',//二级评论
+            */
+        getVal: function() {
+          this.isA = true;
+          this.isB = false;
+          var that = this;
+          var token = api.readFile({
+            sync: true,
+            path: api.boxDir + "/token.txt"
+          });
+          $http.GET(
+            HOST + UrlRouter.myList,
+            {
+              headers: {
+                "Content-Type": "application/json;charset=utf-8",
+                TokenAuthorization: token
+              },
+              values: {
+                pageIndex: "0",
+                pageSize: "1000"
+                // TokenAuthorization:token
+              }
+            },
+            function(ret, err) {
+              that.message = ret.data.list;
+            }
+          );
+        },
+        backHome: function() {
+          api.closeWin({});
+        },
+        opens: function(id) {
+          api.openWin({
+            name: "details",
+            url: "./details.html",
+            slidBackEnabled: false,
+            pageParam: {
+              listId: id,
+              listNews: "news"
+            }
+          });
+        },
+        openAnswer: function(ids, issueId, uName, uCode) {
+          api.openWin({
+            name: "contentTitle",
+            url: "./contentTitle.html",
+            slidBackEnabled: false,
+            pageParam: {
+              id: ids,
+              issueId: issueId,
+              userName: uName,
+              userCode: uCode,
+              a: 1
+            }
+          });
+        },
+        tanchu: function() {},
+        getAnswer: function() {
+          // ?pageIndex=1&pageSize=11
+          this.isA = false;
+          this.isB = true;
+          var token = api.readFile({
+            sync: true,
+            path: api.boxDir + "/token.txt"
+          });
+          var that = this;
+          $http.GET(
+            HOST + UrlRouter.myAnswer,
+            {
+              headers: {
+                "Content-Type": "application/json;charset=utf-8",
+                TokenAuthorization: token
+              },
+              values: {
+                pageIndex: "0",
+                pageSize: "1000"
+              }
+            },
+            function(ret, err) {
+              that.ans = ret.data;
+            }
+          );
+        },
+        fnGetStoryIndexByCondition: function(Id) {},
+        clickAdds: function(item) {
+          this.praiseIssue(item);
+        },
+        collectIssue: function() {
+          //需求点赞
+          var _this = this;
+          $http.GET(
+            HOST + UrlRouter.qxXuZan,
+            {
+              values: {
+                issueId: this.accept.answersCommentToCode
+              }
+            },
+            function(ret, err) {}
+          );
+        },
+        openPersonal: function(a) {
+          //跳转个人中心
+          api.readFile(
+            {
+              path: api.boxDir + "/userid.txt"
+            },
+            function(ret, err) {
+              if (ret) {
+                var _userid = ret.data;
+                if (_userid === "") {
+                  $event.callRNEvent(1, 1, {
+                    toPageName: "Login"
+                  });
+                  return;
+                }
+                // this.fnHideTabBar();
+                if (a === _userid) {
+                  //item.userId
+                  $app.openWin("mine", null, {
+                    url: "./../mine/mine.html"
+                  });
+                } else {
+                  $app.openWin(
+                    "ta_page",
+                    {
+                      userId: a
+                    },
+                    {
+                      url: "./../ta_page/ta_page.html"
+                    }
+                  );
+                }
+              }
+            }
+          );
+        },
+        praiseIssue: function(a) {
+          //方案点赞接口
+          var _this = this;
+          $http.GET(
+            HOST + UrlRouter.hdZan,
+            {
+              values: {
+                issueAnswersId: a.id
+              }
+            },
+            function(ret, err) {
+              if (ret.data == "点赞成功") {
+                a.praiseNumber++;
+                a.isAnswersPraise = 1;
+              } else {
+                if (a.praiseNumber == 0) {
+                  a.praiseNumber == 0;
+                } else {
+                  a.praiseNumber--;
+                }
+                a.isAnswersPraise = 0;
+              }
+            }
+          );
+        },
+        //分享
+        shares: function(i) {
+          this.num = i;
+          $app.openFrame(
+            "list_share_frame",
+            null,
+            null,
+            {
+              frameName: api.frameName
+            },
+            {
+              bounces: false
+            }
+          );
+        },
+        openHui: function() {
+          api.openWin({
+            name: "answer",
+            url: "./answer.html",
+            pageParam: {
+              issueId: this.dataTittle.id,
+              nameTittle: this.dataTittle.title
+            }
+          });
+        },
+        fnReplaceComment: function(comment) {
+          if (!$app.isEmpty(comment)) {
+            comment = comment.replace(/<br\s*\/?>/gi, "\r\n");
+            comment = comment.replace(/<br\/>/g, "\r\n");
+            comment = comment.replace(/<br>/g, "\r\n");
+            comment = comment.replace(/<[^>]+>/g, "");
+            return comment;
+          }
+          return "";
+        },
+        //点击进入个人主页
+        openPersonal: function(a) {
+          //跳转个人中心
+          api.readFile(
+            {
+              path: api.boxDir + "/userid.txt"
+            },
+            function(ret, err) {
+              if (ret) {
+                var _userid = ret.data;
+                if (_userid === "") {
+                  $event.callRNEvent(1, 1, {
+                    toPageName: "Login"
+                  });
+                  return;
+                }
+                // this.fnHideTabBar();
+                if (a === _userid) {
+                  //item.userId
+                  $app.openWin("mine", null, {
+                    url: "./../mine/mine.html"
+                  });
+                } else {
+                  $app.openWin(
+                    "ta_page",
+                    {
+                      userId: a
+                    },
+                    {
+                      url: "./../ta_page/ta_page.html"
+                    }
+                  );
+                }
+              }
+            }
+          );
+        },
+        fnPreviewPictureTop: function(item, index) {
+          $event.isShowHomeTab(false);
+          var arr = [];
+          arr = item;
+          $app.openWin(
+            "preview_picture",
+            {
+              urlArr: arr,
+              activeIndex: index
+            },
+            {
+              url: "../topic/preview_picture.html"
+            }
+          );
+        }
+      }
+    });
+  </script>
+</html>

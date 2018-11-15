@@ -1,0 +1,104 @@
+<!DOCTYPE HTML>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>我的征集多个作品弹窗展示</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/mine_oneMore_frame.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+			html,
+			body {
+				background: rgba(0, 0, 0, 0.5);
+			}
+			
+			[v-cloak] {
+				display: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<section id="app" v-cloak>
+			<div class="list_wrap">
+				<div class="title_wrap flex_container">
+					<div class="title">
+						我的作品
+					</div>
+					<img onclick="api.closeFrame()" class="closeIcon" src="../../image/closeWin.png" />
+				</div>
+				<div class="list">
+					<div v-for="item in dataList" @click="openDetails(item.dataTypeNew,item.id)" class="footer_one flex_container">
+						<div class="footer_one_left">
+							<div  class="comeOn">
+								拉人气
+							</div>
+							<div v-if="rule!=2&&rule!=3" class="persons">
+								第{{item.rank}}名
+							</div>
+							<div v-else class="persons">
+								转发
+							</div>
+							<img class="share_icon" src="../../image/community/share.png" />
+						</div>
+						<div class="footer_one_right flex_container">
+							<div class="writer_name line1">
+								{{item.storyName}}
+							</div>
+							<div class="bottom_icon icon2">
+
+							</div>
+							<div class="bottom_num">
+								{{item.commentNumber}}
+							</div>
+
+							<div class="bottom_icon icon3">
+
+							</div>
+							<div class="bottom_num">
+								{{item.praiseNumber}}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.min.js"></script>
+	<script type="text/javascript">
+		var vm;
+
+		function initVm() {
+			vm = new Vue({
+				el: '#app',
+				data: {
+					rule:'',
+					dataList: null
+				},
+				methods: {
+					init: function() {
+						vm.dataList = api.pageParam.list;
+						vm.rule = api.pageParam.rule;
+					},
+					openDetails: function(_dataTypeNew, _id) {
+						fnOpenWin('topic_details', '../topic/', {
+							type : _dataTypeNew,
+							id : _id
+						});
+					}
+				}
+			})
+		}
+		apiready = function() {
+			//fnRefreshOpen();
+			initVm();
+			vm.init()
+		}
+	</script>
+
+</html>

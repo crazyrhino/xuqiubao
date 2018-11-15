@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>热门话题frame</title>
+    <meta name="viewport"
+          content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+    <style type="text/css">
+        .hot_list{
+            box-sizing: border-box;
+            padding:0 0.8rem;
+        }
+        .hot_list li{
+            display: flex;
+            display: -webkit-box;
+            display: -webkit-flex;
+            -webkit-flex-direction: row;
+            flex-direction: row;
+            height:3.15rem;
+            line-height: 3.15rem;
+        }
+        .hot_list li .hot_search_title{
+            color:#000;
+            font-size:0.8rem;
+            border-bottom: 1px solid #F1F1F1;
+            width:93%;
+        }
+        .hot_list li span{
+            display: block;
+            color:#7E7E7E;
+            font-weight: 600;
+        }
+        .hot_list li .num{
+            width:7%;
+        }
+    </style>
+</head>
+<body>
+<ul class="hot_list">
+    <li v-for="(item,index) in hotSearchList" @click="fnOpenDetails(item.dataTypeNew,item.id)"><span class="num" v-text="index+1"></span><span class="hot_search_title aui-ellipsis-1" v-text="item.title||item.summary"></span></li>
+    <!--<li><span class="num">2</span><span class="hot_search_title">公交坠江原因公布</span></li>-->
+    <!--<li><span class="num">3</span><span class="hot_search_title">公油价年内最大跌幅</span></li>-->
+    <!--<li><span class="num">4</span><span class="hot_search_title">五岁男孩简历回应</span></li>-->
+    <!--<li><span class="num">5</span><span class="hot_search_title">89岁袁隆平再创奇迹</span></li>-->
+    <!--<li><span class="num">6</span><span class="hot_search_title">89岁袁隆平再创奇迹</span></li>-->
+    <!--<li><span class="num">7</span><span class="hot_search_title">天津车祸6死6伤</span></li>-->
+    <!--<li><span class="num">8</span><span class="hot_search_title">天津车祸6死6伤</span></li>-->
+</ul>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript">
+    var vm;
+    apiready = function () {
+        initRefresh();
+        initVue();
+        vm.getStoryIndexByCondition();
+        // initListener();
+    }
+    function fnHideTabBar() {
+        $event.isShowHomeTab(false)
+    }
+    // function initListener() {
+    //     $event.scrollBottomListener(function () {
+    //         $app.showProgress();
+    //         if(pageIndex < 5){
+    //             pageIndex++;
+    //         }
+    //         vm.getStoryIndexByCondition(true);
+    //     })
+    // }
+    function initVue() {
+        vm = $app.MyVue({
+            el: '.hot_list',
+            data: {
+                hotSearchList: []
+            },
+            methods: {
+                getStoryIndexByCondition:function (isLoadMore) {
+                    //获取热门话题列表
+                    $http.GET(UrlRouter.getStoryIndexByCondition, {
+                        values: {
+                            searchType: 4,
+                            pageIndex: 1,
+                            pageSize: 50,
+                            orderFlag:1
+                        }
+                    }, function (ret, err) {
+                        $app.hideProgress();
+                        api.refreshHeaderLoadDone();
+                        if (ret.data.list && ret.data.list.length > 0) {
+
+                            vm.fnAppendData(vm.hotSearchList,ret.data.list)
+                        }
+                    });
+                },
+                fnOpenDetails: function (dataTypeNew, id) {
+                    $app.openWin('topic_details', {
+                        type: dataTypeNew,
+                        id: id
+                    }, {
+                        url: '../topic/topic_details.html'
+                    });
+                    fnHideTabBar()
+                },
+                fnAppendData: function (oldArr, data) {
+                    for (var i = 0; i < data.length; i++) {
+                        oldArr.push(data[i]);
+                    }
+                    return oldArr;
+                },
+            }
+        });
+    }
+    function initRefresh() {
+        $app.fnSetRefresh(function () {
+            pageIndex = 1;
+            vm.hotSearchList = [];
+            vm.getStoryIndexByCondition();
+        });
+    }
+</script>
+</html>

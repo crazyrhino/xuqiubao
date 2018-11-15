@@ -1,0 +1,70 @@
+/*******************************头部 样式开始******************************/
+html,
+body {
+  background: #fff;
+}
+.box {
+  background: #fff;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+.box #header {
+  height: 2.25rem;
+}
+.box .title {
+  box-sizing: border-box;
+  height: 2.20rem;
+  width: 100%;
+}
+.box .title .titleImgBox {
+  padding-top: 0.6rem;
+  position: absolute;
+  width: 2rem;
+  padding-left: 0.7rem;
+  height: 2.20rem;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+.box .title .titleImgBox img {
+  display: inline-block;
+  height: 1.05rem;
+}
+.box .title .titleBox {
+  display: flex;
+}
+.box .title .tab {
+  position: relative;
+  margin-left: 4.88rem;
+  height: 100%;
+  box-sizing: border-box;
+}
+.box .title .tab span {
+  position: absolute;
+  display: inline-block;
+  text-align: left;
+  line-height: 2.25rem;
+  font-size: 0.70rem;
+  color: #404040;
+}
+.box .title .tab span:nth-child(2) {
+  right: 4.15rem;
+}
+.box .title .tab .selectActive {
+  font-family: PingFang-SC-Medium;
+  font-size: 0.80rem;
+  font-weight: 600;
+  color: #ff6633;
+}
+.box .title .tab .selectActive i {
+  position: absolute;
+  display: inline-block;
+  width: 1.10rem;
+  height: 0.18rem;
+  background: #ff6633;
+  border-radius: 0.18rem;
+  bottom: 0.08rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+/*# sourceMappingURL=decoration_resource_topic.css.map */

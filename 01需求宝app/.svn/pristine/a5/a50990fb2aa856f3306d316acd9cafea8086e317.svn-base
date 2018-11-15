@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>所在位置</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/location_select_page.css?v=22333"/>
+</head>
+<body>
+<div class="location_select_box" id="location_select_page" v-cloak>
+    <div class="location_select_text">
+        <img src="../../image/Search@2x.png" alt="">
+        <input type="text" id="location_select" placeholder="搜索地点" v-model="selectInputText"
+               v-on:click="fnGetRecommend">
+        <span class="location_select_cancel" tapmode onclick="api.closeWin()">取消</span>
+    </div>
+    <div class="location_select_content">
+        <ul>
+            <li v-for="list in arrList" tapmode
+                v-on:click="locationSelectText(list.id,selectInputText,list.address,list.name)">
+                <p class="txt-cut">{{list.name}}</p>
+            </li>
+        </ul>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script>
+
+    const location_select_page = new Vue({
+        el: '#location_select_page',
+        data: {
+            selectInputText: '',
+            keywords: "",
+            selectText: '搜索地点',
+            count: "",//总数量,
+            address: "",//地址
+            id: "",//唯一标识
+            location: "116.473168,39.293015",//经纬度	116.472741,39.992221
+            name: "",//名称
+            type: "",//类别
+            status: "",//状态
+            arrList: [],
+            pageSize: "20",
+            pageIndex: "1",
+            loadStatus: true,
+        },
+        mounted() {
+            $('#location_select').trigger('click');
+            $("#location_select").focus();
+
+        },
+
+        watch: {
+            selectInputText(value, oleValue) {
+                //value:修改后的值
+                //oleValue:修改前的值
+                // 监听该值的变化
+                let values = {
+                    keywords: value,//请求关键字
+                    location: this.location,//经纬度坐标   临时写死等待rn传参
+                    pageIndex: this.pageIndex,//第几页
+                    pageSize: this.pageSize,//每页数
+                }
+                this.keywords = value;
+                this.fnGetRecommend(values)
+            }
+        },
+        methods: {
+            fnGetRecommend(values) {
+                $http.GET(UrlRouter.getAround, {//周边位置查询接口
+                    values: values
+                }, function (ret, err) {
+                    if ('OK' === ret.data.info) {
+                        location_select_page.name = ret.data.pois[0].name;
+                        var list = ret.data.pois;
+                        list.splice(0, 1)
+                        location_select_page.arrList = list;
+                    } else if ('NULL' == ret.data.info) {
+                        $app.toast("没有该位置!", 'middle');
+                    }
+
+                }, function () {
+                    // concernVue.list = [];
+                    $app.toast(ret.msg, 'middle');
+                });
+            },
+            locationSelectText(id, selectInputText, address, name) {
+                api.sendEvent({  //发出广播
+                    name: "locationSelectId",
+                    extra: {
+                        id: id,
+                        keywords: selectInputText,
+                        address: address,
+                        name: name,
+                        location: location_select_page.location,
+                        pageIndex: location_select_page.pageIndex,
+                    }
+                })
+                api.closeWin()
+            },
+        }
+    })
+
+</script>
+
+</html>

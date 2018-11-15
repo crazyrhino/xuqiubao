@@ -1,0 +1,71 @@
+.my_communitys {
+  padding-left: 0.400000rem;
+  padding-right: 0.400000rem;
+}
+.my_communitys .comm_tit{
+  padding-top: 0.293333rem;
+  font-size: 0.320000rem;
+  color: #666;
+}
+.communitys_list{
+  padding-top: 0.400000rem;
+  padding-bottom: 0.400000rem;
+  border-bottom: 1px solid rgba(0,0,0,.1);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: row;
+          flex-flow: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+.communitys_list .communityimg{
+  border-radius: 0.106667rem;
+  overflow: hidden;
+  width: 1.733333rem;
+  height: 1.733333rem;
+}
+.communitys_list .communityimg img{
+  width: 100%;
+  height: 100%;
+}
+.communitys_list .communityscont{
+  padding-left: 0.266667rem;
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+}
+.communitys_list .communityscont .contname{
+  font-size: 0.400000rem;
+  color: #333;
+}
+.communitys_list .communityscont .contdescribe{
+  padding-top: 0.133333rem;
+  padding-bottom: 0.133333rem;
+  font-size: 0.346667rem;
+  color: #999;
+}
+.communitys_list .communityscont .topicsnum{
+  font-size: 0.293333rem;
+  color: #FF4400;
+}
+.communitys_list .communityscont .topicsnum .num{
+  font-size: 0.293333rem;
+  color: #FF4400;
+  padding-right: 0
+}
+.communitys_list .communityscont .topicsnum span{
+  padding-right: 0.533333rem;
+  color: #3F3F3F;
+}
+.communitys_list .return_arrow{
+  width: 0.640000rem;
+  height: 0.640000rem;
+}
+.communitys_list .return_arrow img{
+  width: 100%;
+  height: 100%;
+}

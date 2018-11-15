@@ -1,0 +1,336 @@
+html, body, #warp, .popup_position {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+}
+/*选择精华位置-弹窗  头部*/
+.popup_position {
+	position: relative;
+	background: rgba(0, 0, 0, 0.7);
+}
+.popup_content {
+	width: 322px;
+	height: 246px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	background: #fff;
+	border-radius: 4px;
+}
+.popup_content_title {
+	height: 49px;
+	line-height: 49px;
+	text-align: center;
+	font-size: 18px;
+	color: #333333;
+	border: 1px solid #EEEEEE;
+	position: relative;
+}
+.popup_content_title .float_r {
+	width: 24px;
+	height: 49px;
+	background-image: url(../image/closeWin.png);
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 24px 24px;
+	position: absolute;
+	right: 21px;
+}
+/*公用*/
+.popup-flex {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: flex;
+}
+.popup-flex-v {
+	-webkit-box-orient: vertical;
+	-webkit-flex-flow: column;
+	flex-flow: column;
+}
+
+.popup-flex-h {
+	-webkit-box-orient: horizontal;
+	-webkit-flex-flow: row;
+	flex-flow: row;
+}
+
+.popup-flex-flex1 {
+	-webkit-box-flex: 1;
+	-webkit-flex: 1;
+	flex: 1;
+}
+.popup-flex-center {
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+}
+.line2 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	word-wrap:break-word;
+}
+/*选择精华位置-弹窗  内容*/
+.popup_content_subcon {
+	padding: 12px 0 15px;
+}
+.popup_content_subcon_btn {
+	padding: 0 21px 13px;
+}
+.popup_content_subcon .btn-item {
+	box-sizing: border-box;
+	padding: 9px 35px;
+	font-size: 14px;
+	color: #FFFFFF;
+	background: #FF6026;
+	border: 1px solid #FF6026;
+	border-radius: 100px;
+}
+.btn-item.margin-right {
+	margin-right: 21px;
+}
+.popup_content_subcon .btn-item.bgFFF {
+	color: #FF6026;
+	background: #FFF;
+	border-color: #FF6026;
+}
+.popup_content_subcon_time {
+	background: #eee;
+	padding: 13px 35px;
+	font-size: 14px;
+	color: #999999;
+	line-height: 20px;
+	text-align: center;
+}
+.popup_content_subcon_time .start-time {
+	font-size: 14px;
+	color: #333;
+	margin-top: 2px;
+}
+.come-to {
+	width: 24px;
+	background-image: url(../image/home/right_arrow.png);
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 24px 24px;
+	margin-right: 10px;
+}
+.confirm-btn {
+	width: 280px;
+	padding: 8px 0;
+	font-size: 14px;
+	color: #FFFFFF;
+	background: #FF6026;
+	text-align: center;
+	margin: 0 auto;
+	margin-top: 15px;
+	border-radius: 100px;
+}
+/*分享*/
+.share_position {
+	height: 100%;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-flex-flow: column;
+	background: rgba(0, 0, 0, 0.7);
+}
+.share_position .main {
+	-webkit-box-flex: 1;
+	-webkit-flex: 1;
+}
+.share_position ._share {
+	padding-top: 20px;
+	background: #fff;
+}
+.share_position .share .share-title {
+	font-size: 14px;
+	color: #999;
+	padding: 0 16px;
+}
+.share_position .share .line {
+	height: 1px;
+	background: #eee;
+	margin-top: 10px;
+}
+.share_position .share .title {
+	margin: 0 35px;
+}
+.share_position .share .share-content {
+	padding: 14px 11px 4px;
+}
+.share_position .share .second-line {
+	padding-left: 16px;
+}
+.share_position .share .second-line .item {
+	width: 40px;
+}
+
+.share_position .share .share-content .null-con {
+	width: 25px;
+}
+.share_position .share .share-content .null-con-max {
+	width: 75px;
+}
+.share_position .share .item {
+	margin-bottom: 13px;
+}
+.share_position .share .item-img {
+	width: 40px;
+	height: 40px;
+	border-radius: 40px;
+	margin: 0 auto;
+	margin-bottom: 6px;
+}
+.share_position .item-img img {
+	width: 100%;
+	height: 100%;
+}
+.share_position .share .item-name {
+	font-size: 12px;
+	color: #999999;
+	text-align: center;
+}
+.share_position ._share .share-btn {
+	text-align: center;
+	height: 50px;
+	line-height: 50px;
+	border-top: 1px solid #eee;
+	font-size: 17px;
+	color: #333333;
+	margin-top: 3px;
+}
+/*添加标签*/
+.add_link_position {
+	height: 100%;
+	position: relative;
+	background: rgba(0, 0, 0, 0.7);
+}
+.add_link {
+	width: 304px;
+	padding-bottom: 16px;
+	border-radius: 8px;
+	background: #fff;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+}
+.add_link .add_link_close {
+	width: 20px;
+	height: 20px;
+	position: absolute;
+	right: 9px;
+	top: 9px;
+	background-image: url(../image/closeWin.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 20px 20px;
+}
+.add_link .add_link_title {
+	font-size: 18px;
+	color: #333333;
+	margin-top: 20px;
+	margin-bottom: 19px;
+	text-align: center;
+}
+.add_link .add_link_input {
+	margin-left: 19px;
+	margin-right: 17px;
+	padding-bottom: 4px;
+	border-bottom: 1px solid #eee;
+	margin-bottom: 14px;
+}
+.add_link .add_link_input input {
+	outline: none;
+	border: none;
+	font-size: 14px;
+	color: #333;
+}
+.add_link .add_link_input input::placeholder {
+	font-size: 14px;
+	color: #999999;
+}
+.add_link .add_link_btn {
+	width: 278px;
+	padding: 9px 0;
+	margin: 0 auto;
+	background: #FF6026;
+	border-radius: 100px;
+	text-align: center;
+	color: #fff;
+	font-size: 16px;
+}
+
+/*select——golds——pop.html*/
+.popup_height {
+	height: auto;
+}
+.select_lists {
+	padding: 22px 11px 5px 11px;
+	border-bottom: 1px solid #EEE;
+}
+.select_lists .list {
+	display: flex;
+}
+.every_one {
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-bottom: 15px;
+	width: 78px;
+	text-align: center;
+	height: 34px;
+	line-height: 34px;
+	border: 1px solid #FF6026;
+	border-radius: 100px;
+	font-size: 14px;
+	color: #FF6026;
+	flex: 1;
+}
+.every_one_active {
+	background-color: #FF6026;
+	color: #fff;
+}
+.please_enter {
+	display: flex;
+	padding: 12px 21px;
+	border: 1px solid #EEE;
+}
+.other {
+	font-size: 16px;
+	color: #333;
+	line-height: 24px;
+	padding-right: 12px;
+	margin-right: 10px;
+	/*border-right: 1px solid #333;*/
+}
+.other_input {
+	flex: 1;
+	box-sizing: border-box;
+}
+.other_input input {
+	font-size: 16px;
+	color: #333;
+	width: 90%;
+	height: 100%;
+}
+.submits {
+	padding-top: 11px;
+	padding-left: 21px;
+	padding-right: 21px;
+	padding-bottom: 13px;
+}
+.submits .sure {
+	width: 100%;
+	text-align: center;
+	height: 36px;
+	line-height: 36px;
+	background: #FF6026;
+	color: #fff;
+	font-size: 14px;
+	border-radius: 100px;
+}

@@ -1,0 +1,174 @@
+.kings_circle .subtotal{
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  width:100%;
+  padding: 0  0.426667rem;
+  height: 0.826667rem;
+  font-size: 0.320000rem;
+  color: #666666;
+  margin-bottom: 0.106667rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-item-align: center;
+      align-self: center;
+}
+.kings_circle .subtotal img{
+  width: 0.560000rem;
+  height: 0.560000rem;
+  margin-right: 0.213333rem;
+}
+.kings_circle .subtotal .circle{
+  width: 0.080000rem;
+  height: 0.080000rem;
+  border-radius: 0.080000rem;
+  background: #d8d8d8;
+  margin-left: 0.186667rem;
+  margin-right: 0.160000rem;
+}
+.kings_circle .subtotal ._selfmonth,
+.kings_circle .subtotal .lastMonth{
+  font-size: 0.320000rem;
+  color: #999999;
+  padding: 0  0.160000rem;
+  position: relative;
+  margin-right: 0.160000rem;
+}
+.kings_circle .subtotal .lastMonth{
+  padding: 0;
+  margin: 0;
+}
+.kings_circle .subtotal ._selfmonth:after{
+  content:'';
+  width: 1px;
+  height: 0.293333rem;
+  background: #d8d8d8;
+  position: absolute;
+  top: 0.080000rem;
+  right: 0;
+}
+.kings_circle .subtotal .active{
+  color: #FF6026 !important;
+}
+.community-flex{
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+.community-flex-v {
+    -webkit-box-orient: vertical;
+    -ms-flex-flow: column;
+        flex-flow: column;
+}
+
+.community-flex-h {
+    -webkit-box-orient: horizontal;
+    -ms-flex-flow: row;
+        flex-flow: row;
+}
+
+.community-flex-flex1 {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+        flex: 1;
+}
+.flex-center{
+  -webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+}
+/*自己*/
+.communityList .self{
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  width:100%;
+  padding: 0  0.426667rem;
+  height: 2.933333rem;
+  background: #FD6260;
+  color: #fff;
+}
+.communityList .self .num,
+.communityList .other .num{
+  font-size: 0.373333rem;
+}
+.communityList .self .Perimage,
+.communityList .other .Perimage{
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  width: 2.186667rem;
+  height: 2.186667rem;
+  border-radius: 2.186667rem;
+  margin-left: 0.400000rem;
+  margin-right: 0.213333rem;
+  text-align: center;
+}
+.communityList .self .Perimage{
+  border: 0.160000rem solid rgba(255, 255, 255, 0.08);
+  position: relative;
+}
+.communityList .self .Perimage .Perimage-1{
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  width: 1.866667rem;
+  height: 1.866667rem;
+  border-radius: 1.866667rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+  z-index: 5;
+  border: 0.133333rem solid rgba(255, 255, 255, 0.21);
+}
+.communityList .self .Perimage img{
+  width: 1.600000rem;
+  height: 1.600000rem;
+  border-radius: 1.600000rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+}
+.communityList .self .details{
+  font-size: 0.320000rem;
+}
+.communityList .level{
+  font-size: 0.373333rem;
+  line-height: 0.533333rem;
+  margin-top: 0.133333rem;
+  margin-bottom: 0.080000rem;
+}
+.level-alert{
+  font-size: 0.213333rem;
+  line-height: 0.293333rem;
+  margin-left: 0.346667rem;
+}
+.communityList .self ._items{
+  font-size: 0.266667rem;
+  line-height: 1;
+  text-align: center;
+}
+.communityList .self .topic_num{
+  font-size: 0.320000rem;
+  line-height: 0.453333rem;
+}
+.communityList .showCircle{
+  background: #fff;
+  margin-left: 0.453333rem;
+  margin-right: 0.400000rem;
+  vertical-align:middle;
+}
+.communityList .circles_f{
+  text-align: center;
+  padding-top: 2.693333rem;
+}
+.communityList .circles_f img{
+  width: 1.600000rem;
+  height: 1.600000rem;
+}
+.communityList .circles_f p{
+  line-height: 0.533333rem;
+  font-size: 0.373333rem;
+  color: #999;
+}

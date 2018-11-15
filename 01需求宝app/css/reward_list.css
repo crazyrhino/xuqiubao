@@ -1,0 +1,99 @@
+.warp {
+	padding: 0.426667rem;
+}
+.accumulatives {
+	background-image: -webkit-linear-gradient(269deg, #FF6026 0%, #FF9526 99%);
+	background-image: linear-gradient(-179deg, #FF6026 0%, #FF9526 99%);
+	border-radius: 0.106667rem;
+}
+.accumulative_list {
+	height: 2.346667rem;
+	-webkit-box-sizing: border-box;
+	        box-sizing: border-box;
+	padding-top: 0.320000rem;
+	padding-bottom: 0.373333rem;
+}
+.gglod {
+	font-size: 0.266667rem;
+	color: #fff;
+	padding-left: 0.373333rem;
+	padding-right: 0.373333rem;
+}
+.accumulative_list .glodimg {
+	width: 0.666667rem;
+	height: 0.666667rem;
+	margin-right: 0.240000rem;
+	vertical-align: middle;
+}
+.accumulative_list .details {
+	padding-top: 0.213333rem;
+	padding-left: 0.240000rem;
+	color: #fff;
+	text-align: center;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+}
+.details .detail {
+	line-height: 0.746667rem;
+	font-size: 0.533333rem;
+	-webkit-box-flex: 1;
+	    -ms-flex: 1;
+	        flex: 1;
+}
+.detail_bor {
+	border-right: 1px solid rgba(255, 255, 255, .3);
+}
+.sign {
+	font-size: 0.266667rem;
+}
+/*列表*/
+.reward_list{
+    height: 1.173333rem;
+    padding: 0.533333rem 0;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    border-bottom: 1px solid #EEE;
+}
+.reward_li_img ,img{
+    border-radius: 50%;
+    height: 1.173333rem;
+    width: 1.173333rem;
+}
+.reward_li_cont{
+    -webkit-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1;
+    font-size: 0.373333rem;
+    line-height: 0.640000rem;
+    margin-left: 0.480000rem;
+}
+.user_name{
+    color: #333;
+}
+.date{
+    color: #999;
+}
+.reward_li_right{
+    width: 2.666667rem;
+    text-align: right;
+}
+.reward_li_right img{
+    height: 0.640000rem;
+    width: auto;
+    margin-right: 0.053333rem;
+}
+.img_reply {
+    display: inline-block;
+    height: 0.426667rem;
+    min-width: 1.173333rem;
+    text-align: center;
+    background: #FDC223;
+    color: #FFF;
+    font-size: 0.320000rem;
+    line-height: 0.453333rem;
+    padding:0 0.213333rem;
+    border-radius: 0.213333rem;
+    margin: 0.106667rem 0  0.133333rem 0;
+}

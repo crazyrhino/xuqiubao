@@ -1,0 +1,295 @@
+<!DOCTYPE HTML>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>参与话题详情页面</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/winners.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style type="text/css">
+			[v-cloak] {
+				display: none;
+			}
+
+			.line1 {
+				overflow: hidden;
+				text-overflow: ellipsis;
+				display: -webkit-box;
+				-webkit-box-orient: vertical;
+				-webkit-line-clamp: 1;
+			}
+			.red {
+				color: #F14442 !important;
+			}
+			.blue {
+				color: #93B6E2 !important;
+			}
+			.orange {
+				color: #FD935A !important;
+			}
+			.weizhongjiang img {
+				display: block;
+				width: 80px;
+				margin: 20px auto;
+
+			}
+			.bottom_goldadd{
+				min-width: 80px;
+			}
+			.list_cont{
+				width: 100%;
+			}
+			.line1{
+				width: 40%;
+			}
+			.bottom_icon{
+				padding-left: 20px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div  id="data-wrap">
+			<!--<div class="details_conts">
+				<div class="winners_list">
+					<div class="list_cont">
+						<p class="describe" tapmode onclick="openDetail('{{=it[i].storyId}}','{{=it[i].dataTypeNew}}')">中奖名单中奖名单话题名称</p>
+						<div class="flex_container">
+							<div class="writer_header" tapmode onclick="openUsers('{{=it[i].userCode}}')">
+								<img src="../../image/home/tmp_default_header.png" alt="">
+							</div>
+							<div class="writer_name line1"  tapmode onclick="openUsers('{{=it[i].userCode}}')">中奖名单中奖名单用户名</div>
+							<div class="bottom_goldadd">+999
+								金币
+							</div>
+							<div class="bottom_icon" tapmode onclick="doLaud('{{=it[i].storyId}}','{{=it[i].userCode}}')" id="laudicon-{{=it[i].storyId}}" data-status="{{=it[i].praiseFlag}}">
+								<img src="../../image/mine/zans.png">
+							</div>
+							<div class="bottom_num" id="laudcount-{{=it[i].storyId}}">90</div>
+						</div>
+					</div>
+				</div>
+			</div>-->
+		</div>
+		<script type="text/template" id="data-tpl">
+		<div class="details_conts">
+		{{for(var i in it){}}
+		<div class="winners_list">
+			{{? rulesType == 1}}
+				{{? i ==0}}
+				<div class="no_num red">{{=(parseInt(i)+1)}}</div>
+				{{?? i== 1}}
+				<div class="no_num blue">{{=(parseInt(i)+1)}}</div>
+				{{?? i == 2}}
+				<div class="no_num orange">{{=(parseInt(i)+1)}}</div>
+				{{??}}
+				<div class="no_num">{{=(parseInt(i)+1)}}</div>
+				{{?}}
+			{{?}}
+
+			<div class="list_cont">
+				<p class="describe" tapmode onclick="openDetail('{{=it[i].storyId}}','{{=it[i].dataTypeNew}}')">{{=it[i].storyName}}</p>
+				<div class="flex_container">
+					<div class="writer_header" tapmode onclick="openUsers('{{=it[i].userCode}}')">
+						{{? it[i].userImg}}
+						<img src="{{=it[i].userImg}}" alt="">
+						{{??}}
+						<img src="../../image/home/tmp_default_header.png" alt="">
+						{{?}}
+					</div>
+					<div class="writer_name line1"  tapmode onclick="openUsers('{{=it[i].userCode}}')">{{=it[i].userName}}</div>
+					{{? it[i].awardNubmer && it[i].awardNubmer > 0}}
+					<div class="bottom_goldadd">+{{=it[i].awardNubmer||'0'}}
+					{{? it[i].awardType == 0}}金币
+					{{?? it[i].awardType == 1}}钻石
+					{{?}}
+					</div>
+					{{? }}
+					<div class="bottom_icon" tapmode onclick="doLaud('{{=it[i].storyId}}','{{=it[i].userCode}}')" id="laudicon-{{=it[i].storyId}}" data-status="{{=it[i].praiseFlag}}">
+						{{? parseInt(it[i].praiseFlag) == 0}}
+						<img  src="../../image/mine/zan.png">
+						{{??}}
+						<img src="../../image/mine/zans.png">
+						{{?}}
+					</div>
+					<div class="bottom_num" id="laudcount-{{=it[i].storyId}}">{{=it[i].praiseNumber||0}}</div>
+				</div>
+			</div>
+		</div>
+		{{ } }}
+		</div>
+		</script>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/doT.min.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript">
+		var recruitId,rewardType,pageIndex=1,pageSize=200,loadStatus=true;
+		var lockingReward,rulesType;
+		apiready = function() {
+			//fnRefreshOpen();
+			recruitId = api.pageParam.recruitId;
+			rewardType = api.pageParam.rewardType;
+			rulesType = api.pageParam.rulesType;
+			lockingReward = api.pageParam.lockingReward;
+			// alert(rewardType)
+			loadData();
+			api.addEventListener({
+				name: 'scrolltobottom',
+				extra:{
+					threshold:150
+				}
+			}, function(ret, err){
+				if( ret ){
+					if(loadStatus){
+						loadData();
+					}else{
+						api.toast({
+							msg: '没有更多啦',
+							duration: 1000,
+							location: 'bottom'
+						});
+					}
+				}
+			});
+		};
+		function loadData(){
+			if(pageIndex == 1){
+				api.showProgress({
+				    style: 'default',
+				    animationType: 'fade',
+				    title: '',
+				    text: '',
+				    modal: false
+				});
+
+			}
+            var visitorCode = api.readFile({
+                sync: true,
+                path: api.boxDir + '/visitorCode.txt'
+            });
+            if (fnIsEmpty(visitorCode)) {
+                visitorCode = guid();
+            }
+			$service.get('recruit/getWinnerList.ajax', {
+				recruitId: recruitId,
+				pageIndex: pageIndex,
+				pageSize: pageSize,
+                visitorCode:visitorCode
+			}, function(ret, err) {
+				if(ret) {
+					// console.log("00000000"+JSON.stringify(ret))
+					if(ret.ok == 1) {
+						if(ret.data.length > 0){
+							var tpl = document.getElementById("data-tpl").innerHTML;
+							var fn = doT.template(tpl);
+							if(pageIndex == 1){
+								document.getElementById("data-wrap").innerHTML = fn(ret.data);
+							}else{
+								document.getElementById("data-wrap").insertAdjacentHTML('beforeend', fn(ret.data));
+							}
+							if(ret.data.length < pageSize){
+								loadStatus = false;
+							}else{
+								pageIndex++;
+							}
+						}else{
+							if(pageIndex == 1){
+								var html = '<p class="weizhongjiang" style="padding:20px; font-size: 16px; color:#757575; text-align:center"><img src="../../image/weikaijiang.png">中奖名单暂未生成</p>';
+								document.getElementById("data-wrap").innerHTML = html;
+							}
+
+						}
+						api.parseTapmode();
+
+					} else {
+						if(pageIndex == 1) {
+							api.toast({
+							    msg: '暂无数据',
+							    duration: 2000,
+							    location: 'middle'
+							});
+
+						} else {
+
+						}
+					}
+				} else {
+					fnToast(err.msg, 'middle')
+				}
+				api.hideProgress();
+			}, true)
+		}
+		function openDetail(id,dataTypeNew){
+			fnOpenWin('topic_details', '../topic/', {
+				type: dataTypeNew,
+				id: id
+			});
+		}
+		function openUsers(userCode) {
+			var token = api.readFile({
+				sync : true,
+				path : api.boxDir + '/token.txt'
+			});
+			if(fnIsEmpty(token) || token.indexOf('#') == -1){
+				fnOpenLogin();
+			}else{
+				fnOpenWin('ta_page', '../ta_page/', {
+					userId : userCode
+				});
+			}
+		}
+		
+		function fnOpenLogin() {
+			api.sendEvent({
+				name : 'APICloudCallNaviteMethod',
+				extra : {
+					type : 1,
+					canCallBack : 1,
+					toPageName : 'Login'
+				}
+			});
+		}
+		
+		function doLaud(storyId,userCode){
+			return;
+			event.stopPropagation();
+			var _status = document.getElementById("laudicon-"+storyId).getAttribute("data-status");
+			var url = 'story/praiseStory.ajax';
+			var params = {
+				storyId : storyId,
+				userCode :userCode
+			}
+
+			$service.get(url, params, function(ret, err) {
+				// alert(JSON.stringify(ret))
+				if (ret) {
+					if(_status == "0"){
+						document.getElementById("laudicon-"+storyId).innerHTML = '<img src="../../image/mine/zans.png">';
+						document.getElementById("laudicon-"+storyId).setAttribute("data-status","1");
+						if(document.getElementById("laudcount-"+storyId)){
+							document.getElementById("laudcount-"+storyId).textContent = parseInt(document.getElementById("laudcount-"+storyId).textContent)+1;
+							document.getElementById("laudcount-"+storyId).classList.toggle("on");
+						}
+					}else{
+						document.getElementById("laudicon-"+storyId).innerHTML = '<img src="../../image/mine/zan.png">';
+						document.getElementById("laudicon-"+storyId).setAttribute("data-status","0");
+						if(document.getElementById("laudcount-"+storyId)){
+							document.getElementById("laudcount-"+storyId).textContent = parseInt(document.getElementById("laudcount-"+storyId).textContent)-1;
+							document.getElementById("laudcount-"+storyId).classList.toggle("on");
+						}
+					}
+
+
+
+				}
+			}, true);
+		}
+	</script>
+
+</html>

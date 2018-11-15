@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+            background: linear-gradient(to bottom, #FF6026, #FF9526);
+        }
+
+        .wrap {
+            height: 100%;
+            overflow: auto;
+            background: url("../../image/rank/bg_rule.png") no-repeat;
+            background-size: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 44px;
+            z-index: 100;
+            color: #fff;
+            background-color: #FF6026;
+        }
+
+        .header_div {
+            height: 44px;
+            line-height: 44px;
+            text-align: center;
+            font-size: 17px;
+            background: url("../../image/rank/bg_rule.png") no-repeat;
+            background-size: cover;
+        }
+
+        .back_btn {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 44px;
+            height: 44px;
+            background: url(../../image/ic_back_btn.png) no-repeat center;
+            background-size: 24px;
+        }
+
+        .header_div{
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <header class="header">
+        <div class="header_div">
+            <div class="back_btn" tapmode="meui_click" onclick="fnBack()"></div>
+            排行榜规则
+        </div>
+    </header>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        //fnRefreshOpen();
+        fnSysHeaderStyle();
+        // fnOpenFrameInWinMarginTop(1);
+        api.openFrame({
+            name: 'rule_frame',
+            url: 'rule_frame.html',
+            rect: {
+                y : $api.dom('header').offsetHeight,
+                h : 'auto'
+            },
+            bgColor:'rgba(0,0,0,0)',
+            bounces: true
+        });
+    };
+</script>
+</html>

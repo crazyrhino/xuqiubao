@@ -1,0 +1,791 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+    <style type="text/css">
+        html, body {
+            height: 100%;
+            overflow: auto;
+        }
+
+        .part_one {
+            background: #fff;
+        }
+
+        textarea {
+            height: 6rem;
+            max-height: 6rem;
+            min-height: 6rem;
+            overflow: auto;
+            padding: .7rem 1rem;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .number {
+            overflow: hidden;
+        }
+
+        .aui-pull-right {
+            line-height: 1.2rem;
+        }
+
+        .add i {
+            position: absolute;
+            height: .8rem;
+            width: .8rem;
+            line-height: .9rem;
+            top: -.4rem;
+            right: -.3rem;
+            font-size: .5rem;
+            color: #fff;
+            background-color: #000;
+            opacity: .7;
+            border-radius: 50%;
+        }
+
+        .add p {
+            color: #DDDDDD;
+            font-size: .6rem;
+        }
+
+        .slide-box {
+            padding: 0 .7rem .4rem 1rem;
+            width: 100%;
+            display: -webkit-box;
+            overflow-x: scroll;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .c_add_img {
+            position: relative;
+            width: 5.4rem;
+            height: 5.4rem;
+            background: url("../../image/edit_topic/edit_add.png") no-repeat;
+            background-size: cover;
+        }
+
+        .c_upload_img_layout {
+            position: relative;
+            width: 5.4rem;
+            height: 5.4rem;
+        }
+
+        .c_upload_img {
+            width: 5.4rem;
+            height: 5.4rem;
+        }
+
+        .c_delete {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 0.9rem;
+            height: 0.9rem;
+            background: url(../../image/edit_topic/edit_delete.png) no-repeat center;
+            background-size: 0.9rem;
+        }
+
+        .aui-flex-3 {
+            position: relative;
+            display: inline-block;
+            float: left;
+            width: calc(100% / 3 - 5px);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+
+        .aui-grid {
+            padding: 1rem;
+        }
+
+        .edit_footer {
+            position: fixed;
+            z-index: 99;
+            left: 0;
+            width: 100%;
+            background-color: #fff;
+            bottom: 0;
+        }
+
+        .f_top {
+            padding-left: .8rem;
+            height: 1.7rem;
+        }
+
+        .address {
+            border-radius: 1rem;
+            background: #FAFAFA;
+            border: 1px solid #EEE;
+            padding: .25rem .4rem;
+            padding-left: 1.2rem;
+            color: #666;
+            background: url("../../image/edit_topic/edit_address.png") no-repeat .4rem center;
+            background-size: .6rem;
+        }
+
+        .f_bottom {
+            height: 2.2rem;
+            background: #F9F9F9;
+        }
+
+        .f_bottom li:first-child {
+            /*background: url("../../image/edit_topic/edit_topic.png") no-repeat center;*/
+            background: url("../../image/edit_topic/add_picture.png") no-repeat center;
+            background-size: 1.1rem;
+        }
+
+        /*.f_bottom li:nth-child(2) {
+            background: url("../../image/edit_topic/edit_@.png") no-repeat center;
+            background-size: 1.1rem;
+        }
+
+        .f_bottom li:nth-child(3) {
+            background: url("../../image/edit_topic/edit_em.png") no-repeat center;
+            background-size: 1.1rem;
+        }
+*/
+        .f_bottom li:nth-child(2) {
+            background: url("../../image/edit_topic/edit_product.png") no-repeat center;
+            background-size: 1.1rem;
+        }
+
+        .f_bottom li {
+            display: inline-block;
+            width: 3rem;
+            height: 2.2rem;
+        }
+
+        .goods_wrap li {
+            padding: .4rem 1rem;
+            display: flex;
+        }
+
+        .goods_wrap li img.goods_pic {
+            height: 2rem;
+            width: 2rem;
+        }
+
+        .goods_info {
+            flex: 1;
+            padding-right: 2.4rem;
+        }
+
+        .goods_wrap li img.goods_delete {
+            margin-top: .6rem;
+            height: .9rem;
+            width: .9rem;
+        }
+
+        .goods_title {
+            font-size: .65rem;
+            color: #111;
+            letter-spacing: 0;
+            display: block;
+            width: 100%;
+            padding-top: .3rem;
+            line-height: .6rem;
+        }
+
+        .price {
+            font-size: .65rem;
+            color: #FF6026;
+            letter-spacing: 0;
+        }
+
+        /*圈子*/
+        .f_top {
+            display: flex;
+            display: -webkit-flex;
+            display: -webkit-box;
+        }
+
+        .meui_flex_wrap {
+            display: flex;
+            display: -webkit-flex;
+            display: -webkit-box;
+        }
+
+        .c_circle {
+            height: 1.2rem;
+            margin-top: 0.3rem;
+            padding: 0.2rem 0.7rem;
+            background: #F6F6F6;
+            border-radius: .6rem;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        .c_circle_icon {
+            width: 0.7rem;
+            height: 0.7rem;
+        }
+
+        .c_circle_txt {
+            height: 0.7rem;
+            max-width: 6rem;
+            margin-left: 0.2rem;
+            line-height: 0.7rem;
+            font-size: 0.6rem;
+            color: #999;
+        }
+
+    </style>
+</head>
+<body>
+<div class="vue-content aui-border-t" v-cloak>
+    <div class="aui-margin-b-10 part_one">
+        <textarea name="" class="c_content_area" maxlength="2000" oninput="onInput(this)" onpaste="onPaste(this)" placeholder="我想说..."
+                  v-model="message"></textarea>
+        <div class="number aui-padded-r-15 aui-padded-t-5 aui-padded-b-5"><p class="aui-pull-right"><span>{{message.length}}</span><span>/2000</span>
+        </p></div>
+    </div>
+    <draggable v-model="imageList" id="slide_box" class="aui-grid" :options="{draggable:'.dragItem',delay: 200}">
+        <div v-for="(item,index) in imageList" class="aui-flex-3" :class="{ dragItem: item.thumbPath}"
+             :style="{'margin-left':index%3===0?'0':'6px','margin-top':index>2?'6px':'0'}">
+            <div v-if="item.thumbPath" class="c_add_img hidden"></div>
+            <div v-else-if="index != 9" class="c_add_img" tapmode @click="fnOpenSelectPicture()"></div>
+            <div v-if="item.thumbPath" class="c_upload_img_layout" @click="fnPreviewTransPath(index,0)">
+                <img class="c_upload_img" :src="item.thumbPath" alt=""/>
+            </div>
+            <div v-if="item.thumbPath" class="c_delete" tapmode @click="fnDelete(index)"></div>
+        </div>
+    </draggable>
+    <ul class="goods_wrap">
+        <li class="aui-border-b" v-for="(goods,index) in goodsList">
+            <img class="goods_pic" :src="goods.defaultImageUrl" alt="">
+            <!--<img class="goods_pic" src="../../image/business.jpg" alt="">-->
+            <div class="goods_info aui-padded-l-10 aui-ellipsis-1">
+                <span class="goods_title aui-ellipsis-1"
+                      v-text="goods.productFirstName">如恩真皮床现代简约设计师风如恩真皮床现代简约设计师风</span>
+                <span class="price">￥{{goods.finalPrice}}</span>
+            </div>
+            <img tapmode @click="fnDeleteGoods(index)" class="goods_delete" src="../../image/edit_topic/edit_delete.png"
+                 alt="">
+        </li>
+    </ul>
+</div>
+<footer class="edit_footer aui-border-b">
+    <div class="f_top aui-border-b">
+        <!--<span class="address aui-font-size-12" tapmode onclick="fnOpenAddress()">所在位置</span>-->
+        <div class="c_circle meui_flex_wrap" tapmode onclick="fnSelectCircle()">
+            <img class="c_circle_icon" id="circle_img" src="../../image/edit_topic/circle.png" alt=""/>
+            <div class="c_circle_txt meui_single_line" id="circle_txt">
+                选择圈子
+            </div>
+        </div>
+    </div>
+    <ul class="f_bottom">
+        <!--<li tapmode onclick="fnOpenCircle()"></li>-->
+        <!--<li tapmode onclick="fnOpenConcern()"></li>-->
+        <!--<li tapmode onclick="fnOpenEm()"></li>-->
+        <li tapmode onclick="editVue.fnOpenSelectPicture()"></li>
+        <li tapmode onclick="fnOpenProduct()"></li>
+    </ul>
+</footer>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/Sortable.js"></script>
+<script type="text/javascript" src="../../script/vuedraggable.min.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript">
+    var recruitId, editVue, uploadUrls, publishId, keyBoardMgr, selectedImgs, topicId, releaseStatus, haveSelectLabels;
+    var selectLabels = [];
+    var transPaths = [];
+    var selectGoods = [];
+    var isCanPublish = true;
+    var isCircle = false;
+    var uploadAgain = 0;
+    apiready = function () {
+        recruitId = api.pageParam.recruitId;
+        fnInitEventListener($api.dom('.c_content_area'));
+        if (api.pageParam.topicId) {
+            topicId = api.pageParam.topicId;
+            $api.dom('.c_circle').disabled = 'disabled';
+            fnExecSelectCircle(api.pageParam.topicId, api.pageParam.topicName, true);
+        } else {
+            topicId = 533
+        }
+        initStyle();
+    };
+
+    //粘贴
+    function onPaste(context) {
+        setTimeout(function () {
+            context.value = context.value.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, '');
+        }, 0)
+    }
+    function onInput() {
+
+    }
+    //V2.5 圈子选择
+    function fnSelectCircle() {
+        fnHideKeyBoard();
+        isCircle = true;
+        $app.openFrame('select_circle_frame', null, null, {
+            frameName: api.frameName
+        }, {
+            url: '../popup/select_circle_frame.html?v=' + new Date().getTime(),
+            bgColor: 'rgba(0,0,0,0)',
+            bounces: false
+        })
+    }
+
+    function fnExecSelectCircle(id, name) {
+        isCircle = false;
+        fnSetImgSrc('circle_img', '../../image/edit_topic/circle_active.png');
+        fnSetTxt('circle_txt', name);
+        $api.byId('circle_txt').style.color = '#333';
+        topicId = id;
+        api.closeFrame({
+            name: 'select_circle_frame'
+        });
+    }
+
+    function fnGetTagsIds() {
+        var tagsIds = [];
+        if (selectLabels != null && selectLabels.length > 0) {
+            for (var i = 0; i < selectLabels.length; i++) {
+                tagsIds.push(selectLabels[i].id);
+            }
+        }
+        return tagsIds;
+    }
+
+    function fnBack() {
+        if (isCircle) {
+            fnCloseCircle();
+            return;
+        }
+        api.execScript({
+            name: api.winName,
+            script: 'fnCancel();'
+        });
+    }
+
+    function fnCloseCircle() {
+        isCircle = false;
+        api.closeFrame({
+            name: 'select_circle_frame'
+        });
+    }
+
+    function fnInitEventListener(el) {
+        //键盘监听
+        $event.addEventListener('keyboardshow', function (ret) {
+            $api.dom('.edit_footer').style.position = 'absolute';
+            $api.dom('.edit_footer').style.bottom = ret.h + 'px';
+        });
+        $event.addEventListener('keyboardhide', function (ret) {
+            $api.dom('.edit_footer').style.position = 'fixed';
+            $api.dom('.edit_footer').style.bottom = api.safeArea.bottom + 'px';
+        });
+
+        //makeExpandingArea
+        if (!el) {
+            return;
+        }
+        var setStyle = function (el) {
+            el.style.height = 'auto';
+            var sh = el.scrollHeight;
+            el.style.height = sh + 'px';
+        };
+        var delayedResize = function (el) {
+            window.setTimeout(function () {
+                setStyle(el)
+            }, 0);
+        };
+        el.addEventListener('input', function () {
+            setStyle(el);
+        }, false);
+        setStyle(el);
+        el.addEventListener("onkeydown", function () {
+            var key = window.event.keyCode;
+            if (key == 8 || key == 46) {
+                delayedResize(el);
+            }
+        }, false);
+        el.addEventListener("oncut", function () {
+            delayedResize(el);
+        }, false); //处理粘贴
+        $event.getRNCallback(function (ret) {
+            if (ret.type == 4) {
+                if (ret.tag != api.frameName) {
+                    return;
+                }
+                if (uploadAgain == 1) {
+                    $app.hideProgress();
+                    return;
+                }
+                if (ret.subType !== 'progress' && ret.success == 1) {
+                    uploadUrls = ret.data.urls;
+                    fnPublish(releaseStatus);
+                    uploadAgain = 1;
+                } else if (ret.success != 1) {
+                    $app.hideProgress();
+                    $app.toast(ret.message, 'middle');
+                    uploadAgain = 1;
+                }
+            } else if (ret.type == 9) {
+                if (ret.success == 1) {
+                    if (editVue.imageList.length == 10) {
+                        fnToast('最多只能选择9张图片', 'middle');
+                        return;
+                    }
+                    $app.openWin('select_picture', {
+                        canSelectNum: 10 - editVue.imageList.length,
+                        winName: api.winName,
+                        topicType: api.pageParam.topicType
+                    })
+                } else {
+                    api.alert({
+                        title: '提示',
+                        msg: '没有相机权限，请进入设置添加应用的相机/相册权限',
+                        buttons: ['确定']
+                    }, function (ret, err) {
+                    });
+                }
+            }
+        });
+        api.addEventListener({
+            name: 'selectedNum'
+        }, function (ret) {
+            if (ret.value.selectedNum < 5) {
+                api.sendEvent({
+                    name: 'haveSelect',
+                    extra: {
+                        selectedNum: ret.value.selectedNum
+                    }
+                })
+            } else {
+                api.sendEvent({
+                    name: 'unAllowSelect',
+                    extra: {
+                        // selectedNum: num
+                    }
+                })
+            }
+        });
+        api.addEventListener({
+            name: 'selectLabel'
+        }, function (ret) {
+            if (ret) {
+                haveSelectLabels = ret.value.labels;
+            }
+        })
+    }
+
+    function initStyle() {
+        var footerH = parseInt($api.cssVal($api.dom('footer'), 'height')) + api.safeArea.bottom;
+        $api.css($api.dom('html'), 'padding-bottom:' + footerH + 'px');
+        $api.css($api.dom('.edit_footer'), 'bottom:' + api.safeArea.bottom + 'px');
+        $(document).on('touchmove', function (e) {
+            $api.dom('.c_content_area').blur();
+        });
+        $('.c_content_area').on('touchmove', function (e) {
+            window.event.stopPropagation();
+            $api.dom('.c_content_area').focus();
+        });
+    }
+
+    editVue = $app.MyVue({
+        el: ".vue-content",
+        data: {
+            message: '',
+            imageList: [{}],
+            goodsList: []
+        },
+        methods: {
+            fnDelete: function (index) {
+                editVue.imageList.splice(index, 1);
+            },
+            fnPreviewTransPath: function (index) {
+                transPaths = [];
+                for (var i = 0; i < editVue.imageList.length - 1; i++) {
+                    transPaths.push(editVue.imageList[i].path);
+                }
+                fnPreview(index);
+            },
+            fnOpenSelectPicture: function () {
+                if (api.systemType === 'android') {
+                    $event.callRNEvent(9, 1, {
+                        command: ['android.permission.WRITE_EXTERNAL_STORAGE', 'android.permission.READ_EXTERNAL_STORAGE', 'android.permission.CAMERA'] // 需要哪些权限就在数组中传过来
+                    });
+                } else {
+                    if (editVue.imageList.length == 10) {
+                        $app.toast('最多只能选择9张图片', 'middle');
+                        return;
+                    }
+                    $app.openWin('select_picture', {
+                        canSelectNum: 10 - editVue.imageList.length,
+                        winName: api.winName,
+                        topicType: api.pageParam.topicType
+                    })
+                }
+            },
+            fnDeleteGoods: function (index) {
+                editVue.goodsList.splice(index, 1);
+                $api.setStorage('selectGoods', editVue.goodsList);
+                api.writeFile({
+                    path: api.boxDir + '/selected_num.txt',
+                    data: editVue.goodsList.length
+                });
+            },
+            fnReplaceComment: function (comment) {
+                if (!$app.isEmpty(comment)) {
+                    comment = comment.replace(/\r\n/g, '<br/>');
+                    comment = comment.replace(/\n/g, '<br/>');
+                    comment = comment.replace(/\s/g, ' ');
+                    comment = comment.replace(/<[^>]+>/g, "");
+                    return comment;
+                }
+                return '';
+            }
+        }
+    });
+
+    function fnGetProductId() {
+        var productIds = "";
+        for (var i = 0; i < editVue.goodsList.length; i++) {
+            if (i == 0) {
+                productIds += editVue.goodsList[i].sku;
+            } else {
+                productIds += ',' + editVue.goodsList[i].sku;
+            }
+        }
+        return productIds;
+    }
+
+    function fnFillGoods(selectGoodsStr) {
+        editVue.goodsList = selectGoodsStr;
+        selectGoods = selectGoodsStr;
+        api.closeWin({
+            name: 'search_editor_win'
+        });
+    }
+
+    function fnOpenAddress() {
+        $app.openWin('location_select_topic', null, null)
+    }
+
+    function fnOpenCircle() {
+        $app.openWin('tag_win', null, null)
+    }
+
+    function fnOpenConcern() {
+        $app.openWin('to_see_who_topic', null, null)
+    }
+
+    function fnOpenEm() {
+
+    }
+
+    function fnOpenProduct() {
+        $app.openWin('search_editor_win', {
+            selectGoods: selectGoods,
+            winName: api.winName,
+            topicType: api.pageParam.topicType
+        },{
+            softInputBarEnabled:true
+        })
+    }
+
+    function fnHideKeyBoard() {
+        keyBoardMgr = api.require("keyBoardMgr");
+        keyBoardMgr.hideKeyBoard(function (ret, err) {
+        });
+    }
+    function fnGetValue(target) {
+        if (target.indexOf(".") >= 0) {
+            return $api.dom(target).value;
+        } else {
+            return $api.byId(target).value;
+        }
+    }
+
+    function fnReplaceComment(comment) {
+        if (!$app.isEmpty(comment)) {
+            comment = comment.replace(/\r\n/g, '<br/>');
+            comment = comment.replace(/\n/g, '<br/>');
+            comment = comment.replace(/\s/g, ' ');
+            comment = comment.replace(/<[^>]+>/g, "");
+            comment = comment.replace(/\n+/g,"");
+            return comment;
+        }
+        return '';
+    }
+
+    function fnCheck(status) {
+        releaseStatus = status;
+        if (!isCanPublish) {
+            return;
+        }
+        if ($app.isEmpty(fnGetValue('.c_content_area'))) {
+            fnHideKeyBoard();
+            $app.toast('内容不能为空', 'middle');
+            $app.hideProgress();
+            return false;
+        } else {
+            var value = fnReplaceComment(fnGetValue('.c_content_area'));
+            if (value.length < 5 || value.length > 2000) {
+                $app.toast('话题内容字数应为5~2000字', 'middle');
+                $app.hideProgress();
+                return false;
+            }
+        }
+        //TODO 关联圈子，标签非必填
+        /*if ($app.isEmpty(topicId)) {
+            fnHideKeyBoard();
+            $app.toast('请选择圈子', 'middle');
+            $app.hideProgress();
+            return false;
+        }
+        if ($app.isEmpty(fnGetTagsIds())) {
+            fnHideKeyBoard();
+            $app.toast('请选择标签', 'middle');
+            $app.hideProgress();
+            return false;
+        }*/
+        fnConfirm(releaseStatus);
+    }
+
+    function fnConfirm(releaseStatus) {
+        $app.showProgress();
+        uploadAgain = 0;
+        transImgs = [];
+        if (editVue.imageList.length > 1) {
+            for (var i = 0; i < editVue.imageList.length - 1; i++) {
+                transImgs.push(editVue.imageList[i].path);
+            }
+            fnUploadImg();
+        } else {
+            fnPublish(releaseStatus);
+        }
+    }
+
+    function fnUploadImg() {
+        var url = HOST + '/v3/h5/sg/upLoadCommentPicture.html';
+        var token = api.readFile({
+            sync: true,
+            path: api.boxDir + '/token.txt'
+        });
+        var files = [];
+        for (var i = 0; i < transImgs.length; i++) {
+            files.push(transImgs[i]);
+        }
+        $event.callRNEvent(4, 1, {
+            command: api.systemType === 'android' ? [url, token, 0, 0, null, files] : [url, token, 0, 0, 80, files, 1]
+        })
+    }
+
+    function fnPublish(releaseStatus) {
+        var params = {
+            releaseStatus: releaseStatus,
+            storyContent: fnGetValue('.c_content_area'),
+            storyName: '',
+            imgs: uploadUrls,
+            topicId: topicId,  // 圈子id 默认 我们的家533
+            tagsIds: [492], //TODO 测试 生活+ ID
+            // tagsIds : [488], //TODO 生产 生活+ ID
+            productId: fnGetProductId(),
+            activityId: api.pageParam.taskId || ''
+        };
+        if (api.pageParam.recruitId) {
+            params.recruitId = recruitId;
+        }
+        $http.POST(UrlRouter.publishStory, {
+            body: params
+        }, function (ret) {
+            $app.hideProgress();
+            isCanPublish = false;
+            if (releaseStatus == 1) {
+                // 广播发布成功事件
+                $event.sendEvent('topicPublicSuccessEvent', {
+                    recruitId: recruitId
+                });
+                $app.toast('发表成功', 'middle');
+                selectedImgs = [];
+                publishId = ret.data;
+                setTimeout(function () {
+                    //TODO 加入圈子
+                    $http.GET(UrlRouter.joinInTopic, {
+                        values: {
+                            topicId: topicId
+                        }
+                    });
+                    api.writeFile({
+                        path: api.boxDir + '/selectedImgs.txt',
+                        data: JSON.stringify(selectedImgs)
+                    }, function (ret, err) {
+                        setTimeout(function () {
+                            var openType = 'publish';
+                            api.removeEventListener({
+                                name: 'NaviteCallAPICloudMethod'
+                            });
+                            $app.openWin('topic_details', {
+                                type: 1,
+                                id: publishId,
+                                openType: openType,
+                                closeToWin: true,
+                                closeWinName: api.winName
+                            }, {
+                                reload: true
+                            })
+
+                        }, 200);
+                    });
+                }, 1000);
+            } else {
+                // alert('保存草稿成功')
+            }
+        }, function (err) {
+            $app.hideProgress();
+            $app.toast(err.msg, 'middle');
+        });
+    }
+
+    function fnPreview(index) {
+        $app.openWin('photo_viewer', {
+            urlArr: transPaths,
+            activeIndex: index
+        })
+    }
+
+    function fnGetSelectedImgs() {
+        fnAppendData();
+        api.closeToWin({
+            name: api.winName
+        });
+    }
+
+    function fnAppendData() {
+        var data = JSON.parse(api.readFile({
+            sync: true,
+            path: api.boxDir + '/selectedImgs.txt'
+        }));
+        if (data && data.length > 0) {
+            for (var i = 0; i < data.length; i++) {
+                editVue.imageList.splice(editVue.imageList.length - 1, 0, data[i]);
+            }
+        }
+        setTimeout(function () {
+            document.getElementById('slide_box').scrollLeft = document.getElementById('slide_box').scrollWidth;
+        }, 500);
+    }
+</script>
+</html>

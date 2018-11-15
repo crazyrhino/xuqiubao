@@ -1,0 +1,189 @@
+<!DOCTYPE HTML>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>我的征集多个作品弹窗展示</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/over_mine_oneMore_frame.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+			html,
+			body {
+				background: rgba(0, 0, 0, 0.50);
+			}
+			
+			[v-cloak] {
+				display: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<section id="app" v-cloak>
+
+			<div class="list_wrap">
+				<div class="title_wrap flex_container">
+					<div class="title">
+						我的作品
+					</div>
+					<img onclick="api.closeFrame()" class="closeIcon" src="../../image/closeWin.png" />
+				</div>
+
+				<div class="list">
+					<!--普通-->
+					<div  v-for="item in dataList" @click="openDetails(item.dataTypeNew,item.id)" >
+						<div v-if="!item.isAwardOk" class="footer_one flex_container">
+							<div v-if="rule!=2&&rule!=3" class="personNums">
+								第{{item.rank}}名
+							</div>
+							<div class="devide">
+
+							</div>
+							<div class="writer_name line1">
+								{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}
+							</div>
+							<div class="bottom_icon icon2">
+
+							</div>
+							<div class="bottom_num">
+								{{item.commentNumber}}
+							</div>
+
+							<div class="bottom_icon icon3">
+
+							</div>
+							<div class="bottom_num" style="margin-right: 15px;">
+								{{item.praiseNumber}}
+							</div>
+						</div>
+						<div v-if="item.isAwardOk&&pageData.rewardType!=3" class="footer_one flex_container">
+							<img class="jiangbei" src="../../image/mine/zy04@2x.png" />
+							<div v-if="rule!=2&&rule!=3" class="personNums1 flex">
+								第{{item.rank}}名
+							</div>
+							<div class="devide">
+
+							</div>
+							<div class="writer_name1 line1">
+								{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}
+							</div>
+							<div class="bottom_icon icon2">
+
+							</div>
+							<div class="bottom_num">
+								{{item.commentNumber}}
+							</div>
+
+							<div class="bottom_icon icon3">
+
+							</div>
+							<div class="bottom_num" style="margin-right: 15px;">
+								{{item.praiseNumber}}
+							</div>
+						</div>
+						<div v-if="item.isAwardOk&&pageData.rewardType==3" class="footer_one flex_container">
+							<div class="footer_one_left flex" @click.stop.prevent = "fnOpenWin('address','',{storyId:item.id})">
+								<div class="comeOn">
+									中奖地址
+								</div>
+								<div v-if="rule!=2&&rule!=3" class="persons">
+									第{{item.rank}}名
+								</div>
+								<div v-else class="persons">
+									<span v-if="item.provinceId">
+										已填写
+									</span>
+									<span v-else>
+										点击填写
+									</span>
+								</div>
+								
+							</div>
+							<div class="writer_name1 line1">
+									{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}{{item.storyName}}
+								</div>
+								
+								<div class="bottom_icon icon2">
+
+								</div>
+								<div class="bottom_num">
+									{{item.commentNumber?item.commentNumber:0}}
+								</div>
+
+								<div class="bottom_icon icon3">
+
+								</div>
+								<div class="bottom_num" style="margin-right: 15px;">
+									{{item.praiseNumber?item.praiseNumber:0}}
+								</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.min.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	
+	<script type="text/javascript">
+		var vm;
+
+		function initVm() {
+			vm = new Vue({
+				el: '#app',
+				data: {
+					pageData:null,
+					rule: '',
+					dataList: [],
+					indexFlag:0
+				},
+				methods: {
+					init: function() {
+						vm.pageData = api.pageParam.pageData;
+						vm.dataList = api.pageParam.list;
+						vm.rule = api.pageParam.rule;
+//						alert(vm.rule)
+//						vm.loadData();
+						
+					},
+					openDetails: function(_dataTypeNew, _id) {
+						fnOpenWin('topic_details', '../topic/', {
+							type: _dataTypeNew,
+							id: _id
+						});
+					},
+//					loadData: function() {
+//						if(vm.indexFlag == vm.list.length){
+//							return false;
+//						}
+//						var params = {
+//							id: vm.list[vm.indexFlag].id
+//						}
+//						$service.get('recruit/queryRecruitByStoryId.ajax', params, function(ret, err) {
+//							if(ret) {
+//								if(ret.ok == 1) {
+//									vm.dataList.push(ret.data);
+//									console.log(JSON.stringify(vm.dataList))
+//									vm.indexFlag++;
+//									vm.loadData()
+//								} else {}
+//							} else {
+//								fnToast(err.msg, 'middle')
+//							}
+//						}, true)
+//					}
+				}
+			})
+		}
+		apiready = function() {
+			initVm();
+			vm.init()
+		}
+	</script>
+
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<style>
+		</style>
+	</head>
+	<body></body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js?v=1"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+			api.setFullScreen({
+				fullScreen : false
+			});
+			fnBackListener(fnSpecialBack);
+			api.openFrame({
+				name : api.winName + '_frame',
+				url : api.winName + '_frame.html?v=' + new Date().getTime(),
+				pageParam : api.pageParam,
+				softInputMode : 'pan',
+				softInputBarEnabled : false,
+				allowEdit : true,
+				softInputDismissMode : ['tap', 'drag']
+			});
+		};
+		
+		function fnSpecialBack(){
+			api.execScript({
+				frameName : api.winName + '_frame',
+	            script: 'fnBack();'
+            });
+		}
+	</script>
+</html>

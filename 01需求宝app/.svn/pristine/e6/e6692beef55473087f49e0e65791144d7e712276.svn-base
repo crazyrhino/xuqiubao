@@ -1,0 +1,164 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>私信</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/letter_list.css" />
+		<style>
+			.c_partner_list {
+				display: none;
+			}
+			.c_team_list {
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="recommendations">
+			<div class="open_group" tapmode="meui_click" onclick="fnSwitchGroup('c_recently_list','c_recently_arrow')">
+				<img class="open_down c_recently_arrow" src="../../image/private_letter/down_arrow.png">
+				最近联系的
+			</div>
+			<div class="c_recently_list">
+				<div class="recommendation_list">
+					<div class="list_header"><img src="../../image/test_img/person.jpeg">
+					</div>
+					<div class="list_cont">
+						<p class="cont_name">
+							Sophia索菲亚
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="open_group" tapmode="meui_click" onclick="fnSwitchGroup('c_partner_list','c_partner_arrow')">
+				<img class="open_down c_partner_arrow" src="../../image/private_letter/right_arrow.png">
+				合伙人
+			</div>
+			<div class="c_partner_list">
+				<div class="recommendation_list">
+					<div class="list_header">
+						<img src="../../image/test_img/person.jpeg">
+					</div>
+					<div class="list_cont">
+						<p class="cont_name">
+							Sophia索菲亚
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="open_group" tapmode="meui_click" onclick="fnSwitchGroup('c_team_list','c_team_arrow')">
+				<img class="open_down c_team_arrow" src="../../image/private_letter/right_arrow.png">
+				团队
+			</div>
+			<div class="c_team_list">
+				<div class="recommendation_list">
+					<div class="list_header">
+						<img src="../../image/test_img/person.jpeg">
+					</div>
+					<div class="list_cont">
+						<p class="cont_name">
+							Sophia索菲亚
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="c_circle_list">
+				<div class="c_circle_item">
+					<div class="open_group" tapmode="meui_click" onclick="fnSwitchCircleGroup()">
+						<img class="open_down" src="../../image/private_letter/right_arrow.png">
+						西安圈子成员
+					</div>
+					<div class="c_partner_list">
+						<div class="recommendation_list">
+							<div class="list_header">
+								<img src="../../image/test_img/person.jpeg">
+							</div>
+							<div class="list_cont">
+								<p class="cont_name">
+									Sophia索菲亚
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			fnGetChildrenMemberList();
+			fnGetTeamMemberList();
+			fnGetMyManagerTopics();
+		};
+		function fnGetChildrenMemberList() {
+			$service.post('getChildrenMemberList.ajax', {
+			}, function(ret, err) {
+				if (ret.ok == 1) {
+				}
+			},false,false,true);
+		}
+		
+		function fnGetTeamMemberList() {
+			$service.post('getTeamMemberList.ajax', {
+			}, function(ret, err) {
+				if (ret.ok == 1) {
+				}
+			},false,false,true);
+		}
+
+		function fnSwitchGroup(name, btn) {
+			if ($api.dom('.' + name).style.display == 'none') {
+				fnSetDisplay('.' + name, true);
+				fnSetImgSrc('.' + btn, '../../image/private_letter/down_arrow.png');
+			} else {
+				fnSetDisplay('.' + name, false);
+				fnSetImgSrc('.' + btn, '../../image/private_letter/right_arrow.png');
+			}
+		}
+
+		function fnGetMyManagerTopics(isLoadMore, isRefresh) {
+			$service.post('user/getMyManagerTopics.ajax', {
+				userId : 0,
+				pageIndex : 1,
+				pageSize : 20
+			}, function(ret, err) {
+//				api.refreshHeaderLoadDone();
+//				if (ret) {
+//					if (ret.data.list && ret.data.list.length > 0) {
+//						vue.count = ret.data.count;
+//						if (isRefresh) {
+//							vue.list = [];
+//						}
+//						fnAppendTopicData(vue.list, ret.data.list);
+//					} else {
+//						if (isLoadMore) {
+//							fnToast("没有更多");
+//						} else if (isRefresh) {
+//							fnToast("获取数据失败");
+//						}
+//					}
+//				} else {
+//					fnToast(err.msg);
+//				}
+			});
+		}
+
+		function fnAppendTopicData(oldArr, data) {
+			for (var i = 0; i < data.length; i++) {
+				if (fnIsEmpty(data[i].topicImg)) {
+					data[i].topicImg = '../../image/home/tmp_default_header.png';
+				}
+				oldArr.push(data[i]);
+			}
+			return oldArr;
+		}
+	</script>
+</html>

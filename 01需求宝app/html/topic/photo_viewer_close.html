@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <style>
+    	body,html{
+    		background: rgba(0,0,0,0);
+    	}
+    	.close_btn{
+    		width: 48px;
+    		height: 48px;
+    		background: url(../../image/closeWin.png) no-repeat center;
+    		background-size: 24px;
+    	}
+    </style>
+</head>
+<body>
+	<div class="close_btn" tapmode onclick="api.closeWin();"></div>
+</body>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript">
+	apiready = function(){
+		//fnRefreshOpen();
+	};
+</script>
+</html>

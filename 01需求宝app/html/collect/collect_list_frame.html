@@ -1,0 +1,338 @@
+<!DOCTYPE HTML>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>征集主页</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/swiper.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/collect_list_frame.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+			[v-cloak]{
+				display: none;
+			}
+            html,body,#app,.no-data{
+                height: 100%;
+            }
+            .no-data{
+                background-color: #fff;
+                text-align: center;
+                height: 100%;
+                overflow: hidden;
+            }
+            .no-data img{
+                height:97px;
+                width: 124px;
+                margin:156px 0 12px 0;
+            }
+            .no-data p{
+                font-size: 14px;
+                color: #999;
+                margin-bottom:24px;
+            }
+            .no-data div{
+                height: 38px;
+                width: 126px;
+                margin:0 auto;
+                border-radius: 100px;
+                border:1px solid #FF6026;
+                color: #FF6026;
+                font: 16px/38px '';
+            }
+            .bacImg{
+            	background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+		</style>
+	</head>
+
+	<body>
+		<section id="app" v-cloak>
+            <div v-if="listData.length == 0" class="no-data">
+                <img src="../../image/empty/no_search_results.png" alt="">
+                <p>哎呀，没有内容哎~</p>
+            </div>
+			<section v-for="item,index in listData" @click="opencollectDetail(item.id)" class="list_wrap">
+				<div class="img_wrap">
+					<div class="status_wrap">
+						<div class="bacImg" :style="{'background-image':'url('+fnSizeImg(item.mainImg)+')'}"></div>
+						<!--<img :src="item.mainImg?(item.mainImg+'@343_192'):''" class="bacImg" />-->
+						<div class="status">
+							<img v-if="item.recruitStatus=='0'" src="../../image/collect/weikaishi.png" />
+							<img v-if="item.recruitStatus=='1'" src="../../image/collect/zjz@2x.png" />
+							<img v-if="item.recruitStatus=='2'" src="../../image/collect/end.png" />
+							<span v-if="item.recruitStatus == '1'||item.recruitStatus == '2'" class="statusText">
+								{{status(item.recruitStatus)}}
+							</span>
+							<span v-if="item.recruitStatus == '0'" class="statusText" style="margin-left: -10px;">
+								{{status(item.recruitStatus)}}
+							</span>
+						</div>
+					</div>
+				</div>
+				<div class="title">
+					<div class="wrap">
+						{{item.recruitName}}
+					</div>
+
+				</div>
+				<div class="flex_container bottom_bar">
+					<div class="flex_container left_bar">
+						<div class="time">
+
+							<span v-if="item.recruitStatus=='2'">
+								{{item.beginTime.substring(0,10)}}
+							</span>
+
+							<span v-if="item.recruitStatus=='0'">
+								{{item.beginTime.substring(0,10)}}&nbsp;&nbsp;距离开始还有
+								<span style="color: #FF6026;">
+								<!--还没开始，需要算出当前时间到开始那天还有多少天开始-->
+								{{datedifference('now',item.beginTime)}}
+								</span>
+								天
+							</span>
+
+							<span v-if="item.recruitStatus=='1'">
+								{{item.beginTime.substring(0,10)}}&nbsp;&nbsp;还有
+								<span style="color: #FF6026;">
+									{{datedifference(item.beginTime,item.endTime)}}
+								</span>
+								{{datedifference(item.beginTime,item.endTime, 'string') }}结束
+							</span>
+						</div>
+					</div>
+					<div v-if="item.recruitStatus=='1'||item.recruitStatus=='2'" class="right_bar flex_container">
+						<div class="headIdcon_wrap">
+							<img v-if="item.subStoryNum==0" src="../../image/edit_topic/circle.png" />
+							<img v-else src="../../image/edit_topic/circle_active.png" />
+						</div>
+						<div class="personNum">
+							<span v-bind:id="'count-'+item.id">{{item.subStoryNum}}</span>次参与
+						</div>
+					</div>
+				</div>
+				<div class="device_bar" style="height: 4px;background-color:#EEEEEE"></div>
+			</section>
+		</section>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/vue-tap.js"></script>
+	<script type="text/javascript">
+		var vm;
+		var isLoading = false;
+		function initVm() {
+			vm = new Vue({
+				el: '#app',
+				data: {
+					pageIndex: 1,
+					pageSize: 10,
+					listData: [],
+					noData:false
+				},
+				updated:function() {
+			        isLoading = false;
+			    },
+				methods: {
+					init: function() {
+						vm.loadData();
+					},
+					fnSizeImg : function(url){
+						// if(url && (url.indexOf('ehaier.com')!=-1 || url.indexOf('aliyuncs.com')!=-1) && url.indexOf('cdn41')==-1&& url.indexOf('sg-video-test')==-1){
+						// 	return url+'@300_200';
+						// }
+						return url;
+					},
+					loadData: function() {
+						$service.get('recruit/queryRecruitList.ajax', {
+							pageIndex: vm.pageIndex,
+							pageSize: vm.pageSize
+						}, function(ret, err) {
+							if(ret && ret.ok == 1) {
+								api.refreshHeaderLoadDone();
+								var data = ret.data;
+								if(data.length > 0) {
+									if(vm.pageIndex == 1) {
+										vm.listData = data;
+									} else {
+										vm.listData = vm.listData.concat(data)
+									}
+									vm.pageIndex+=1;
+								} else {
+									if(vm.pageIndex == 1) {
+										vm.noData = true;
+									} else {
+										fnToast('没有更多了', 'middle')
+									}
+								}
+							} else {
+								fnToast(err.msg, 'middle');
+								if(ret.errorCode == '-100') {
+									//TODO:跳转登录页面
+									setTimeout(function() {
+
+									})
+								}
+
+							}
+							//							alert(JSON.stringify(ret))
+							//							alert(JSON.stringify(err))
+						},false)
+					},
+					status: function(_statusNum) {
+						switch(_statusNum) {
+							case '0':
+								return '马上开始';
+								break;
+							case '1':
+								return '征集中';
+								break;
+							case '2':
+								return '已结束';
+								break;
+							default:
+								return false;
+						}
+					},
+					datedifference: function(start, end,str) { //sDate1和sDate2是2006-12-18格式
+						// var timestamp = Date.parse(new Date());
+						var myDate = new Date();
+						//sDate1 = myDate.toLocaleDateString();
+						var sDate1 = myDate.getFullYear()+'/'+(myDate.getMonth()+1)+'/'+myDate.getDate();
+						var sDate2 = end.substring(0,10);
+						sDate2 = sDate2.replace(/-/g, '/');
+						// if(sDate1 == 'now') {
+						// 	var myDate = new Date();
+						// 	sDate1 = myDate.toLocaleDateString();
+						// }
+						var dateSpan,
+							tempDate,
+							iDays,
+							iHours;
+						// sDate1 = Date.parse(sDate1);
+						// sDate2 = Date.parse(sDate2);
+						dateSpan = Date.parse(sDate1) - Date.parse(sDate2);
+						dateSpan = Math.abs(dateSpan);
+						iDays = Math.floor(dateSpan / (24 * 3600 * 1000));
+						if(str){
+							if(iDays>0){
+								return '天';
+							}else{
+								return '小时';
+							}
+						}
+						if(iDays>0){
+							return iDays;
+						}else{
+							iHours = 24 - myDate.getHours()
+							return iHours;
+						}
+					},
+					opencollectDetail: function(_id) {
+						fnOpenWin("collect_detail2", null, {
+							id: _id
+						})
+					}
+				}
+			})
+		}
+		//月份格式转换
+		function creatMonth(mon) {
+		  if(mon<10){
+		    month = '0'+mon;
+		  }else {
+		    month = mon;
+		  }
+		}
+		var keywords;
+        function fnReSearch(keyword) {
+            keywords = keyword;
+            vm.pageIndex = 1;
+            api.showProgress();
+            vm.listData = [];
+            fnSearch(keyword, false, true);
+        }
+		function fnHideKeyBoard() {
+            var keyBoardMgr = api.require("keyBoardMgr");
+            keyBoardMgr.hideKeyBoard(function(ret, err) {
+            });
+        }
+        function fnSearch(keyword) {
+			isLoading = true;
+            $service.get('recruit/queryRecruitList.ajax', {
+                keyword: keyword,
+                pageIndex: vm.pageIndex,
+                pageSize: vm.pageSize
+            }, function(ret, err) {
+                // console.log(JSON.stringify(ret.data));
+                if(ret && ret.ok == 1) {
+                    api.refreshHeaderLoadDone();
+                    var data = ret.data;
+                    if(data.length > 0) {
+                        if(vm.pageIndex == 1) {
+                            vm.listData = data;
+                        } else {
+                            vm.listData = vm.listData.concat(data)
+                        }
+                        vm.pageIndex+=1;
+                    } else {
+                        if(vm.pageIndex == 1) {
+                            vm.noData = true;
+                        } else {
+                            fnToast('没有更多了', 'middle')
+                        }
+                    }
+                } else {
+                    fnToast(err.msg, 'middle');
+                    if(ret.errorCode == '-100') {
+                        //TODO:跳转登录页面
+                        setTimeout(function() {
+
+                        })
+                    }
+
+                }
+            },false)
+        }
+		apiready = function() {
+			//fnRefreshOpen();
+			initVm();
+			vm.init();
+			fnSetRefresh(fnRefresh);
+			api.addEventListener({
+				name: 'scrolltobottom',
+				extra: {
+					threshold: 10 //设置距离底部多少距离时触发，默认值为0，数字类型
+				}
+			}, function(ret, err) {
+				if(isLoading)return;
+				fnSearch(keywords);
+			});
+			api.addEventListener({
+			    name: 'topicPublicSuccessFromCollectEvent'
+			}, function(ret, err){
+			    if( ret ){
+			        var collectId = ret.value.collectId;
+					if(document.getElementById("count-"+collectId)){
+						var _count = parseInt(document.getElementById("count-"+collectId).textContent);
+						document.getElementById("count-"+collectId).textContent = _count+1;
+					}
+			    }
+			});
+
+		}
+		function fnRefresh(){
+			vm.pageIndex = 1;
+            vm.listData = [];
+            fnSearch(keywords);
+        }
+	</script>
+
+</html>

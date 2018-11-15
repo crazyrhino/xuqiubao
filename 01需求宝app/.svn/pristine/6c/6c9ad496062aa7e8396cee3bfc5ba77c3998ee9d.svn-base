@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+<title>title</title>
+<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+<style type="text/css">
+	.folder {
+		position: relative;
+		padding-left: 54px;
+	}
+	.folder .thumb {
+		position: absolute;
+		left: 0;
+		top: 50%;
+		width: 54px;
+		height: 54px;
+		overflow: hidden;
+		-webkit-transform: translateY(-50%);
+		transform: translateY(-50%);
+		background-position: center center;
+		background-repeat: no-repeat;
+		background-size: cover;
+		background-image: url(../../image/img_thumb.png);
+	}
+	.folder .textBox {
+		position: relative;
+		border-bottom: 1px solid #eee;
+		height: 54px;
+		line-height: 54px;
+		padding: 5px 0 5px 15px;
+		font-size: 16px;
+		color: #333;
+	}
+	.folder .textBox .num {
+		color: #999;
+	}
+	.folder .textBox:before {
+		display: block;
+		content: '';
+		width: 8px;
+		height: 8px;
+		position: absolute;
+		top: 50%;
+		right: 15px;
+		background: transparent;
+		border: 1px solid #999;
+		border-top: none;
+		border-right: none;
+		z-index: 2;
+		-webkit-border-radius: 0;
+		border-radius: 0;
+		-webkit-transform: translateY(-50%) rotate(-135deg);
+		transform: translateY(-50%) rotate(-135deg);
+	}
+</style>
+</head>
+<body>
+<div class="folderList" id="data_html"></div>
+<script type="text/x-dot-template" id="data_tpl">
+{{ for(var i in it) { }}
+{{? it[i].imgCount != 0}}
+	 <div class="folder" tapmode onclick="openFolder('{{= it[i].groupName }}','{{= it[i].groupId }}');">
+	 	<div class="thumb" {{if( it[i].thumbPath ){ }}style="background-image: url({{= it[i].thumbPath }});" {{ } }}></div>
+	 	<div class="textBox">{{= it[i].groupName }}<span class="num">（{{= it[i].imgCount }}）</span></div>
+	 </div>
+{{?}}
+{{ } }}
+</script>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/doT.min.js"></script>
+<script type="text/javascript">
+apiready = function() {
+	//fnRefreshOpen();
+//  fnInitEventListener();
+//  fnScanGetPictures();
+	getPicture();
+};
+function getPicture(){
+	var UIAlbumBrowser = api.require('UIAlbumBrowser');
+	UIAlbumBrowser.scanGroups({
+	    type: 'image',
+	    thumbnail: {
+	        w: 300,
+	        h: 300
+	    }
+	}, function(ret) {
+	    if (ret) {
+	    	if(api.systemType == 'android') {
+		    	fnReBuildGroups(ret.list);
+	    	}else{
+	    		ret.list = fnReBuildGroupsIos(ret.list);
+	    	}
+			var tpl = document.getElementById("data_tpl").innerHTML;
+			var tempFn = doT.template(tpl);
+			document.getElementById("data_html").innerHTML = tempFn(ret.list);
+	    }
+	});
+}
+
+function fnReBuildGroups(data){
+	var thumbPath = '';
+	var groupName = '所有照片';
+	var groupId = -1;
+	var imgCount = 0;
+	for(var i = 0; i < data.length; i++){
+		if(!fnIsEmpty(data[i].thumbPath)) {
+			thumbPath = data[i].thumbPath;
+		}
+		imgCount += data[i].imgCount;
+	}
+	data.splice(0,1,{
+		thumbPath: thumbPath,
+        groupName: groupName,
+        groupId: groupId,
+        groupType:'image',
+        imgCount:imgCount   
+	});
+}
+
+function fnReBuildGroupsIos(data){
+	for(var i = 0; i < data.length; i++){
+		if(data[i].groupName == '相机胶卷' || data[i].groupName == '所有照片') {
+			var tmp = data[i];
+			data.splice(i,data[i]);
+			data.splice(0,1,tmp);
+			continue;
+		}
+        if (data[i].groupName == '视频') {
+            data.splice(i,1)
+        }
+	}
+	return data;
+}
+
+
+function openFolder(name,id){
+	var jsFun = 'getFolderPhoto("'+name+'","'+id+'")';
+	api.execScript({
+		name: 'select_picture',
+		script: jsFun
+	});
+}
+function fnInitEventListener() {
+    api.addEventListener({
+        name : 'NaviteCallAPICloudMethod'
+    }, function(rets, err) {
+        var ret = rets.value;
+        if (ret.type == 9) {
+            if (ret.success == 1) {
+                getPicture();
+            } else {
+                fnToast('没有相应权限', 'middle');
+            }
+        }
+    });
+}
+
+function fnScanGetPictures() {
+    if (api.systemType === 'android') {
+        api.sendEvent({
+            name: 'APICloudCallNaviteMethod',
+            extra: {
+                type: 9,          // 权限管理
+                canCallBack: 1,          // 返回1时，说明有权限，可进行下一步操作
+                command: ['android.permission.WRITE_EXTERNAL_STORAGE','android.permission.READ_EXTERNAL_STORAGE','android.permission.CAMERA']       // 需要哪些权限就在数组中传过来
+            }
+        });
+    }else {
+        getPicture();
+    }
+}
+</script>
+</html>

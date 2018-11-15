@@ -1,0 +1,72 @@
+body, html {
+  background: #fff;
+  font-size: 20px;
+  .box {
+    p, span {
+      color: #666;
+      font-size: 0.70rem;
+    }
+    .aui-clearfix {
+      &:nth-child(1) .order {
+        //background: #fff;
+      }
+    }
+    .order {
+      height: 1.30rem;
+      p {
+        line-height: 1.30rem;
+      }
+      padding-left: 0.5rem;
+      border-bottom: 1px solid #eee;
+      background: #eee;
+
+    }
+    .content {
+      height: 2.50rem;
+      background: #fff;
+      .content_li {
+        border-bottom: 1px solid #eee;
+        box-sizing: border-box;
+
+        span {
+          color: #000;
+          margin-left: 0.45rem;
+          line-height: 2.50rem;
+        }
+        img {
+          float: left;
+
+        }
+        .select {
+          width: 1.5rem;
+          height: 1.5rem;
+          float: left;
+          margin-left: 0.35rem;
+          margin-top: 0.8rem;
+          img {
+            width: 0.9rem;
+            height: 0.9rem;
+          }
+        }
+        .user_img {
+          width: 1.8rem;
+          height: 1.8rem;
+          margin-top: 0.35rem;
+        }
+
+      }
+
+    }
+
+    &:first-child ul {
+      &:first-child {
+        li .order {
+          background: #fff;
+        }
+      }
+
+    }
+
+  }
+
+}

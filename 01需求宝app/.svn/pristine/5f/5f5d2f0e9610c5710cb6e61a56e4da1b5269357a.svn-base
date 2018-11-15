@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<style>
+			body, html {
+				background: rgba(0, 0, 0, 0);
+			}
+			.edit_btn {
+				width: 48px;
+				height: 48px;
+				background: url(../../image/edit_topic_btn.png) no-repeat center;
+				background-size: 48px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="edit_btn" tapmode="meui_click" onclick="fnGetUserInfo()"></div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			fnAddNativeListener();
+			//fnRefreshOpen();
+		};
+		function fnAddNativeListener() {
+			api.addEventListener({
+				name : 'NaviteCallAPICloudMethod'
+			}, function(rets, err) {
+				var ret = rets.value;
+				if (ret.type == 1) {
+					if (ret.success == 1) {
+						fnOnTokenCallBack(ret);
+					} else {
+						fnToast('登录失败', 'middle');
+					}
+				} else if (ret.type == 2) {
+					fnOnTokenCallBack(ret);
+				}
+			});
+		}
+
+		function fnOnTokenCallBack(ret) {
+			if (ret.success == 1 && !ret.subType ) {
+				var token = ret.token;
+				api.writeFile({
+					path : api.boxDir + '/token.txt',
+					data : token
+				}, function(ret, err) {
+				});
+			}
+		}
+
+		function fnGetUserInfo() {
+			api.readFile({
+				path : api.boxDir + '/userid.txt',
+			}, function(ret, err) {
+				if (ret && !fnIsEmpty(ret.data)) {
+					var _userid = ret.data;
+					$service.get('user/isBlackAndFocus.ajax', {
+						memberId : _userid,
+						topicId : api.pageParam.topicId || ''
+					}, function(ret, err) {
+						if (ret.ok == 0) {
+							fnToast('该用户是黑名单用户', 'middle');
+						} else {
+							api.readFile({
+								path : api.boxDir + '/userType.txt',
+							}, function(ret, err) {
+								if (ret.data == 1) {
+									api.openFrame({
+										name : 'upgrade',
+										url : '../popup/upgrade.html',
+										rect : {
+											x : 0,
+											y : 0,
+											w : 'auto',
+											h : 'auto'
+										},
+										bgColor : 'rgba(0,0,0,0)'
+									});
+								} else {
+									fnOpenSelectType();
+								}
+							})
+						}
+					})
+				} else {
+					fnOpenLogin();
+				}
+			});
+		}
+
+		function fnOpenLogin() {
+            api.sendEvent({
+                name: 'change_frame_event'
+            });
+			api.sendEvent({
+				name : 'APICloudCallNaviteMethod',
+				extra : {
+					type : 1,
+					canCallBack : 1,
+					toPageName : 'Login'
+				}
+			});
+		}
+
+		function fnOpenSelectType() {
+			if (api.winName.indexOf('community_detial') != -1) {
+				fnLogStr($api.getStorage('isJoin'));
+				var isJoin = (api.readFile({
+						sync : true,
+						path : api.boxDir + '/isJoin.txt'
+					}));
+				if (isJoin != 1) {
+					api.execScript({
+						name : api.winName,
+						frameName : 'community_detial_frame',
+						script : 'fnOpenDialog();'
+					});
+                    api.setFrameAttr({
+                        name: 'edit_btn_frame',
+                        hidden: true
+                    });
+					return;
+				}
+				api.openFrame({
+					name : 'select_topic_type',
+					url : 'select_topic_type.html'+'?' + new Date().getTime(),
+					pageParam : {
+						winName : api.winName,
+						frameName : 'community_detial_frame',
+						topicId : api.pageParam.topicId,
+						topicName : api.pageParam.topicName
+					}
+				});
+				fnHideScrollTopBtnFrame();
+			} else {
+				api.openFrame({
+					name : 'select_topic_type',
+					url : 'select_topic_type.html',
+					pageParam : {
+						winName : api.winName,
+						topicId : api.pageParam.topicId,
+						topicName : api.pageParam.topicName
+					}
+				});
+				fnHideScrollTopBtnFrame();
+			}
+			api.setFrameAttr({
+				name : api.frameName,
+				hidden : true
+			});
+		}
+		
+		function fnHideScrollTopBtnFrame(){
+			if(api.winName == 'community_detial'){
+				api.execScript({
+					name : api.winName,
+					frameName : 'community_detial_frame',
+		            script: 'fnHideScrollTopBtnFrame();'
+	            });
+			}else{
+				api.execScript({
+					name : 'root',
+		            script: 'fnHideScrollTopBtnFrame();'
+	            });
+			}
+		}
+	</script>
+</html>

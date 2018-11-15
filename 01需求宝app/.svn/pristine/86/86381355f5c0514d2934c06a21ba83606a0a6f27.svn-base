@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>话题</title>
+        <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+        <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/hitList.css" />
+		<style>
+			html,body,#wrap{
+				height: 100%
+			}
+			.hit-list .bill .circle {
+				width: 3px;
+				height: 3px;
+				border-radius: 3px;
+			}
+			.no-data{
+				text-align: center;
+				height: 100%;
+				overflow: hidden;
+			}
+			.no-data img{
+				height:97px;
+				width: 124px;
+				margin:64px 0 12px 0;
+			}
+			.no-data p{
+				font-size: 14px;
+				color: #999;
+				margin-bottom:24px;
+			}
+			.no-data div{
+				height: 38px;
+				width: 126px;
+				margin:0 auto;
+				border-radius: 100px;
+				border:1px solid #FF6026;
+				color: #FF6026;
+				font: 16px/38px '';
+			}
+			
+			.break {
+				word-wrap: break-word;
+				word-break: break-all;
+			}
+			.hit-list .bill .topic-theme-content{
+				height: auto;
+				max-height: 168px;
+				padding-bottom: 14px;
+			}
+		</style>
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+		</style>
+	</head>
+	<body>
+		<div id="wrap" class="hit-list my_receive_reward_frame">
+			<div v-show="list.length == 0" class="no-data">
+				<img src="../../image/mine/noht@2x.png" alt="">
+				<p>快去分享话题吧</p>
+				<div tapmode onclick="fnOpenMain()">写话题</div>
+			</div>
+			<div class="half-height" v-if="list.length != 0">
+				<div class="cark">
+					<div class="money">
+						<div class="subtitle">
+							<img src="../../image/community/zypl9@2x.png" alt="">累计收赏
+						</div>
+						<div class="subcon hit-list-flex hit-list-flex-h">
+							<div class="item hit-list-flex-flex1 afterLine">
+								<span class="tipedCount">{{tipedCount}}</span><span class="unit">次</span>
+							</div>
+							<div class="item hit-list-flex-flex1">
+								<span class="tipedAmount">{{tipedAmount}}</span><span class="unit">金币</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="bill topic-theme">
+				<div v-for="item in list" class="type-active type-topic topic-theme-content" @click="openDetails(item.dataTypeNew,item.id)">
+					<!-- 话题排行榜 -->
+					<div class="datecon hit-list-flex hit-list-flex-h hit-list-flex-center">
+						<div class="details hit-list-flex-flex1">
+							<div class="details-title hit-list-flex line2">
+								<span v-if="item.isChoice && item.isChoice != 0" class="fine-label"></span>{{item.storyName}}
+							</div>
+							<div class="details-brief hit-list-flex line2 meui_flex_con_no_w break">
+								{{item.storyContentNostyle}}
+							</div>
+						</div>
+						<img v-if="item.storyImgs" class="rightImg" v-bind:src="item.storyImgs.split(',')[0]" alt="" onerror="fnImgError(this)">
+					</div>
+					<div class="subfooter hit-list-flex hit-list-flex-h  hit-list-flex-center">
+						<div class="glods" v-if="item.amount">
+							金币+{{item.amount}}
+						</div>
+						<div class="viewNum hit-list-flex-flex1">
+							<span><img src="../../image/community/gk@3x.png" alt="">{{item.browserNumber}}</span>
+							<span class="margin"><img src="../../image/community/Message@3x.png" alt="">{{item.commentNumber}}</span>
+							<span><img src="../../image/community/zan@3x.png" alt="">{{item.praiseNumber}}</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript">
+		var pageIndex = 1;
+		apiready = function() {
+			//fnRefreshOpen();
+			fnGetUserCount();
+            fnGetStroyTipList();
+            fnSetRefresh(function() {
+                pageIndex = 1;
+                fnGetUserCount();
+                fnGetStroyTipList(false, true);
+            });
+            addBottomListener(function() {
+                pageIndex++;
+                fnGetStroyTipList(true, false);
+            });
+		};
+		var myVue = new Vue({
+			el : '#wrap',
+			data : {
+				reCommonList : [{
+					id : 8,
+					name : '推荐',
+					selected : false,
+				}, {
+					id : 11,
+					name : '机制',
+					selected : false,
+				}],
+				list : [],
+                tipedCount:0,
+                tipedAmount:0
+			},
+			methods : {
+                openDetails : function(_dataTypeNew, _id) {
+                    fnOpenWin('topic_details', '../topic/', {
+                        type : _dataTypeNew,
+                        id : _id
+                    });
+                }
+			}
+		});
+        function fnOpenMain() {
+            api.closeToWin({
+                name: 'root',
+                animation: {
+                    type: 'push',
+                    subType: 'from_left',
+                    duration: 300
+                }
+            });
+        }
+		function fnGetUserCount() {
+			$service.get('user/getUserCount.ajax', {
+			}, function(ret, err) {
+				if (ret.ok == 1) {
+				    myVue.tipedCount = ret.data.tipedCount;
+				    myVue.tipedAmount = ret.data.tipedAmount;
+				} else {
+					fnToast('获取数据失败');
+				}
+			});
+		}
+		function fnGetStroyTipList(isLoadMore, isRefresh) {
+            $service.get('story/getStroyTipForUserCodeList.ajax', {
+                pageIndex: pageIndex,
+                pageSize : 20
+            }, function(ret, err) {
+                api.refreshHeaderLoadDone();
+                if(ret.ok == 1){
+                    if (ret.data.list && ret.data.list.length > 0) {
+                        if (isRefresh) {
+                            myVue.list = [];
+                        }
+                        fnAppendData(myVue.list, ret.data.list);
+                    } else {
+                        if (isLoadMore) {
+                            fnToast("没有更多");
+                        }
+                    }
+				}
+            },isRefresh)
+		}
+
+	</script>
+</html>

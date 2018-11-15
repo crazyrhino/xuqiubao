@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>填写中奖地址</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/address.css" />
+	</head>
+
+	<body>
+		<header id="header" class="rank_header">
+			<div class="rank_content">
+				<img class="rank_back" src="../../image/rank/rank_back.png" tapmode onclick="api.closeWin()">
+				<span id="title">征集详情</span>
+				<span tapmode onclick="save()" class="right">保存</span>
+			</div>
+		</header>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+			api.parseTapmode();
+			var header = $api.byId('header');
+			fnSysHeaderStyle()
+			fnOpenremPaFrame();
+		};
+
+		function fnOpenremPaFrame() {
+			api.openFrame({
+				name: 'address_frame',
+				url: 'address_frame.html?v=' + new Date().getTime(),
+				rect: {
+					x: 0,
+					y: $api.dom('header').offsetHeight + 1,
+					w: 'auto',
+					h: 'auto'
+				},
+				pageParam: api.pageParam,
+				bounces: false,
+				bgColor: 'rgba(0,0,0,0)',
+				vScrollBarEnabled: true,
+				hScrollBarEnabled: true
+			});
+
+		}
+		function save() {
+			api.execScript({
+				frameName: 'address_frame',
+				script: 'check()'
+			});
+		}
+	</script>
+
+</html>

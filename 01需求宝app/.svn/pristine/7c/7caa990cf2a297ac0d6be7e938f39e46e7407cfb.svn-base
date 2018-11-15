@@ -1,0 +1,252 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>征集详情</title>
+		<!-- <link rel="stylesheet" type="text/css" href="../../css/api.css" /> -->
+		<!-- <link rel="stylesheet" type="text/css" href="../../css/flex-layout.css" /> -->
+		<!-- <link rel="stylesheet" type="text/css" href="../../css/collect_detail_frame2.css" /> -->
+		<style>
+            * {
+                padding: 0;
+                margin: 0;
+            }
+			body {
+			    background: transparent !important;
+			}
+            .edit {
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+            }
+            .edit img {
+                display: block !important;
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+            }
+		</style>
+	</head>
+	<body>
+        <div class="edit" tapmode onclick="check()">
+            <img src="../../image/edit_topic_btn.png" />
+        </div>
+		<script type="text/javascript" src="../../script/api.js"></script>
+		<script type="text/javascript" src="../../script/jquery.js"></script>
+		<script type="text/javascript" src="../../script/mapi.js"></script>
+		<script type="text/javascript" src="../../script/doT.min.js"></script>
+		<script type="text/javascript" src="../../script/minigrid.min.js"></script>
+		<script type="text/javascript" src="../../script/service.js"></script>
+		<script type="text/javascript">
+            var recruitId,topicId,topicName,recruitType;
+			var getStatus;
+			var __OK__,__VALUE__,__CONTENT__;
+            apiready = function(){
+                recruitId = api.pageParam.recruitId;
+                topicId = api.pageParam.topicId;
+                topicName = api.pageParam.topicName;
+                recruitType = api.pageParam.recruitType;
+                api.addEventListener({
+                	name:'can',
+                },function(ret,err){
+                	if(ret){
+                		fnPartake()
+                	}
+                });
+                api.addEventListener({
+                    name: 'viewappear'
+                }, function (ret, err) {
+                    api.addEventListener({
+                        name:'can',
+                    },function(ret,err){
+                        if(ret){
+                            fnPartake()
+                        }
+                    });
+                });
+                api.addEventListener({
+                    name: 'viewdisappear'
+                }, function (ret, err) {
+                    api.removeEventListener({
+                        name: 'can'
+                    });
+                });
+            }
+            function check(){
+            	api.sendEvent({
+            		name:'needCheck',
+            		extra:{}
+            	})
+            }
+            function fnPartake() {
+				if(getStatus == 1){
+					if (__OK__ == 0) {
+						fnToast(__CONTENT__,'middle')
+					}else {
+						api.getPrefs({
+							key: 'userType'
+						}, function (ret, err) {
+							if (__VALUE__ == 1) {
+								api.openFrame({
+									name: 'upgrade',
+									url: '../popup/upgrade.html',
+									rect: {
+										x: 0,
+										y: 0,
+										w: 'auto',
+										h: 'auto'
+									},
+									bgColor: 'rgba(0,0,0,0)'
+								});
+							} else {
+//								api.setFrameAttr({
+//									hidden: true
+//								});
+								if(recruitType == 1) {
+									fnOpenEditTopic();
+								} else if(recruitType == 2) {
+									fnOpenRecord();
+								} else if(recruitType == 3) {
+									fnOpenSelectType();
+								}
+							}
+						})
+					}
+					return;
+				}
+
+				api.readFile({
+				    path: api.boxDir + '/userid.txt',
+				}, function(ret, err){
+				    if( ret ){
+				        var _userid  = ret.data;
+						if(!_userid){
+							fnToast('请先登录!');
+							return;
+						}
+						api.getPrefs({
+							key: 'isBlackAndFocus'
+						}, function (ret, err) {
+
+							if (ret.value == -200) {
+								fnToast('您已经被禁言，不能进行该操作!')
+							} else {
+								$service.get('user/isBlackAndFocus.ajax', {
+									memberId:_userid,
+									topicId:api.pageParam.topicId || ''
+								}, function(ret, err) {
+									getStatus = 1;
+									__OK__ = ret.ok;
+									__VALUE__ = ret.value;
+
+									if (ret.ok == 0) {
+										__CONTENT__ = ret.data.content;
+										fnToast(ret.data.content,'middle')
+									}else {
+										api.getPrefs({
+											key: 'userType'
+										}, function (ret, err) {
+											if (ret.value == 1) {
+												api.openFrame({
+													name: 'upgrade',
+													url: '../popup/upgrade.html',
+													rect: {
+														x: 0,
+														y: 0,
+														w: 'auto',
+														h: 'auto'
+													},
+													bgColor: 'rgba(0,0,0,0)'
+												});
+											} else {
+//                                              api.setFrameAttr({
+//                              					hidden: true
+//                              				});
+												if(recruitType == 1) {
+													fnOpenEditTopic();
+												} else if(recruitType == 2) {
+													fnOpenRecord();
+												} else if(recruitType == 3) {
+													fnOpenSelectType();
+												}
+											}
+										})
+									}
+								})
+							}
+						})
+				    }else{
+						fnToast('请先登录!');
+						return;
+					}
+				})
+
+
+			}
+            function fnOpenEditTopic() {
+				fnOpenWin("edit_topic", '../topic/', {
+					winName: api.winName,
+					frameName: api.frameName,
+					recruitId: recruitId,
+					topicId: topicId,
+					topicName: topicName,
+					source:'collect',
+					collectId:recruitId
+				});
+                api.writeFile({
+                    path : api.boxDir + '/publish_back_winname.txt',
+                    data : api.winName
+                }, function(ret, err) {
+
+                });
+				// $api.setStorage('publish_back_winname', api.winName);
+			}
+			function fnOpenRecord() {
+				fnOpenWin("video_record", '../topic/', {
+					winName: api.winName,
+					frameName: api.frameName,
+                    recruitId: recruitId,
+					topicId: topicId,
+					topicName: topicName,
+					source:'collect',
+					collectId:recruitId
+				});
+                api.writeFile({
+                    path : api.boxDir + '/publish_back_winname.txt',
+                    data : api.winName
+                }, function(ret, err) {
+
+                });
+				// $api.setStorage('publish_back_winname', api.winName);
+			}
+            function fnOpenSelectType() {
+				api.openFrame({
+					name: 'select_topic_type',
+					url: '../topic/select_topic_type.html',
+					pageParam: {
+						winName: api.winName,
+						frameName: api.frameName,
+                        recruitId: recruitId,
+    					topicId: topicId,
+    					topicName: topicName,
+						source:'collect',
+						collectId:recruitId
+					}
+				});
+			}
+            function fnShowEditBtn() {
+				api.setFrameAttr({
+					hidden: false
+				});
+				api.closeFrame({
+					name: 'select_topic_type'
+				});
+				api.closeToWin({
+					name: api.winName
+				});
+			}
+		</script>
+	</body>
+</html>

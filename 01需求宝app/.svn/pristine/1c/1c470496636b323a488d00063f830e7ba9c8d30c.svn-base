@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta content="telephone=no,email=no" name="format-detection">
+    <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>需求宝</title>
+    <link rel="stylesheet" href="css/skin.css">
+    <style>
+    	.box{ background-color:#f5f5f5;}    	
+    	    .ask { clear: both; padding:0.8rem;background-color:#fff; margin-bottom: 1rem;}		
+			.ask h3{ font-size: 1.2rem; font-weight: bold;  padding: 5px 0;word-wrap:break-word}
+		    .ask div{ color: #555; font-size:1rem; line-height: 1.4rem;   }	
+		    .ask em{ color: #666; padding-right: 10px;}	  
+		    .ask img{ float: left; width:32%; height:7rem; margin-right:0.2rem;object-fit:cover;background-position:cover;}
+		    .ask p{font-size: 1rem; line-height: 1.4rem;}
+		    .ask .unfold  {color: #4B78B2; position:absolute; line-height: 1.4rem;  background: #fff; right:0px; bottom:0rem; }
+		    
+            .unfold span{width: 5rem;height: 100%;position: absolute;left:-5rem; bottom:0rem;
+		    background: -webkit-gradient(linear,left top,right top,from(rgba(255,255,255,0)),to(#fff));
+		    background: linear-gradient(to right,rgba(255,255,255,0),#fff);}
+		    
+		.askinfo {overflow:hidden; margin-bottom: 0.3rem; position: relative; }
+		.clear{clear:both;}		
+		 .boxNav { background-color:#fff; }  		   
+		 .footers span:nth-child(2), .footers span:nth-child(3){ font-size: 0.6rem;}     
+		  .footers #dianz img {width: 1.5rem; height: 1.5rem;margin-bottom: .2rem; margin-top:.2rem;}     
+		  .footers #yaoqing img {width: 1.5rem; height: 1.5rem; margin-bottom: .2rem; margin-top:.2rem;}     
+      .smallBox img{ vertical-align: middle;}
+      .deletes{background: rgba(202, 201, 201, 0.7);position: fixed;top: 0;width: 100%;height: 100%;}
+      .deletes div{
+        width: 20rem;
+        height: 10rem;
+        background: #fff;
+        position: absolute;
+        top:50%;
+        left:50%;
+        margin-left:-10rem;
+        margin-top: -5rem;
+        border-radius: 1rem;
+      }
+      .deletes div span{
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+        height: 50%;
+        line-height: 5rem;
+      }
+      .deletes div span:nth-child(1){
+        font-size: 1.2rem;
+      }
+      .deletes div span:nth-child(2){
+        font-size: 1.2rem;
+        width: 17rem;
+        height: 2.8rem;
+        line-height: 2.8rem;
+        margin: auto;
+        background: #236fe0;
+        color: #fff;
+        border-radius: 1.5rem;
+        margin-left: 1.5rem;
+      }
+    </style>
+</head>
+<body>
+    <div class="box" id="boxs" v-cloak>     	
+    	 <div class="ask">
+			      <h3 v-html="dataTittle.title"></h3>
+				  <div class="askinfo" id="info">
+				 	 <p style="word-wrap:break-word"  v-html="dataTittle.content"></p>
+				  <div class="unfold" style="display: block;"  v-show="isShow" @click="show_info()"><span></span>【全文】</div>
+			     </div> 
+			  	   <img   v-for="(item,index) in dataTittle.imgArray" 
+                  	@click="fnPreviewPictureTop(dataTittle.imgArray,index)" :key="index" v-if="item.img != ''" :src="item+'@200_200'" alt="">
+		 	 	 <div class="clear"></div>
+			 	 <p>
+	              <em v-cloak>有{{dataTittle.answersCount}}个回答</em>
+	              <em v-cloak>{{dataTittle.praiseNumber}}个点赞</em>
+	            </p>
+		 </div>	
+        <nav class="boxNav" style="margin-bottom:3.6rem;">
+          <ul class="boxNavUl" v-if="dataContent">
+            <li class="boxNavli" v-for="(item,index) in dataContent" :key="index">
+              <div class="ulTittle">
+                <span @click="openPersonal(item.userCode)">
+                  <div style="position: relative;">
+                      <img style="border-radius:50%" class="imgTittle" :src="typeof(item.userImg) !== 'undefined' ? item.userImg : './images/tmp_default_header.png'" alt="">
+                      <!-- 大v标记    -->
+                      <img style="width: .9rem;height: .9rem;position: absolute;top:1.2rem;left:2.5rem;" v-if="item.talentFlag==1" src="./images/red_vip.png" alt="">
+                      <img style="width: .9rem;height: .9rem;position: absolute;top:1.2rem;left:2.5rem;" v-else-if="item.talentFlag==2" src="./images/yellow_vip.png" alt="">
+                      <img style="width: .9rem;height: .9rem;position: absolute;top:1.2rem;left:2.5rem;" v-else-if="item.talentFlag==3" src="./images/purple_vip.png" alt="">
+                  </div>
+                  <p style="word-wrap:break-word" >
+                    <span style="word-break: break-all;width: 17rem;" class="imgLabel" v-cloak>{{item.userName | ellipsis}}<img v-if="Selected" src="./images/jingxuan_@2x.png" alt=""></span>
+                    <span class="tittleTime" v-cloak v-text="formatDateTime(item.dynamicTimePostTime)"></span>
+                  </p>
+                </span>
+                <!-- <span @click.stop="shares('0',item)" class="imgMore"><img  src="./images/more_@2x.png" alt=""></span> -->
+                <span></span>
+              </div>
+              <div class="ulBody">
+                  <p @click="openAnswer(item.id,item.issueId,item.userName,item.userCode,item.isAnswersPraise)" v-html="item.answersCommentNoStyle"></p>
+                  <div class="imgBoxs">
+                    <!-- <img v-if="item.mainImgs" :src="item.mainImgs" alt=""> -->
+                    <!-- <img v-for="(item,index) in item.imgArray" :key="index" :src="item" alt=""> -->
+                        <img  v-for="(items,index) in item.imgArray" @click="fnPreviewPictureContent(item.imgArray,index)" :key="index" :src="items" v-if="index<3" alt="">
+                  </div>
+              </div>
+              <div class="ulBottom">
+                <span class="smallBox">
+                <!-- <span @click="openAnswer(item.id,item.issueId,item.userName,item.userCode)" class="smallBox"> -->
+                  <!-- <img src="./images/icon_browse@2x.png" alt="">
+                  <span>300</span> -->
+                </span>
+                <span class="amllBosx">
+                  <span @click="openAnswer(item.id,item.issueId,item.userName,item.userCode,item.isAnswersPraise)" class="smallBox">
+                    <img src="./images/icon_comment@2x.png" alt="">
+                    <span style="color:#b6b6b6;padding-top: 0.1rem" v-cloak>{{item.commentNumber}}</span>
+                  </span>
+                  <span class="smallBox" @click="clickAdds(item)">
+                    <img :src="item.isAnswersPraise == 0 ? img3 : img2" alt="">
+                    <span style="color:#b6b6b6;padding-top: 0.1rem" v-cloak>{{item.praiseNumber}}</span>
+                  </span>
+                </span>
+              </div>
+              <!-- <div class="comments" v-if="item.secondLevelList">
+                <div class="commentsBox" @click="openAnswer(item.id,item.issueId,item.userName,item.userCode,item.isAnswersPraise)">
+                  <ul>
+                    <li v-for="(items,index) in item.secondLevelList">
+                      <p v-cloak><span v-cloak>{{items.userName}}：</span>{{items.answersComment}}</p>
+                    </li>
+                  </ul>
+                  <span v-if="item.secondLevelList.length == 3" class="com_look">查看全部评论</span>
+                </div>
+              </div> -->
+            </li>
+          </ul>
+        </nav>
+        <div class="goTop" style="width:3rem;height:3rem;position: fixed;right:1.5rem;bottom:7.5rem;display:none" @click="topScroll">
+          <img src="./images/scroll_top.png" alt="">
+        </div>
+        <footer class="footers">
+          <div @click="openHui">
+            <span class="footersBackImg">
+              <p>我要回答</p>
+            </span>
+          </div>
+          <span id="dianz" @click="zanimg()">
+            <span v-if="showImgs"><img src="./images/zan@2x.png" alt=""></span>
+            <span v-else><img src="./images/zang_02.png" alt=""></span>点赞</span>
+          <span @click.stop="shares('1')">
+            <span id="yaoqing"><img src="./images/yaoqing_@2x.png" alt=""></span>邀请回答</span>
+        </footer>
+        <div v-cloak v-show="deletesList" style="display:none;" class="deletes">
+          <div>
+            <span>该需求已被删除</span>
+            <span @click="detailsBack">返回</span>
+          </div>
+        </div>
+    </div>
+</body>
+<script src="./js/jquery-1.11.1.min.js"></script>
+<script src="./js/js.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript" src="../../script/common.js?v=0"></script>
+<script type="text/javascript" src="../../script/signature.js"></script>
+<script type="text/javascript" src="../../script/service.js"></script> 
+<script>   
+  $(window).scroll(function(){
+      if($(window).scrollTop()>1200){
+          document.querySelector(".goTop").style.display="block";
+      }else{
+          document.querySelector(".goTop").style.display="none";
+      }
+  }) 
+  apiready = function() {  
+    // $app.showProgress();
+    $app.fixStatusBar('#title');
+    $event.isShowHomeTab(false);
+    boxs.requireObject(api.pageParam.listId)
+    boxs.getContent(api.pageParam.listId)
+    fnInitListener(api.pageParam.listId);
+    $app.fnSetRefresh(function () {
+        boxs.requireObject(api.pageParam.listId)
+        boxs.getContent(api.pageParam.listId)
+        api.refreshHeaderLoadDone();
+    })      	
+    api.addEventListener({
+        name: 'openFx'
+    }, function(ret, err) {
+      boxs.listS = ret.value.opensDeta
+    });
+
+  }
+  // 点击分享
+  function fnShareNative(platformType) {
+      // 0 回答详情  1 邀请和需求
+      if(boxs.listS == 0){
+          var shareTopicInfo={
+            summary:boxs.listItem.answersComment,//内容
+            title:boxs.listItem.title,//需求名称
+            userName:boxs.listItem.userName,//
+            mainImg:boxs.listItem.issueAnswersImgs,
+            userCode:boxs.listItem.userCode,
+            id:boxs.listItem.id,
+            issueId:boxs.listItem.issueId
+          }
+      }else{
+        var shareTopicInfo={
+          summary:boxs.dataTittle.contentNostyle,//内容
+          title:boxs.dataTittle.title,//需求名称
+          userName:boxs.dataTittle.userName,//
+          mainImg:boxs.dataTittle.mainImgs,
+          userCode:boxs.dataTittle.userCode,
+          dataTypeNew:boxs.dataTittle.contentNostyle,
+          id:boxs.dataTittle.id
+        }
+      }
+      var storyContent = boxs.fnReplaceComment(shareTopicInfo.summary);
+      if(boxs.listS == 0){
+        var url = SHARE_HOST + '/content.html?ids=' + boxs.listItem.id + 'codes' + boxs.listItem.userCode;
+      }else{
+        var url = SHARE_HOST + '/details.html?listId=' + boxs.dataTittle.id;
+      }
+      var title = shareTopicInfo.title ? shareTopicInfo.title + '-顺逛微社区' : shareTopicInfo.userName + '的话题-顺逛微社区'; //分享标题
+      var content = storyContent ? storyContent.substr(0, 30) : '马上进入，参与话题讨论吧...';
+      var pic = shareTopicInfo.mainImg && shareTopicInfo.mainImg.indexOf('../') == '-1' ? shareTopicInfo.mainImg : 'http://www.ehaier.com/mstatic/wd/v2/img/sg.png';//分享图片，写绝对路径  是否后台获取
+      if ($app.isEmpty(pic)) {
+          pic = 'http://www.ehaier.com/mstatic/wd/v2/img/sg.png';
+      }
+      $app.showProgress();
+      $event.callRNEvent(3,1,{
+          command : [title, content, pic, url, 0, platformType]
+      });
+  }
+  // 分享参数
+  function fnGetShareUrl() {
+    // var shareTopicInfo={
+    //         summary:'123',
+    //         title:'分享页面用',
+    //         userName:'h5页面',
+    //         mainImg:'./images/fbht@2x.png',
+    //         userCode:'1',
+    //         dataTypeNew:'2',
+    //         id:'3'
+    //     }
+    //   var memberId = api.readFile({
+    //       sync: true,
+    //       path: api.boxDir + '/userid.txt'
+    //   });
+    //   if ($app.isEmpty(memberId)) {
+    //       memberId = shareTopicInfo.userCode;
+    //   }
+      if(boxs.listS == 0){
+        var params = {
+            id:boxs.listItem.id,
+            issueId:boxs.listItem.issueId,
+            userName:boxs.listItem.userName,
+            userCode:boxs.listItem.userCode,
+            isAnswersPraise:boxs.listItem.isAnswersPraise
+        };
+      }else{
+        var params = {
+            listId: boxs.dataTittle.id,
+        };
+      }
+      // return new Base64().encode(JSON.stringify(params));
+      return JSON.stringify(params);
+  }
+  function funcGoto(a){
+    boxs.requireObject(api.pageParam.listId)
+    boxs.getContent(api.pageParam.listId)
+    if(a == '1'){
+      boxs.fntoList()
+    }else{
+      return
+    }
+  }
+ 
+  // 复制函数
+  function fnCopy() {
+    if(boxs.listS == 0){
+      var clipBoard = api.require('clipBoard');
+      clipBoard.set({
+          value: SHARE_HOST + '/content.html?ids=' + boxs.listItem.id + 'codes' + boxs.listItem.userCode
+      }, function (ret, err) {
+          if (ret && ret.status) {
+              api.toast({
+                  msg: '复制成功',
+                  duration: 2000,
+                  location: 'middle'
+              });
+              $event.isShowHomeTab(false);
+              api.closeFrame({
+                  name: 'list_share_frame'
+              });
+              api.closeFrame({
+                  name: 'topic_share_frame'
+              });
+              api.closeFrame({
+                  name: 'collect_share_frame'
+              });
+          } else {
+            api.toast({
+                msg: '复制失败',
+                duration: 2000,
+                location: 'middle'
+            });
+            $event.isShowHomeTab(false);
+              api.closeFrame({
+                  name: 'list_share_frame'
+              });
+          }
+      });
+    }else{
+      var clipBoard = api.require('clipBoard');
+      clipBoard.set({
+          value: SHARE_HOST + '/details.html?listId=' + boxs.dataTittle.id
+      }, function (ret, err) {
+          if (ret && ret.status) {
+              api.toast({
+                  msg: '复制成功',
+                  duration: 2000,
+                  location: 'middle'
+              });
+              $event.isShowHomeTab(false);
+              api.closeFrame({
+                  name: 'list_share_frame'
+              });
+              api.closeFrame({
+                  name: 'topic_share_frame'
+              });
+              api.closeFrame({
+                  name: 'collect_share_frame'
+              });
+          } else {
+            api.toast({
+                msg: '复制失败',
+                duration: 2000,
+                location: 'middle'
+            });
+            $event.isShowHomeTab(false);
+            api.closeFrame({
+                name: 'list_share_frame'
+            });
+          }
+      });
+    }
+  }
+  // 复制参数
+  function fnGetShareUrlCollect() {
+    if(boxs.listS == 0){
+      var params = {
+          id:boxs.listItem.id,
+          issueId:boxs.listItem.issueId,
+          userName:boxs.listItem.userName,
+          userCode:boxs.listItem.userCode,
+          isAnswersPraise:boxs.listItem.isAnswersPraise
+      };
+    }else{
+      var params = {
+          listId: boxs.dataTittle.id,
+      };
+    }
+      // return new Base64().encode(JSON.stringify(params));
+      return JSON.stringify(params)
+  }
+  function fnInitListener(needId) {
+    $event.isShowHomeTab(false);
+        $event.scrollBottomListener(function () {
+            $app.showProgress();
+            boxs.fnGetStoryIndexByCondition(needId);
+        });
+        $event.addEventListener('NaviteCallAPICloudMethod', function (ret) {
+            $app.hideProgress();
+            var ret = ret.value;
+            if (ret.type == 3 && ret.tag == api.frameName) {
+                $app.hideProgress();
+                if (ret.success == 1) {
+                    isShare = true;
+                    $app.toast('分享成功');
+                    $event.isShowHomeTab(false);
+                    api.closeFrame({
+                        name: 'list_share_frame'
+                    });
+                } else {
+                    $app.toast('您已取消分享');
+                    $event.isShowHomeTab(false);
+                    api.closeFrame({
+                        name: 'list_share_frame'
+                    });
+                }
+            } else if (ret.type == 13) {
+                if (ret.tag == 'resume') {
+                }
+            }
+        });
+    }
+  var boxs = new Vue({
+    el:'#boxs',
+    filters:{
+      ellipsis:function (value) {
+        if (!value) return ''
+        if (value.length > 10) {
+          return value.slice(0,10) + '...'
+        }
+        return value
+      }
+    },
+    data:{
+        dataTittle:{},
+        dataContent:[],
+        items:{},
+        showImgs:true,
+        clickAddNumber:'30',
+        clickAddData:'',
+        needsId:'',
+        img2:"./images/zang@3x.png",
+        img3:"./images/zan@3x.png",
+        listState:'1',
+        image:[],
+        Selected:false,//去掉精选
+        imgsList:true,
+        showScroll:true,
+        Jurisdiction:'0',
+        imgsFd:[],
+        listS:'',//判断哪个分享
+        listItem:{},//判断是哪个页面列表
+        deletesList:false,
+        isShow:false //是否显示全部
+    },
+    methods:{
+      topScroll:function(){
+        $('body').animate({
+            scrollTop: '0'             
+        },100);
+      },
+            formatDateTime: function (datetime) {
+                if (!datetime)
+                    return "";
+                var tempDate;
+                tempDate = datetime.replace(/-/g,':').replace(' ',':');
+                tempDate = tempDate.split(':');
+                tempDate = new Date(tempDate[0],(tempDate[1]-1),tempDate[2],tempDate[3],tempDate[4],tempDate[5]);
+                var current_date = new Date().getTime();
+                var mul = current_date - tempDate;
+                var time = parseInt(mul / 1000);
+                if (time < 60) {
+                    return "刚刚";
+                } else if (time < 3600) {
+                    return parseInt(time / 60) + " 分钟前";
+                } else if (time < 86400) {
+                    return parseInt(time / 3600) + " 小时前";
+                }
+                return datetime.split(' ')[0];
+            },
+      fntoList:function(){
+        api.toast({
+            msg: '回答成功',
+            duration: 1500,
+            location: 'middle'
+        });
+      },
+      requireObject:function(listId){ //需求详情
+        var token = api.readFile({
+                sync: true,
+                path: api.boxDir + '/token.txt'
+            });
+        var _this = this;
+        $http.GET(UrlRouter.qxDetailsTop,{
+          values:{
+            id:listId,
+            TokenAuthorization:token
+          }
+        },function(ret,err){
+          if(ret.data == null){
+            _this.deletesList = true
+            $app.hideProgress();
+          }else{
+            _this.dataTittle = ret.data
+            _this.imgsFd = ret.data.imgArray
+            if(ret.data.isAnswersPraise == 0){
+              _this.showImgs = true
+            }else{
+              _this.showImgs = false
+            } 
+            //判定字数      
+            if(_this.countSymbols(ret.data.content)>72){
+              _this.isShow=true   
+              $("#info").css({"overflow":"hidden","height":"4.1rem"})	              
+            } 
+            api.sendEvent({
+                name: 'detailsList',
+                extra: {
+                    lists: ret.data
+                }
+            });
+          }
+        })
+      },
+      getContent:function(listId){//第一次列表
+        var token = api.readFile({
+            sync: true,
+            path: api.boxDir + '/token.txt'
+        });
+        var _this = this;
+        $http.GET(UrlRouter.qxDetailsList,{
+          values:{
+            issueId:listId,
+            pageIndex:'0',
+            pageSize:'10',
+            TokenAuthorization:token
+          }
+        },function(ret,err){
+          if(ret.data == null){
+            _this.deletesList = true
+            $app.hideProgress();
+          }else{
+            $app.hideProgress();
+            _this.dataContent = ret.data
+          }
+        })
+      },
+      openAnswer:function(ids,issueId,uName,uCode,isa){
+        api.openWin({
+          name:'contentTitle',
+          url:'./contentTitle.html?v=5',
+          slidBackEnabled:false,
+          pageParam:{
+            id:ids,
+            issueId:issueId,
+            userName:uName,
+            userCode:uCode,
+            isAnswersPraise:isa
+          }
+        })
+        // setTimeout(function(){
+        //   api.closeWin({});
+        // },700)
+      },
+      zanimg:function(){ //是否登录
+        var token = api.readFile({
+            sync: true,
+            path: api.boxDir + '/token.txt'
+        });
+        // if(token.indexOf("#") != -1){
+          this.showImgs = !this.showImgs
+          if(this.showImgs){
+            this.dataTittle.praiseNumber--
+          }else{
+            this.dataTittle.praiseNumber++
+          }
+          this.dataTittle.isAnswersPraise
+          this.collectIssue()
+        // }else{
+        //   // 跳转登录页面
+        //   $event.callRNEvent(1, 1, {
+        //       toPageName: 'Login'
+        //   });
+        // }
+      },
+      clickAdds:function(item){
+        // var token = api.readFile({
+        //     sync: true,
+        //     path: api.boxDir + '/token.txt'
+        // });
+        // if(token.indexOf("#") != -1){
+          this.praiseIssue(item)
+        // }else{
+        //   // 跳转登录页面
+        //   $event.callRNEvent(1, 1, {
+        //       toPageName: 'Login'
+        //   });
+        // }
+      },
+      collectIssue:function(){//需求点赞
+        var _this = this
+        $http.GET(UrlRouter.qxXuZan,{
+          values:{
+            issueId:this.dataTittle.id
+          }
+        },function(ret,err){
+        })
+      },
+      praiseIssue:function(a){//方案点赞接口
+        var _this = this
+        $http.GET(UrlRouter.qxXuXiangZan,{
+          values:{
+            issueAnswersId:a.id,
+          }
+        },function(ret,err){
+          if(ret.data == '点赞成功'){
+            a.praiseNumber++
+            a.isAnswersPraise = 1
+          }else{
+            a.praiseNumber--
+            a.isAnswersPraise = 0
+          }
+        })
+      },
+      fnGetStoryIndexByCondition:function(Id) {//上拉加载
+          var _this = this;
+          var token = api.readFile({
+              sync: true,
+              path: api.boxDir + '/token.txt'
+          });
+          $http.GET(UrlRouter.qxDetailsList,{
+            values:{
+              issueId:Id,
+              pageIndex:_this.dataContent.length,
+              pageSize:'10',
+              TokenAuthorization:token
+            }
+          },function(ret,err){
+            var b = ret.data
+            if( b.length == '0' ){
+              api.toast({
+                  msg: '没有更多内容',
+                  duration: 2000,
+                  location: 'middle'
+              });
+              $app.hideProgress();
+            }else{
+              for(var i=0;i<b.length;i++){
+                _this.dataContent.push(b[i])
+              }
+              $app.hideProgress();
+            }
+          })
+        },
+        fnPreviewPictureTop:function(item, index) {
+            $event.isShowHomeTab(false);
+            var arr = []
+            arr = this.imgsFd
+            $app.openWin('preview_picture', {
+                urlArr: arr,
+                activeIndex: index
+            }, {
+                url: '../topic/preview_picture.html'
+            })
+        },
+        fnPreviewPictureContent:function(item,index){
+          $event.isShowHomeTab(false);
+            var arr = item
+            $app.openWin('preview_picture', {
+                urlArr: arr,
+                activeIndex: index
+            }, {
+                url: '../topic/preview_picture.html'
+            })
+        },
+      openHui:function(){
+        var token = api.readFile({
+            sync: true,
+            path: api.boxDir + '/token.txt'
+        });
+        if(token.indexOf("#") != -1){
+          // 参数传递从details
+          // api.sendEvent({
+          //       name: 'answerUser',
+          //       extra: {
+          //           issueId:this.dataTittle.id,
+          //           // nameTittle:this.dataTittle.title,
+          //           // names:this.dataTittle.userName,
+          //           // code:this.dataTittle.userCode
+          //       }
+          //   });
+          api.openWin({
+            name:'answer',
+            url:'./answer.html',
+            slidBackEnabled:false,
+            pageParam:{
+              issueId:this.dataTittle.id,
+              nameTittle:this.dataTittle.title,
+              names:this.dataTittle.userName,
+              code:this.dataTittle.userCode
+            }
+          })
+        }else{
+          $event.callRNEvent(1, 1, {
+              toPageName: 'Login'
+          });
+        }
+      },
+      shares:function(lists,items){
+        this.listS = lists
+        this.listItem = items
+        var token = api.readFile({
+            sync: true,
+            path: api.boxDir + '/token.txt'
+        });
+        if(token.indexOf("#") != -1){
+          $app.openFrame('list_share_frame',null,null,{
+              frameName:api.frameName
+          },{
+              bounces: false
+          })
+        }else{
+          // 跳转登录页面
+          $event.callRNEvent(1, 1, {
+              toPageName: 'Login'
+          });
+        }
+      },
+      detailsBack:function(){
+        api.closeWin({})
+      },
+      openPersonal:function(a){//跳转个人中心
+          api.readFile({
+              path: api.boxDir + '/userid.txt'
+          }, function (ret, err) {
+              if (ret) {
+                  var _userid = ret.data;
+                  if (_userid === '') {
+                       $event.callRNEvent(1, 1, {
+                              toPageName: 'Login'
+                          });
+                      return;
+                  }
+                  // this.fnHideTabBar();
+                  if (a === _userid) { //item.userId 
+                      $app.openWin('mine', null, {
+                          url: './../mine/mine.html'
+                      })
+                  } else {
+                      $app.openWin('ta_page', {
+                          userId: a
+                      }, {
+                          url: './../ta_page/ta_page.html'
+                      })
+                  }
+              }
+          });
+          setTimeout(function(){
+            api.closeWin({})
+          },700)
+      },
+      fnOpenLogin:function() {
+          $event.callRNEvent(1, 1, {
+              toPageName: 'Login'
+          });
+      },
+      fnHideTabBar:function() {
+        $event.isShowHomeTab(false)
+      },
+      fnReplaceComment:function(comment) {
+          if (!$app.isEmpty(comment)) {
+              comment = comment.replace(/<br\s*\/?>/gi, "\r\n");
+              comment = comment.replace(/<br\/>/g, "\r\n");
+              comment = comment.replace(/<br>/g, "\r\n");
+              comment = comment.replace(/<[^>]+>/g, "");
+              return comment;
+          }
+          return '';
+      },
+      show_info:function() {       
+        $("#info").css({"overflow":"inherit","height":"inherit"})		 
+        this.isShow = false
+      },
+      Trim: function (str) {
+        	return str.replace(/(^\s*)|(\s*$)/g, "");
+        },
+      countSymbols:function(str) { //兼容表情符号
+		   String.prototype.replaceAll  = function(s1,s2){     
+	          return this.replace(new RegExp(s1),s2);     
+	       }    
+	      var regexAstralSymbols =/\&#[0-9]*[0-9][;]/;      
+	      return str.replaceAll(regexAstralSymbols, '*').length 
+		 
+	 }  
+    }
+  })
+</script>
+</html>

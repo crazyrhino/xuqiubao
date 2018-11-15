@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<style>
+			body, html {
+				height: 100%;
+				width: 100%;
+				background: url(../../image/collect/tmp_collect.jpg) no-repeat center;
+				background-size: 100%;
+			}
+			.header_div {
+				position: relative;
+				width : 100%;
+				height: 44px;
+			}
+			.back_btn {
+				position: absolute;
+				top: 0px;
+				left: 6px;
+				width: 44px;
+				height: 44px;
+				background-image: url(../../image/label/back.png);
+				background-size: 24px;
+				background-repeat: no-repeat;
+				background-position: center;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<div class="header_div meui_border_b">
+				<div class="back_btn" tapmode="meui_click" onclick="fnBack()"></div>
+			</div>
+		</header>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			fnSysHeaderStyle();
+		};
+	</script>
+</html>

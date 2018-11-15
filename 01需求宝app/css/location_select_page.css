@@ -1,0 +1,81 @@
+html,
+body {
+  font-size: 20px;
+  background: #F2F2F2;
+}
+html .location_select_box .location_select_text,
+body .location_select_box .location_select_text {
+  padding: 0.45rem;
+  background: #F2F2F2;
+  position: relative;
+}
+html .location_select_box .location_select_text #location_select,
+body .location_select_box .location_select_text #location_select {
+  background: #fff !important;
+  height: 1.50rem;
+  width: 88%;
+  -webkit-border-radius: 0.75rem;
+  -moz-border-radius: 0.75rem;
+  border-radius: 0.75rem;
+  position: relative;
+  padding-left: 1.8rem;
+  font-size: 0.70rem;
+}
+html .location_select_box .location_select_text .location_select_cancel,
+body .location_select_box .location_select_text .location_select_cancel {
+  color: #999;
+  font-size: 0.85rem;
+  position: absolute;
+  right: 0.35rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+html .location_select_box .location_select_text img,
+body .location_select_box .location_select_text img {
+  position: absolute;
+  width: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0.65rem;
+  z-index: 99999999999999999999999999999;
+}
+html .location_select_box .location_select_content,
+body .location_select_box .location_select_content {
+  width: 100%;
+}
+html .location_select_box .location_select_content ul,
+body .location_select_box .location_select_content ul {
+  background: #fff;
+  padding-left: 0.45rem;
+  width: 100%;
+  /*多行溢出 手机端使用*/
+}
+html .location_select_box .location_select_content ul li,
+body .location_select_box .location_select_content ul li {
+  box-sizing: border-box;
+  border-bottom: 1px solid #eee;
+  line-height: 2.70rem;
+  min-height: 2.70rem;
+  font-size: 0.75rem;
+  color: #333;
+  width: 100%;
+  padding-right: 3rem;
+}
+html .location_select_box .location_select_content ul P,
+body .location_select_box .location_select_content ul P {
+  padding-right: 2rem;
+}
+html .location_select_box .location_select_content ul .txt-cut,
+body .location_select_box .location_select_content ul .txt-cut {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用*/
+  display: -webkit-box;
+  /*//显示1行*/
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+[v-cloak] {
+  display: none;
+}
+/*# sourceMappingURL=location_select_page.css.map */

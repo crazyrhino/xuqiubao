@@ -1,0 +1,256 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+	<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+	<title>编辑页关联产品</title>
+	<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+	<link rel="stylesheet" type="text/css" href="../../css/search_editor.css" />
+	<style>
+		.product_tit {
+			-webkit-line-clamp: 2;
+			height: 38px;
+			padding-top: 6px;
+		}
+	</style>
+</head>
+<body>
+<div class="my_search_editor">
+	<div class="select_all" v-cloak>
+		<div v-for="(item,index) in list" class="select_list" tapmode v-on:click="fnSelect(item,index)">
+			<div class="select_btn">
+				<img v-if="item.selected" src="../../image/edit_topic/selected.png">
+				<img v-else src="../../image/community/select_none.png">
+			</div>
+			<div class="select_cont">
+				<div class="product_img">
+					<img v-bind:src="item.defaultImageUrl">
+				</div>
+				<div class="product_cont">
+					<p class="product_tit" v-text="item.productFirstName"></p>
+					<!--<p class="product_detail"  v-text="item.productSecondName + item.productTitle"></p>-->
+					<p class="product_price">
+						¥{{item.finalPrice}}
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/service.js"></script>
+<script type="text/javascript" src="../../script/flexible.js"></script>
+<script type="text/javascript">
+    var pageIndex = 1;
+    var currentKeyword;
+    var selectedNum;
+    var selectGoods = [];
+    apiready = function() {
+        //fnRefreshOpen();
+        selectGoods = api.pageParam.selectGoods;
+        selectedNum = selectGoods.length;
+        fnProductCommonLoadItem();
+        fnSetRefresh(function() {
+            pageIndex = 1;
+            currentKeyword = null;
+            fnProductCommonLoadItem(false, true);
+        });
+        addBottomListener(function() {
+            pageIndex++;
+            if (currentKeyword) {
+                fnSearchProductCommonLoadItem(currentKeyword, true, false);
+            } else {
+                fnProductCommonLoadItem(true, false);
+            }
+        });
+        fnInitEventListener();
+    };
+
+    function fnInitEventListener(){
+        api.addEventListener({
+            name:'haveSelect'
+        },function (ret) {
+            selectedNum = ret.value.selectedNum;
+        });
+        api.addEventListener({
+            name:'unAllowSelect'
+        },function (ret) {
+            selectedNum = 5
+        });
+        api.addEventListener({
+            name:'haveSelectedGoods'
+        },function (ret) {
+            selectGoods = ret.value.selectGoods;
+            for (var i = 0; i<vue.list.length;i++){
+                if (selectGoods.length === 0){
+                    vue.list[i].selected = false;
+                }
+                for (var j = 0;j<selectGoods.length;j++){
+                    if (selectGoods[j].productId == vue.list[i].productId || selectGoods[j].id == vue.list[i].productId) {
+                        vue.list[i].selected = true;
+                        break;
+                    }else {
+                        vue.list[i].selected = false;
+                    }
+                }
+            }
+        })
+    }
+    var vue = new Vue({
+        el : '.select_all',
+        data : {
+            list : [],
+            selectedNum : 0
+        },
+        methods : {
+            fnSelect : function(item, index) {
+                if (!item.selected) {
+                    if (selectedNum < 5) {
+                        vue.$set(vue.$data.list[index], 'selected', true);
+                        vue.$set(vue.$data.list[index], 'selectedFrom', 'goods_frame1');
+                        if(selectGoods != ''){
+                            for(var i = 0; i < selectGoods.length;i++){
+                                if(selectGoods[i].productId != item.productId && selectGoods[i].id != item.productId){
+                                    selectedNum++;
+                                    fnRefreshSelectGoods(item,true);
+                                    break;
+                                }else{
+                                    vue.$set(vue.$data.list[index], 'selected', false);
+                                    fnRefreshSelectGoods(item,false);
+                                    fnToast('您已添加该商品','middle');
+                                    selectedNum--;
+                                }
+                            }
+                        }else {
+                            selectedNum++;
+                            fnRefreshSelectGoods(item,true);
+                        }
+                    } else {
+                        fnToast('最多选5件','middle');
+                    }
+                } else {
+                    vue.$set(vue.$data.list[index], 'selected', false);
+                    vue.$set(vue.$data.list[index], 'selectedFrom', '');
+                    selectedNum--;
+                    fnRefreshSelectGoods(item,false);
+                }
+                fnSetSelectNum(selectedNum);
+            }
+        }
+    });
+    function fnRefreshSelectGoods(item,selected) {
+        api.sendEvent({
+            name: 'selectedGoods',
+            extra: {
+                item: item,
+                selected:selected
+            }
+        })
+    }
+
+    function fnSetSelectNum(num) {
+        api.sendEvent({
+            name: 'selectedNum',
+            extra: {
+                selectedNum: num
+            }
+        })
+    }
+
+
+    function fnProductCommonLoadItem(isLoadMore, isRefresh) {
+        $service.get('product/commonLoadItem.ajax', {
+            pageIndex : pageIndex,
+            pageSize : 20
+        }, function(ret, err) {
+            api.refreshHeaderLoadDone();
+            if (ret.ok == 1) {
+                if (ret.data.productsList && ret.data.productsList.length > 0) {
+                    if (isRefresh) {
+                        vue.list = [];
+                    }
+                    if(selectGoods != ''){
+                        for(var j = 0;j < ret.data.productsList.length; j++){
+                            ret.data.productsList[j].selected = false;
+                            for(var n = 0; n < selectGoods.length; n++){
+                                if(selectGoods[n].productId == ret.data.productsList[j].productId || selectGoods[n].id == ret.data.productsList[j].productId){
+                                    ret.data.productsList[j].selected = true;
+                                }
+                            }
+                        }
+                        fnAppendData(vue.list, ret.data.productsList);
+                    }else{
+                        for(var j = 0;j < ret.data.productsList.length; j++){
+                            ret.data.productsList[j].selected = false;
+                        }
+                        fnAppendData(vue.list, ret.data.productsList);
+                    }
+                } else {
+                    if (isLoadMore) {
+                        fnToast("没有更多");
+                    }
+                }
+            }
+        },isRefresh);
+    }
+
+    function fnSearchProductCommonLoadItem(keyword, isLoadMore, isRefresh) {
+        if (currentKeyword != keyword) {
+            vue.list = [];
+            pageIndex = 1;
+        }
+        currentKeyword = keyword;
+        $service.get('product/wdCommonSearch.ajax', {
+            pageIndex : pageIndex,
+            pageSize : 20,
+            fromType : 2,
+            keyword : keyword
+        }, function(ret, err) {
+            api.refreshHeaderLoadDone();
+            if (ret.ok == 1) {
+                if (ret.data.productsList && ret.data.productsList.length > 0) {
+                    if (isRefresh) {
+                        vue.list = [];
+                    }
+                    if(selectGoods != ''){
+                        for(var j = 0;j < ret.data.productsList.length; j++){
+                            ret.data.productsList[j].selected = false;
+                            for(var n = 0; n < selectGoods.length; n++){
+                                // if(selectGoods[n].selectedFrom == 'goods_frame1' && (selectGoods[n].productId == ret.data.productsList[j].productId||selectGoods[n].id == ret.data.productsList[j].productId)){
+                                if(selectGoods[n].productId == ret.data.productsList[j].productId||selectGoods[n].id == ret.data.productsList[j].productId){
+                                    ret.data.productsList[j].selected = true;
+                                }
+                            }
+                        }
+                        fnAppendData(vue.list, ret.data.productsList);
+                    }else{
+                        for(var j = 0;j < ret.data.productsList.length; j++){
+                            ret.data.productsList[j].selected = false;
+                        }
+                        fnAppendData(vue.list, ret.data.productsList);
+                    }
+                    // fnAppendData(vue.list, ret.data.productsList);
+                } else {
+					fnToast("没有更多");
+                }
+            } else {
+                fnToast("没有搜索到相关商品",'middle');
+            }
+        },isRefresh);
+    }
+
+    function fnAppendData(oldArr, data) {
+        for (var i = 0; i < data.length; i++) {
+            // data[i].selected = false;
+            oldArr.push(data[i]);
+        }
+        return oldArr;
+    }
+
+</script>
+</html>

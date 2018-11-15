@@ -1,0 +1,110 @@
+html, body {
+  font-size: 20px;
+  background: #F2F2F2;
+  .location_select_box {
+    .location_select_text {
+      padding: 0.35rem;
+      background: #F2F2F2;
+      position: relative;
+      #location_select {
+        background: #fff !important;
+        height: 1.50rem;
+        width: 98%;
+        -webkit-border-radius: 0.75rem;
+        -moz-border-radius: 0.75rem;
+        border-radius: 0.75rem;
+        position: relative;
+        padding-left: 1.8rem;
+        font-size: 0.70rem;
+      }
+      .location_select_cancel {
+        color: #999;
+        font-size: 0.85rem;
+        position: absolute;
+        right: 0.35rem;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      img {
+        position: absolute;
+        width: 0.9rem;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 0.65rem;
+        z-index: 99999999999999999999999999999;
+      }
+
+    }
+    .location_select_bottom {
+      background: #F2F2F2;
+      .location_no,
+      ul,
+      .location_current {
+        padding-left: 0.45rem;
+        background: #fff;
+      }
+      .location_no {
+        line-height: 2rem;
+        color: #4B78AA;
+        font-size: 0.75rem;
+      }
+      .location_current {
+        background: #F2F2F2;
+        line-height: 1.50rem;
+        font-size: 0.70rem;
+        color: #666666;
+      }
+      ul {
+        background: #fff;
+        li {
+          //min-height: 2.70rem;
+          height: auto;
+          box-sizing: border-box;
+          border-bottom: 1px solid #eee;
+          position: relative;
+          padding-top: 0.3rem;
+          padding-bottom: 0.3rem;
+          width: 100%;
+          img {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: 1.00rem;
+            width: 1.50rem;
+          }
+          p {
+            padding-right: 2rem;
+            &:nth-child(1) {
+              color: #333;
+              font-size: 0.75rem;
+            }
+            &:nth-child(2) {
+              color: #999;
+              font-size: 0.60rem;
+            }
+          }
+
+        }
+        /*多行溢出 手机端使用*/
+        .txt-cut {
+          overflow: hidden;
+          text-overflow: ellipsis; /* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用*/
+          display: -webkit-box;
+          /*//显示1行*/
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          //width: 100%;
+        }
+        .location_name {
+          line-height: 2.3rem !important;
+          font-size: 0.75rem;
+        }
+      }
+
+    }
+  }
+  [v-cloak] {
+    display: none;
+  }
+
+}

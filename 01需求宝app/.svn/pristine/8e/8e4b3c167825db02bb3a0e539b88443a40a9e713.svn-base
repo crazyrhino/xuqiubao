@@ -1,0 +1,131 @@
+body,html {
+	background: #EEE;
+	height: 100%;
+}
+
+body,html{
+	background: #EEE;
+}
+header {
+	width: 100%;
+	height: 44px;
+	background: #FFF;
+}
+.header_div{
+	position : relative;
+	width: 100%;
+	height: 44px;
+	line-height: 44px;
+}
+.c_back_btn {
+	position: absolute;
+	top: 0px;
+	left : 6px;
+	width: 44px;
+	height: 44px;
+	background-image: url(../image/label/back.png);
+	background-size: 24px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+.c_title {
+	height: 44px;
+	line-height: 50px;
+	font-size: 17px;
+	color : #000;
+}
+.c_circle_base_info{
+	height: 88px;
+	padding-left : 16px;
+	padding-top : 14px;
+	background: #FFF;
+}
+.c_circle_head{
+	width: 60px;
+	height: 60px;
+	border-radius: 60px;
+}
+.c_circle_name{
+	height: 60px;
+	padding-left : 14px;
+	font-size : 17px;
+	line-height: 60px;
+}
+.c_cricle_desc_div{
+	height : 72px;
+	margin-top : 8px;
+	padding-left : 16px;
+	padding-top : 14px;
+	background: #FFF;
+}
+.c_desc_label{
+	height: 22px;
+	font-size: 16px;
+	line-height: 22px;
+	color : #333;
+}
+.c_desc{
+	margin-top : 6px;
+	font-size: 12px;
+	line-height: 17px;
+	color : #666;
+}
+.c_circle_owner_div{
+	background: #FFF;
+}
+.c_owner_label_div{
+	margin-top : 8px;
+	padding-top : 12px;
+	padding-left : 16px;
+	padding-bottom : 12px;
+}
+.c_owner_img{
+	width: 22px;
+	height: 22px;
+}
+.c_owner_label{
+	height: 22px;
+	padding-left : 9px;
+	line-height: 22px;
+	font-size: 16px;
+	color : #333;
+}
+.c_owner_info{
+	padding-top : 10px;
+	padding-left : 16px;
+	padding-bottom : 10px;
+	padding-right : 16px;
+}
+.c_owner_head{
+	width: 40px;
+	height: 40px;
+	border-radius: 40px;
+	background: url(../image/home/tmp_default_header.png) no-repeat;
+	background-size: 40px;
+}
+.c_owner_name{
+	height: 40px;
+	padding-left : 16px;
+	line-height: 40px;
+	font-size: 14px;
+	color : #333;
+}
+.c_follow_img{
+	width : 64px;
+	height : 26px;
+	margin-top: 7px;
+}
+.c_num{
+	font-size: 12px;
+	color : #999;
+}
+.c_unjoin_btn{
+	width : 100%;
+	height: 44px;
+	margin-top : 8px;
+	line-height: 44px;
+	font-size: 16px;
+	text-align: center;
+	color :red;
+	background: #FFF;
+}

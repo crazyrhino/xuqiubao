@@ -1,0 +1,375 @@
+/*活跃排行榜*/
+.communityHonor .subtotal {
+	-webkit-box-sizing: border-box;
+	        box-sizing: border-box;
+	width: 100%;
+	padding: 0  0.426667rem;
+	height: 0.826667rem;
+	font-size: 0.320000rem;
+	color: #666666;
+	margin-bottom: 0.106667rem;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-item-align: center;
+	    align-self: center;
+}
+.communityHonor .subtotal img {
+	width: 0.560000rem;
+	height: 0.560000rem;
+	margin-right: 0.213333rem;
+}
+.communityHonor .subtotal .circle {
+	width: 0.080000rem;
+	height: 0.080000rem;
+	border-radius: 0.080000rem;
+	background: #d8d8d8;
+	margin-left: 0.186667rem;
+	margin-right: 0.160000rem;
+}
+.communityHonor .subtotal ._selfmonth, .communityHonor .subtotal .lastMonth {
+	font-size: 0.320000rem;
+	color: #999999;
+	padding: 0  0.160000rem;
+	position: relative;
+	margin-right: 0.160000rem;
+}
+.communityHonor .subtotal .lastMonth {
+	padding: 0;
+	margin: 0;
+}
+.communityHonor .subtotal ._selfmonth:after {
+	content: '';
+	width: 1px;
+	height: 0.293333rem;
+	background: #d8d8d8;
+	position: absolute;
+	top: 0.080000rem;
+	right: 0;
+}
+.communityHonor .subtotal .active {
+	color: #FF6026 !important;
+}
+.community-flex {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+}
+.community-flex-v {
+	-webkit-box-orient: vertical;
+	-ms-flex-flow: column;
+	    flex-flow: column;
+}
+
+.community-flex-h {
+	-webkit-box-orient: horizontal;
+	-ms-flex-flow: row;
+	    flex-flow: row;
+}
+
+.community-flex-flex1 {
+	-webkit-box-flex: 1;
+	-ms-flex: 1;
+	    flex: 1;
+}
+.flex-center {
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+}
+/*自己的排名*/
+.communityList .self {
+	-webkit-box-sizing: border-box;
+	        box-sizing: border-box;
+	width: 100%;
+	padding: 0  0.426667rem;
+	height: 2.933333rem;
+	background: #FD6260;
+	color: #fff;
+}
+.communityList .self .num, .communityList .other .num {
+	font-size: 0.373333rem;
+}
+.communityList .self .Perimage, .communityList .other .Perimage {
+	-webkit-box-sizing: border-box;
+	        box-sizing: border-box;
+	width: 2.186667rem;
+	height: 2.186667rem;
+	border-radius: 2.186667rem;
+	margin-left: 0.400000rem;
+	margin-right: 0.213333rem;
+	text-align: center;
+}
+.communityList .self .Perimage {
+	border: 0.160000rem solid rgba(255, 255, 255, 0.08);
+	position: relative;
+}
+.communityList .self .Perimage .Perimage-1 {
+	-webkit-box-sizing: border-box;
+	        box-sizing: border-box;
+	width: 1.866667rem;
+	height: 1.866667rem;
+	border-radius: 1.866667rem;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-50%,-50%);
+	        transform: translate(-50%,-50%);
+	z-index: 5;
+	border: 0.133333rem solid rgba(255, 255, 255, 0.21);
+}
+.communityList .self .Perimage img {
+	width: 1.600000rem;
+	height: 1.600000rem;
+	border-radius: 1.600000rem;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-50%,-50%);
+	        transform: translate(-50%,-50%);
+}
+.communityList .self .details {
+	font-size: 0.320000rem;
+}
+.communityList .level {
+	font-size: 0.373333rem;
+	line-height: 0.533333rem;
+	margin-top: 0.133333rem;
+	margin-bottom: 0.080000rem;
+}
+.level-alert {
+	font-size: 0.213333rem;
+	line-height: 0.293333rem;
+	margin-left: 0.346667rem;
+}
+.communityList .self ._items {
+	font-size: 0.266667rem;
+	line-height: 1;
+	text-align: center;
+}
+.communityList .self .topic_num {
+	font-size: 0.320000rem;
+	line-height: 0.453333rem;
+}
+
+.communityList .showCircle {
+	background: #fff;
+	margin-left: 0.453333rem;
+	margin-right: 0.400000rem;
+	vertical-align: middle;
+}
+/*别人的排名*/
+.communityList .other {
+	-webkit-box-sizing: border-box;
+	        box-sizing: border-box;
+	width: 100%;
+	padding: 0  0.426667rem;
+}
+.communityList .other .item {
+	-webkit-box-sizing: border-box;
+	        box-sizing: border-box;
+	height: 2.213333rem;
+	border-bottom: 1px solid #eee;
+}
+.communityList .other .num {
+	margin-left: 0.266667rem;
+	font-size: 0.373333rem;
+	color: #FD935A;
+}
+
+.only_num {
+	margin-left: 0.266667rem;
+	font-size: 0.373333rem;
+	color: #FD935A;
+}
+
+.numOne {
+	color: #F14442 !important;
+}
+.numTwo {
+	color: #93B6E2 !important;
+}
+.numOther {
+	color: #333 !important;
+}
+.communityList .other .Perimage {
+	width: 1.866667rem;
+	height: 1.866667rem;
+	border-radius: 0;
+	margin-left: 0.293333rem;
+	margin-right: 0.160000rem;
+	text-align: center;
+	position: relative;
+}
+.communityList .other .Perimage .less {
+	width: 1.173333rem;
+	height: 1.173333rem;
+	border-radius: 1.173333rem;
+	position: absolute;
+	left: 50%;
+	margin-top: 0.453333rem;
+	-webkit-transform: translateX(-50%);
+	        transform: translateX(-50%);
+	z-index: 3;
+}
+.communityList .other .Perimage .large {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 5;
+	background-image: url(../image/rank/ph1@3x.png);
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+.communityList .other .Perimage .large.numtwo {
+	background-image: url(../image/rank/ph2@3x.png);
+}
+.communityList .other .Perimage .large.numthree {
+	background-image: url(../image/rank/ph3@3x.png);
+}
+.communityList .other .contents {
+	font-size: 0.373333rem;
+	color: #999999;
+	line-height: 0.533333rem;
+	padding-top: 0.213333rem;
+}
+.communityList .other .otherName {
+	color: #333;
+	margin-bottom: 0.133333rem;
+}
+/*加载更多*/
+.communityList .other .item.More {
+	height: 1.173333rem;
+	color: #999;
+	font-size: 0.320000rem;
+	-webkit-box-pack: center;
+	    -ms-flex-pack: center;
+	        justify-content: center;
+}
+.communityList .other .item.More img {
+	width: 0.640000rem;
+	height: 0.640000rem;
+	margin-right: 0.053333rem;
+}
+/*被捧排行榜*/
+#exaltedHonor .self {
+	background: #6886B8
+}
+.bgBlue {
+	background: #6886B8 !important;
+}
+/*话题排行榜*/
+#topicHonor {
+	margin-bottom: 0.400000rem;
+}
+#topicHonor .subtotal {
+	margin-bottom: 0;
+}
+#topicHonor .communityList {
+	margin-top: -0.186667rem;
+}
+#topicHonor .communityList .item {
+	height: 3.093333rem;
+}
+#topicHonor .communityList .item.More {
+	height: 1.253333rem;
+}
+#topicHonor .communityList .item .num {
+	width: 0.533333rem;
+	height: 0.666667rem;
+	background-image: url(../image/rank/ph6@3x.png);
+	background-repeat: no-repeat;
+	background-size: cover;
+	margin-left: -0.080000rem;
+}
+#topicHonor .communityList .item .numtwo {
+	background-image: url(../image/rank/ph5@3x.png);
+}
+#topicHonor .communityList .item .numthree {
+	background-image: url(../image/rank/ph4@3x.png);
+}
+#topicHonor .communityList .uploadImg {
+	width: 3.146667rem;
+	height: 2.346667rem;
+	border-radius: 0.106667rem;
+	background: #EEE;
+	margin-left: 0.666667rem;
+	margin-right: 0.506667rem;
+}
+#topicHonor .communityList .otherName {
+	font-size: 0.426667rem;
+	color: #333;
+	margin-bottom: 0.346667rem;
+}
+#topicHonor .communityList .fine-label {
+	width: 0.480000rem;
+	height: 0.480000rem;
+	background-image: url(../image/rank/jx@3x.png);
+	background-repeat: no-repeat;
+	background-size: contain;
+	vertical-align: sub;
+	margin-right: 0.213333rem;
+}
+.line2 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	word-wrap:break-word;
+}
+.Gold {
+	font-size: 0.320000rem;
+	color: #FFFFFF;
+	padding: 0  0.240000rem;
+	border-radius: 2.666667rem;
+	background: #FDC223;
+	line-height: 0.453333rem;
+}
+.float-right {
+	float: right !important;
+}
+/*更多*/
+.communityList .other .contents img {
+	width: 1.440000rem;
+	height: 0.586667rem;
+	vertical-align: middle;
+	margin-top: -0.053333rem;
+}
+/*没有排行的时候*/
+.communityHonor .nofriends {
+	margin-top: 3.093333rem;
+	text-align: center;
+}
+.communityHonor .nofriends img {
+	width: 3.306667rem;
+	height: 2.586667rem;
+	margin-bottom: 0.266667rem;
+}
+.communityHonor .nofriends_alert {
+	font-size: 0.373333rem;
+	color: #999999;
+	line-height: 0.533333rem;
+	margin-bottom: 0.320000rem;
+}
+.communityHonor .nofriends .btn {
+	width: 3.386667rem;
+	height: 1.013333rem;
+	line-height: 1.013333rem;
+	color: #FF6026;
+	font-size: 0.426667rem;
+	border: 1px solid #FF6026;
+	border-radius: 0.106667rem;
+	margin: 0 auto;
+}
+.border-1-top {
+	border-top: 1px solid #eee;
+}
+.topic_img {
+	width: 3.146667rem;
+	height: 2.346667rem;
+	border-radius: 0.106667rem;
+}

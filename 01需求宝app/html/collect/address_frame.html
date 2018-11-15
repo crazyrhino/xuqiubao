@@ -1,0 +1,212 @@
+<!DOCTYPE HTML>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>地址</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/address_choose.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/swiper.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/address_frame.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+			body,
+			html {
+				background-color: #EEEEEE;
+			}
+			#areaLabel input {
+				flex: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<section id="app">
+			<section class="list_wrap">
+				<div class="flex_container list">
+					<label>收件人</label>
+					<input type="text" />
+				</div>
+				<div class="flex_container list">
+					<label>手机号码</label>
+					<input type="number" />
+				</div>
+				<div id="areaLabel" class="flex_container list">
+					<label>所在地址</label>
+					<input name="Addr" id="Addr" readonly placeholder="" type="text" />
+				</div>
+				<div class="flex_container list1">
+					<label>详细地址</label>
+					<input type="text" placeholder="请填写详细地址" />
+				</div>
+			</section>
+			<div id="addressSelectWrapper">
+				<div id="addressSelect">
+					<div class="tip">
+						<h3>所在地区</h3>
+						<button type="button" id="cancel"></button>
+					</div>
+					<div id="address">
+						<ul class="selected-address">
+							<li class="lastarea" id="lastprovince">请选择</li>
+							<li class="lastarea" id="lastcity">请选择</li>
+							<li class="lastarea" id="lastarea">请选择</li>
+							<li class="lastarea" id="lasttown">请选择</li>
+						</ul>
+						<div class="address-content">
+							<ul id="province"></ul>
+							<ul id="city"></ul>
+							<ul id="area"></ul>
+							<ul id="town"></ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</body>
+	<script type="text/javascript" src="../../script/jquery.js"></script>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/city.js?v=2"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript">
+		apiready = function(){
+			//fnRefreshOpen();
+			api.addEventListener({
+				name:'saveRewardAddress'
+			},function(ret,err) {
+				save();
+			})
+		}
+	
+		var consignee, mobile, regionName, address
+
+		function check() {
+			consignee = $('input').eq(0).val();
+			mobile = $('input').eq(1).val();
+			regionName = $('input').eq(2).val();
+			address = $('input').eq(3).val();
+			if(consignee == '') {
+				fnToast('请填写收件人');
+				return false;
+			};
+			if(mobile == '') {
+				fnToast('请填写手机号码');
+				return false;
+			};
+			if(!isTelephone(mobile)) {
+				fnToast('请填写正确的手机号码');
+				return false;
+			};
+			if(regionName == '') {
+				fnToast('请选择所在地址');
+				return false;
+			};
+			if(address == '') {
+				fnToast('请填写详细地址');
+				return false;
+			};
+			fnOpenremPaFrame();
+		}
+
+		var provinceId = '';
+		var cityId = '';
+		var regionId = '';
+		var streetId = '';
+		function save() {
+			var params = {
+				provinceId: provinceId,
+				cityId: cityId,
+				regionId: regionId,
+				streetId: streetId,
+				consignee: consignee,
+				mobile: mobile,
+				regionName: regionName,
+				address: regionName + address,
+				storyId: api.pageParam.storyId
+			};
+			$service.post('recruit/addAddress.ajax', params, function(ret, err) {
+				if(ret) {
+					if(ret.ok == 1) {
+						fnToast('保存成功');
+						//地址保存成功之后，将上一个页面的中奖地址隐藏掉
+//						api.execScript({
+//							name:'collect_detail'
+//						    frameName: 'over_mine_oneMore_frame2',
+//						    script: 'fnRefreshData('+api.pageParam.index+')'
+//						});
+						api.sendEvent({
+							name:'showJB',
+							extra:{
+								index:api.pageParam.index
+							}
+						})
+						api.closeWin();
+					} else {
+						fnToast(ret.data.content);
+					}
+				} else {
+					fnToast(err.msg, 'middle')
+				}
+			}, true)
+
+		}
+
+		function fnOpenremPaFrame() {
+			api.openFrame({
+				name: 'address_confirm',
+				url: '../popup/address_confirm.html?v=' + new Date().getTime(),
+				rect: {
+					x: 0,
+					y: 0,
+					w: 'auto',
+					h: 'auto'
+				},
+				pageParam: {},
+				bounces: false,
+				bgColor: 'rgba(0,0,0,0)',
+				vScrollBarEnabled: true,
+				hScrollBarEnabled: true
+			});
+
+		}
+		$(function() {
+			// 地址选择器遮罩层打开与关闭
+			$("#areaLabel").click(function(e) {
+				$("#addressSelectWrapper").show();
+				e.stopPropagation();
+			});
+			$(document).click(function() {
+				$("#addressSelectWrapper").hide();
+			});
+			$("#cancel").click(function() {
+				$("#addressSelectWrapper").hide();
+			});
+			$("#addressSelect").click(function(e) {
+				e.stopPropagation();
+			});
+
+			initAddress();
+		});
+
+		//初始化地址选择
+		function initAddress() {
+			$("#Addr").cityLinkage({
+				containerId: 'addressSelectWrapper',
+				getSelectedCode: function() {
+					return $("#Addr").data("code");
+				},
+				callback: function(data) {
+					$("#Addr").val(data.addr).data("code", data.town.code);
+				}
+			});
+		}
+		//验证手机号
+		function isTelephone(s) {
+			return /^0{0,1}(13[0-9]|15[3-9]|15[0-2]|18[0-9]|17[0-9])[0-9]{8}$/.test(s);
+		}
+	</script>
+
+</html>

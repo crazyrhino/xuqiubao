@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+	<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+	<title>征集详情</title>
+	<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../../css/collect_list_win.css" />
+</head>
+<body>
+	<header id="header" class="rank_header">
+		<p class="rank_content"><img class="rank_back" src="../../image/rank/rank_back.png" tapmode onclick="api.closeWin()">征集详情<img class="right" src="../../image/mine/more@2x.png" tapmode onclick=""></p>
+	</header>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/flexible.js"></script>
+<script type="text/javascript">
+	apiready = function() {
+		if(api.systemType == 'ios'){
+			var header = $api.byId('header');
+	    	fnSysHeaderStyle()
+		}
+
+		fnOpenremPaFrame();
+	};
+	function fnOpenremPaFrame() {
+		if(api.systemType == 'ios'){
+			var headerH = $api.dom('header').offsetHeight+1;
+		}else{
+			var headerH = 45;
+		}
+		api.openFrame({
+		    name: 'collect_detail_frame',
+		    url: 'collect_detail_frame.html?v=' + new Date().getTime(),
+		    rect: {
+		        x: 0,
+		        y: headerH,
+		        w: 'auto',
+		        h: 'auto'
+		    },
+			useWKWebView: true,
+		    pageParam: api.pageParam,
+		    bounces: false,
+		    vScrollBarEnabled: false,
+		    hScrollBarEnabled: false,
+		    allowEdit : true
+		});
+
+	}
+</script>
+</html>

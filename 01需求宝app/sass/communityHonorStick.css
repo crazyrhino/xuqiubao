@@ -1,0 +1,363 @@
+/*活跃排行榜*/
+.communityHonor .subtotal {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 0 16px;
+	height: 31px;
+	font-size: 12px;
+	color: #666666;
+	margin-bottom: 4px;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	align-self: center;
+}
+.communityHonor .subtotal img {
+	width: 21px;
+	height: 21px;
+	margin-right: 8px;
+}
+.communityHonor .subtotal .circle {
+	width: 3px;
+	height: 3px;
+	border-radius: 3px;
+	background: #d8d8d8;
+	margin-left: 7px;
+	margin-right: 6px;
+}
+.communityHonor .subtotal ._selfmonth, .communityHonor .subtotal .lastMonth {
+	font-size: 12px;
+	color: #999999;
+	padding: 0 6px;
+	position: relative;
+	margin-right: 6px;
+}
+.communityHonor .subtotal .lastMonth {
+	padding: 0;
+	margin: 0;
+}
+.communityHonor .subtotal ._selfmonth:after {
+	content: '';
+	width: 1px;
+	height: 11px;
+	background: #d8d8d8;
+	position: absolute;
+	top: 3px;
+	right: 0;
+}
+.communityHonor .subtotal .active {
+	color: #FF6026 !important;
+}
+.community-flex {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: flex;
+}
+.community-flex-v {
+	-webkit-box-orient: vertical;
+	-webkit-flex-flow: column;
+	flex-flow: column;
+}
+
+.community-flex-h {
+	-webkit-box-orient: horizontal;
+	-webkit-flex-flow: row;
+	flex-flow: row;
+}
+
+.community-flex-flex1 {
+	-webkit-box-flex: 1;
+	-webkit-flex: 1;
+	flex: 1;
+}
+.flex-center {
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+}
+/*自己的排名*/
+.communityList .self {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 0 16px;
+	height: 110px;
+	background: #FD6260;
+	color: #fff;
+}
+.communityList .self .num, .communityList .other .num {
+	font-size: 14px;
+}
+.communityList .self .Perimage, .communityList .other .Perimage {
+	box-sizing: border-box;
+	width: 82px;
+	height: 82px;
+	border-radius: 82px;
+	margin-left: 15px;
+	margin-right: 8px;
+	text-align: center;
+}
+.communityList .self .Perimage {
+	border: 6px solid rgba(255, 255, 255, 0.08);
+	position: relative;
+}
+.communityList .self .Perimage .Perimage-1 {
+	box-sizing: border-box;
+	width: 70px;
+	height: 70px;
+	border-radius: 70px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	z-index: 5;
+	border: 5px solid rgba(255, 255, 255, 0.21);
+}
+.communityList .self .Perimage img {
+	width: 60px;
+	height: 60px;
+	border-radius: 60px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+}
+.communityList .self .details {
+	font-size: 12px;
+}
+.communityList .level {
+	font-size: 14px;
+	line-height: 20px;
+	margin-top: 5px;
+	margin-bottom: 3px;
+}
+.level-alert {
+	font-size: 8px;
+	line-height: 11px;
+	margin-left: 13px;
+}
+.communityList .self ._items {
+	font-size: 10px;
+	line-height: 1;
+	text-align: center;
+}
+.communityList .self .topic_num {
+	font-size: 12px;
+	line-height: 17px;
+}
+
+.communityList .showCircle {
+	background: #fff;
+	margin-left: 17px;
+	margin-right: 15px;
+	vertical-align: middle;
+}
+/*别人的排名*/
+.communityList .other {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 0 16px;
+}
+.communityList .other .item {
+	box-sizing: border-box;
+	height: 83px;
+	border-bottom: 1px solid #eee;
+}
+.communityList .other .num {
+	margin-left: 10px;
+	font-size: 14px;
+	color: #FD935A;
+}
+
+.only_num {
+	margin-left: 10px;
+	font-size: 14px;
+	color: #FD935A;
+}
+
+.numOne {
+	color: #F14442 !important;
+}
+.numTwo {
+	color: #93B6E2 !important;
+}
+.numOther {
+	color: #333 !important;
+}
+.communityList .other .Perimage {
+	width: 70px;
+	height: 70px;
+	border-radius: 0;
+	margin-left: 11px;
+	margin-right: 6px;
+	text-align: center;
+	position: relative;
+}
+.communityList .other .Perimage .less {
+	width: 44px;
+	height: 44px;
+	border-radius: 44px;
+	position: absolute;
+	left: 50%;
+	margin-top: 17px;
+	transform: translateX(-50%);
+	z-index: 3;
+}
+.communityList .other .Perimage .large {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 5;
+	background-image: url(../image/rank/ph1@3x.png);
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+.communityList .other .Perimage .large.numtwo {
+	background-image: url(../image/rank/ph2@3x.png);
+}
+.communityList .other .Perimage .large.numthree {
+	background-image: url(../image/rank/ph3@3x.png);
+}
+.communityList .other .contents {
+	font-size: 14px;
+	color: #999999;
+	line-height: 20px;
+	padding-top: 8px;
+}
+.communityList .other .otherName {
+	color: #333;
+	margin-bottom: 5px;
+}
+/*加载更多*/
+.communityList .other .item.More {
+	height: 44px;
+	color: #999;
+	font-size: 12px;
+	justify-content: center;
+}
+.communityList .other .item.More img {
+	width: 24px;
+	height: 24px;
+	margin-right: 2px;
+}
+/*被捧排行榜*/
+#exaltedHonor .self {
+	background: #6886B8
+}
+.bgBlue {
+	background: #6886B8 !important;
+}
+/*话题排行榜*/
+#topicHonor {
+	margin-bottom: 15px;
+}
+#topicHonor .subtotal {
+	margin-bottom: 0;
+}
+#topicHonor .communityList {
+	margin-top: -7px;
+}
+#topicHonor .communityList .item {
+	height: 116px;
+}
+#topicHonor .communityList .item.More {
+	height: 47px;
+}
+#topicHonor .communityList .item .num {
+	width: 20px;
+	height: 25px;
+	background-image: url(../image/rank/ph6@3x.png);
+	background-repeat: no-repeat;
+	background-size: cover;
+	margin-left: -3px;
+}
+#topicHonor .communityList .item .numtwo {
+	background-image: url(../image/rank/ph5@3x.png);
+}
+#topicHonor .communityList .item .numthree {
+	background-image: url(../image/rank/ph4@3x.png);
+}
+#topicHonor .communityList .uploadImg {
+	width: 118px;
+	height: 88px;
+	border-radius: 4px;
+	background: #EEE;
+	margin-left: 25px;
+	margin-right: 19px;
+}
+#topicHonor .communityList .otherName {
+	font-size: 16px;
+	color: #333;
+	margin-bottom: 13px;
+}
+#topicHonor .communityList .fine-label {
+	width: 18px;
+	height: 18px;
+	background-image: url(../image/rank/jx@3x.png);
+	background-repeat: no-repeat;
+	background-size: contain;
+	vertical-align: sub;
+	margin-right: 8px;
+}
+.line2 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	word-wrap:break-word;
+}
+.Gold {
+	font-size: 12px;
+	color: #FFFFFF;
+	padding: 0 9px;
+	border-radius: 100px;
+	background: #FDC223;
+	line-height: 17px;
+}
+.float-right {
+	float: right !important;
+}
+/*更多*/
+.communityList .other .contents img {
+	width: 54px;
+	height: 22px;
+	vertical-align: middle;
+	margin-top: -2px;
+}
+/*没有排行的时候*/
+.communityHonor .nofriends {
+	margin-top: 116px;
+	text-align: center;
+}
+.communityHonor .nofriends img {
+	width: 124px;
+	height: 97px;
+	margin-bottom: 10px;
+}
+.communityHonor .nofriends_alert {
+	font-size: 14px;
+	color: #999999;
+	line-height: 20px;
+	margin-bottom: 12px;
+}
+.communityHonor .nofriends .btn {
+	width: 127px;
+	height: 38px;
+	line-height: 38px;
+	color: #FF6026;
+	font-size: 16px;
+	border: 1px solid #FF6026;
+	border-radius: 4px;
+	margin: 0 auto;
+}
+.border-1-top {
+	border-top: 1px solid #eee;
+}
+.topic_img {
+	width: 118px;
+	height: 88px;
+	border-radius: 4px;
+}

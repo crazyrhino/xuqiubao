@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>所在位置</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/location_select_frame.css?v=1"/>
+</head>
+<body>
+<div class="location_select_box" v-cloak>
+    <div class="location_select_text">
+        <img src="../../image/Search@2x.png" alt="">
+        <input type="text" id="location_select" placeholder="搜索地点" v-moudel="selectText" tapmode onclick="selectPage()">
+    </div>
+    <div class="location_select_bottom">
+        <p class="location_no" tapmode onclick="api.closeWin()">不显示地点</p>
+        <p class="location_current">当前定位</p>
+        <ul>
+            <li class="location_name">
+                {{name}}
+            </li>
+            <li v-for="list in arrList" v-if="id == list.id" v-on:click="selectList(list.id,list.address,list.name)">
+                <p class="txt-cut">{{list.address}}</p>
+                <p class="txt-cut">{{list.name}}</p>
+                <img class="" src="../../image/edit_topic/video_confirm.png" alt="">
+            </li>
+            <li v-for="list in arrList" v-els v-on:click="selectList(list.id,list.address,list.name)">
+                <p>{{list.address}}</p>
+                <p>{{list.name}}</p>
+                <img class="lelectImg aui-hide" src="../../image/edit_topic/video_confirm.png" alt="">
+            </li>
+        </ul>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/api.js"></script>
+
+<script>
+    apiready = function () {
+        $app.showProgress();//加载中
+        location_select_frame_vue.fnGetRecommend(location_select_frame_vue.keywords, location_select_frame_vue.location, location_select_frame_vue.pageIndex);
+        api.addEventListener({  //监听
+            name: 'locationSelectId'
+        }, function (ret, err) {
+            // alert(JSON.stringify(ret.value)); //注意赋值时不用JSON.stringify();
+            if (ret) {
+                location_select_frame_vue.id = ret.value.id;
+                location_select_frame_vue.arrList = []
+                location_select_frame_vue.fnGetRecommend(ret.value.keywords, ret.value.location, ret.value.pageIndex);
+            }
+            location_select_frame_vue.selectList(ret.value.id, ret.value.address, ret.value.name);
+
+        });
+
+        api.addEventListener({
+            name: 'scrolltobottom',
+            extra: {
+                threshold: 150
+            }
+        }, function (ret, err) {
+            if (location_select_frame_vue.loadStatus) {
+                location_select_frame_vue.fnGetRecommend(location_select_frame_vue.keywords, location_select_frame_vue.location, location_select_frame_vue.pageIndex);
+            } else {
+                api.toast({
+                    msg: '没有更多啦!',
+                    duration: 1000,
+                    location: 'middle'
+                });
+            }
+        });
+    };
+    const location_select_frame_vue = new Vue({
+        el: '.location_select_box',
+        data: {
+            keywords: "",//搜索的值
+            selectText: '搜索地点',
+            address: "",//地址
+            id: "",//唯一标识
+            location: "116.473168,39.293015",//经纬度	116.472741,39.992221 临时写死等待rn传参
+            name: "",//名称
+            type: "",//类别
+            status: "",//状态
+            arrList: [],
+            pageSize: "20",
+            pageIndex: "1",
+            loadStatus: true,
+        },
+        methods: {
+            fnGetRecommend(keywords1, location, pageIndex) {
+                $http.GET(UrlRouter.getAround, {//周边位置查询接口
+                    values: {
+                        keywords: keywords1,//请求关键字
+                        location: location,//经纬度坐标
+                        pageIndex: pageIndex,///第几页
+                        pageSize: this.pageSize,//每页数
+                    },
+                }, function (ret, err) {
+                    if ('OK' === ret.data.info) {
+                        // alert(Math.ceil(ret.data.count / location_select_frame_vue.pageSize))
+                        //因为最后四页看不到所以-4
+                        if (Math.ceil(ret.data.count / location_select_frame_vue.pageSize - 4) > location_select_frame_vue.pageIndex) {
+                            location_select_frame_vue.pageIndex++
+                        } else {
+                            location_select_frame_vue.loadStatus = false
+                        }
+                        location_select_frame_vue.name = ret.data.pois[0].name;
+                        var list = ret.data.pois;
+                        list.splice(0, 1)
+
+                        if (location_select_frame_vue.arrList.length != 0) {
+                            for (var i in list) {
+                                location_select_frame_vue.arrList.push(list[i])
+                            }
+                            //concat太耗内存
+                            // location_select_frame_vue.arrList =  location_select_frame_vue.arrList.concat(list);
+                        } else {
+                            location_select_frame_vue.arrList = list;
+                        }
+
+                        api.hideProgress();//停止"加载中"提示框
+                    } else if ('NULL' == ret.data.info) {
+                        $app.toast("没有该位置!", 'middle');
+                    }
+
+                }, function () {
+                    // concernVue.list = [];
+                    $app.toast(ret.msg, 'middle');
+                });
+            },
+            selectList(id, address, name) {
+                api.sendEvent({
+                    name: 'selectListTextId',
+                    extra: {
+                        id: id,
+                        address: address,
+                        name: name,
+                    }
+                });
+            }
+        }
+    })
+
+    function selectPage() {
+        $('.lelectImg').addClass('aui-hide');
+        location_select_frame_vue.id = ''
+        api.openWin({
+            name: 'location_select_page',
+            // url : winUrl + winName + '.html?v=' + new Date().getTime(),
+            url: 'location_select_page.html?v=' + new Date().getTime(),
+            pageParam: {},
+            slidBackEnabled: false,
+            allowEdit: true
+        });
+    }
+
+    //添加选中样式
+    $('.location_select_bottom ul').on('click', 'li', function () {
+        $(this).find('img').toggleClass('aui-hide').parent().siblings().find('img').addClass('aui-hide')
+    })
+
+
+</script>
+
+</html>

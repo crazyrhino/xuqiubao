@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<style>
+			body, html {
+				width: 100%;
+				height: 100%;
+				background: rgba(0,0,0,0);
+			}
+			.record_div {
+				position: relative;
+				/*left: 0;*/
+				/*bottom: 40px;*/
+				width: 100%;
+				height: 80px;
+				text-align: center;
+			}
+			#canvas {
+				width: 82px;
+				height: 82px;
+			}
+			.cancel{
+				position: absolute;
+				left: 26px;
+				/*bottom: 29px;*/
+                top: 20px;
+				width: 60px;
+				height: 40px;
+				line-height : 40px;
+				text-align: left;
+				font-size: 15px;
+				color : #FFF;
+			}
+
+			.preview_div {
+				position: absolute;
+				left: 0;
+				bottom: 26px;
+				width: 100%;
+				height: 40px;
+				display: none;
+			}
+			.back_btn{
+				position: absolute;
+				left: 26px;
+				top: 0;
+				width: 40px;
+				height: 40px;
+				background: url(../../image/edit_topic/video_back.png) no-repeat center;
+				background-size: 48px;
+				border-radius: 40px;
+			}
+			.select_video_btn{
+				position: absolute;
+				right: 26px;
+				top: 20px;
+				width: 60px;
+				height: 60px;
+				border-radius: 4px;
+				display: none;
+			}
+			.confirm_btn{
+				position: absolute;
+				right: 16px;
+				top: 0;
+				width: 40px;
+				height: 40px;
+				background: url(../../image/edit_topic/video_confirm.png) no-repeat center;
+				background-size: 48px;
+				border-radius: 40px;
+			}
+            .change{
+                width: 40px;
+                height: 40px;
+                background: url(../../image/edit_topic/change.png) no-repeat center;
+                background-size: 24px 20px;
+                position: absolute;
+                top: 26px;
+                right: 16px;
+            }
+			.btn{
+				color: #fff;
+				font-size: 14px;
+			}
+		</style>
+	</head>
+	<body>
+    <!--<div class="change" tapmode onclick="fnSetCamera()"></div>-->
+    <div class="record_div" id="record_btn">
+			<div class="cancel" tapmode="meui_click" onclick="fnBack()">取消</div>
+			<canvas id="canvas" width="86" height="86"></canvas>
+			<div class="btn">长按拍摄</div>
+			<img class="select_video_btn" src="" alt="" tapmode="meui_click" onclick="fnSelectVideo()"/>
+		</div>
+		<div class="preview_div">
+			<div class="back_btn" tapmode="meui_click" onclick="fnRecord()"></div>
+			<div class="confirm_btn" tapmode="meui_click" onclick="fnConfirm()"></div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/jquery.js"></script>
+	<script type="text/javascript">
+		var thumbnailPath;
+		apiready = function() {
+			fnDrawInitRecordBtn();
+			fnOnRecordBtnTouch();
+            fnInitEventListener();
+			fnScanPictures();
+            //fnRefreshOpen();
+		};
+		var isFront = 'back';
+		function fnSetCamera() {
+			if(isRecording)return;
+            if(isFront == 'front'){
+                isFront = 'back';
+            }else {
+                isFront = 'front';
+            }
+            api.sendEvent({
+                name: 'setCamera',
+                extra: {
+                    isFront: isFront
+                }
+            });
+        }
+        function fnScanGetPictures() {
+            // if (api.systemType === 'android') {
+            //     api.sendEvent({
+            //         name: 'APICloudCallNaviteMethod',
+            //         extra: {
+            //             type: 9,          // 权限管理
+            //             canCallBack: 1,          // 返回1时，说明有权限，可进行下一步操作
+            //             command: ['android.permission.WRITE_EXTERNAL_STORAGE','android.permission.READ_EXTERNAL_STORAGE','android.permission.CAMERA']       // 需要哪些权限就在数组中传过来
+            //         }
+            //     });
+            // }else {
+                fnGetVideo();
+            // }
+        }
+
+        var count = 0;
+        function fnInitEventListener() {
+            api.addEventListener({
+                name : 'NaviteCallAPICloudMethod'
+            }, function(rets, err) {
+                var ret = rets.value;
+                if (ret.type == 9) {
+                    if (ret.success == 1) {
+                        if (count === 0) {
+                            count++;
+                            fnGetVideo();
+                        }
+                    } else {
+                        // fnToast('没有相应权限', 'middle');
+                        api.alert({
+                            title: '提示',
+                            msg: '没有相机权限，请进入设置添加应用的相机/相册权限',
+                            buttons: ['确定']
+                        }, function (ret, err) {
+                            api.closeWin();
+                        });
+                    }
+                }else if (ret.type == 13) {
+                    if (ret.tag === 'pause') {
+                        api.closeWin();
+                    }
+                }
+            });
+            api.addEventListener({
+                name: 'pause'
+            }, function (ret, err) {
+                api.closeWin();
+            });
+        }
+		function fnBack(){
+            var publish_back_winname = api.readFile({
+                sync : true,
+                path : api.boxDir + '/publish_back_winname.txt'
+            });
+			if (publish_back_winname == 'collect_detail') {
+				api.execScript({
+					name : publish_back_winname,
+					frameName : 'collect_detail_frame',
+					script : 'fnShowEditBtn();'
+				});
+			} else if (api.pageParam.frameName) {
+				api.execScript({
+					name : publish_back_winname,
+					frameName : api.pageParam.frameName,
+					script : 'fnShowEditBtn();'
+				});
+			}else {
+				api.execScript({
+					name : publish_back_winname,
+					script : 'fnShowEditBtn();'
+				});
+			}
+            var videoRecorder = api.require('videoRecorder');
+            videoRecorder.close();
+            fnCloseRnOpenWin();
+		}
+        function fnCloseRnOpenWin() {
+            if (api.winName == 'root') {
+                api.writeFile({
+                    path : api.boxDir + '/isRoot.txt',
+                    data : ''
+                });
+                api.writeFile({
+                    path : api.boxDir + '/topicId.txt',
+                    data : ''
+                });
+                api.sendEvent({
+                    name : 'APICloudCallNaviteMethod',
+                    extra : {
+                        type : 6
+                    }
+                });
+            }
+        }
+        function fnScanPictures() {
+            // api.showProgress();
+            var UIAlbumBrowser = api.require('UIAlbumBrowser');
+            if (api.systemType === 'ios') {
+                UIAlbumBrowser.requestAlbumPermissions({}, function (ret, err) {
+                    if (ret.isAccessPermissions) {
+                        fnScanGetPictures()
+                    } else {
+                        api.alert({
+                            title: '提示',
+                            msg: '没有相机权限，请进入设置添加应用的相机/相册权限',
+                            buttons: ['确定']
+                        }, function (ret, err) {
+                            api.closeWin();
+                        });
+                    }
+                });
+            }else {
+                fnScanGetPictures()
+            }
+        }
+		function fnGetVideo() {
+			var UIAlbumBrowser = api.require('UIAlbumBrowser');
+			UIAlbumBrowser.scan({
+				type : 'video',
+				count : 1,
+				sort : {
+					key : 'time',
+					order : 'desc'
+				},
+				thumbnail : {
+					w : 100,
+					h : 100
+				}
+			}, function(ret) {
+				// api.hideProgress();
+				if (ret && ret.list && ret.list.length > 0) {
+					fnSetImgSrc('.select_video_btn',ret.list[0].thumbPath);
+					fnSetDisplay('.select_video_btn',true);
+				}
+			});
+		}
+
+		function fnSelectVideo(){
+			if(isRecording)return;
+			api.execScript({
+				name : 'video_record',
+	            script: 'fnCloseRecord();'
+            });
+			fnOpenWin('select_video',null,api.pageParam);
+		}
+		function fnConfirm(){
+            api.sendEvent({
+                name: 'confirm_btn'
+            });
+            api.addEventListener({
+                name: 'confirm_btn_result'
+            }, function (ret, err) {
+                if(ret.value.size / 1024 / 1024 > 30 ){
+                    fnToast("视频大小不能超过30M");
+                    return;
+                }
+				if (parseInt(ret.value.time) >= 5) {
+                    api.execScript({
+                        name : api.winName,
+                        script: 'fnClosePlayer();'
+                    });
+                    var recordVideo = $api.getStorage('record_video');
+                    recordVideo.path = recordVideo.filePath;
+                    fnOpenWin('edit_video_topic',null, {
+                        record_video : recordVideo,
+                        winName : api.winName,
+                        frameName : api.pageParam.frameName,
+                        recruitId : api.pageParam.recruitId,
+                        topicId : api.pageParam.topicId,
+                        topicName : api.pageParam.topicName,
+                        taskId : api.pageParam.taskId
+                    });
+				}else {
+                    api.toast({
+                        msg : '视频长度不能小于5秒',
+                        location : 'middle',
+                        duration : 2000
+                    });
+				}
+            });
+
+		}
+		function fnPreview(){
+			fnSetDisplay('.preview_div',true);
+            api.execScript({
+                frameName: 'video_record_camera_frame',
+                script: 'fnSetDisplay(\'.change\',false);'
+            });
+			fnSetDisplay('.record_div',false);
+		}
+
+		function fnRecord(){
+			fnSetDisplay('.preview_div',false);
+			fnSetDisplay('.record_div',true);
+            api.execScript({
+                frameName: 'video_record_camera_frame',
+                script: 'fnSetDisplay(\'.change\',true);'
+            });
+			api.execScript({
+				name : api.winName,
+	            script: 'fnRecord();'
+            });
+		}
+
+
+		var isRecording = false;
+        var currentTime;
+		function fnOnRecordBtnTouch() {
+            var interval;
+			$('#canvas').on('touchstart', function(e) {
+				if (isRecording) {
+				    return;
+                }
+                fnDrawInitRecordBtnRecording();
+				isRecording = true;
+                api.execScript({
+                    frameName: 'video_record_camera_frame',
+                    script: 'isRecording = true;'
+                });
+			    if (api.systemType === 'ios') {
+                    var privacy = api.require('privacy');
+                    privacy.camera(function (ret, err) {
+                        if (ret.status) {
+                            api.execScript({
+                                name: api.winName,
+                                script: 'fnStart();'
+                            });
+                            currentTime = 0;
+                            interval = setInterval(function () {
+                                fnRecording(interval, currentTime);
+                                currentTime++;
+                            }, 100);
+                        } else {
+                            api.alert({
+                                title: '提示',
+                                msg: '没有相机权限，请进入设置添加应用的相机/相册权限',
+                                buttons: ['确定']
+                            }, function (ret, err) {
+                                api.closeWin();
+                            });
+                            // fnToast('录像打开失败，请检查权限', 'middle')
+                        }
+                    });
+                }else {
+                    api.execScript({
+                        name: api.winName,
+                        script: 'fnStart();'
+                    });
+                    currentTime = 0;
+                    interval = setInterval(function () {
+                        fnRecording(interval, currentTime);
+                        currentTime++;
+                    }, 100);
+                }
+			});
+            $('#canvas').on('touchmove', function(e) {
+                var y = e.originalEvent.targetTouches[0].screenY;
+				if (y < 0 || y > api.frameHeight){
+                    if(!isRecording){
+                        return;
+                    }
+                    api.execScript({
+                        name: api.winName,
+                        script: 'recordTime = ' + currentTime
+                    });
+                    if (api.systemType === 'ios'){
+                        api.showProgress();
+                    }
+                    if (currentTime * 100 < 5000) {
+                        api.toast({
+                            msg : '视频长度不能小于5秒',
+                            location : 'middle',
+                            duration : 2000
+                        });
+                        api.hideProgress();
+                    }
+                    // isRecording = false;
+                    if (interval) {
+                        clearInterval(interval);
+                        fnClearCanvas();
+                        api.execScript({
+                            name: api.winName,
+                            script: 'fnStop();'
+                        });
+                    }
+				}
+            });
+			$('#canvas').on('touchend', function(e) {
+			    if(!isRecording){
+			        return;
+                }
+                api.execScript({
+                    name: api.winName,
+                    script: 'recordTime = ' + currentTime
+                });
+			    if (api.systemType === 'ios'){
+                    api.showProgress();
+                }
+                if (currentTime * 100 < 5000) {
+                    api.toast({
+                        msg : '视频长度不能小于5秒',
+                        location : 'middle',
+                        duration : 2000
+                    });
+                    api.hideProgress();
+                }
+                // isRecording = false;
+			    if (interval) {
+                    clearInterval(interval);
+                    fnClearCanvas();
+                    api.execScript({
+                        name: api.winName,
+                        script: 'fnStop();'
+                    });
+                }
+			});
+		}
+
+		function fnRecording(interval, currentTime) {
+			var canvas = document.getElementById("canvas");
+			var cxt = canvas.getContext("2d");
+			cxt.beginPath();
+			cxt.arc(46, 46, 43, -0.5 * Math.PI, (-0.5 + 0.0067 * currentTime) * Math.PI);
+			cxt.lineWidth = 3;
+			cxt.strokeStyle = "#FF6026";
+			cxt.stroke();
+			if (currentTime == 300) {
+				clearInterval(interval);
+				fnClearCanvas();
+                api.execScript({
+                    name: api.winName,
+                    script: 'recordTime = ' + currentTime
+                });
+				api.execScript({
+					name : api.winName,
+		            script: 'fnStop();'
+	            });
+			}
+		}
+		function fnDrawInitRecordBtnRecording() {
+			fnOnlyClear();
+			var canvas = document.getElementById("canvas");
+			var cxt = canvas.getContext("2d");
+			var width = canvas.width;
+			var height = canvas.height;
+			if (window.devicePixelRatio) {
+				canvas.style.width = width + "px";
+				canvas.style.height = height + "px";
+				canvas.height = height * window.devicePixelRatio;
+				canvas.width = width * window.devicePixelRatio;
+				cxt.scale(window.devicePixelRatio, window.devicePixelRatio);
+			}
+			cxt.beginPath();
+			cxt.arc(46, 46, 40, 0, 360);
+			cxt.lineWidth = 3;
+			cxt.strokeStyle = "white";
+			cxt.stroke();
+			//画空心圆
+			cxt.closePath();
+			cxt.beginPath();
+			cxt.arc(46, 46, 35, 0, 360);
+			cxt.fillStyle = "white";
+			cxt.fill();
+			//画空心圆
+			cxt.closePath();
+		}
+
+
+
+		function fnDrawInitRecordBtn() {
+			var canvas = document.getElementById("canvas");
+			var cxt = canvas.getContext("2d");
+			var width = canvas.width;
+			var height = canvas.height;
+			if (window.devicePixelRatio) {
+				canvas.style.width = width + "px";
+				canvas.style.height = height + "px";
+				canvas.height = height * window.devicePixelRatio;
+				canvas.width = width * window.devicePixelRatio;
+				cxt.scale(window.devicePixelRatio, window.devicePixelRatio);
+			}
+			cxt.beginPath();
+			cxt.arc(46, 46, 35, 0, 360);
+			cxt.lineWidth = 3;
+			cxt.strokeStyle = "white";
+			cxt.stroke();
+			//画空心圆
+			cxt.closePath();
+			cxt.beginPath();
+			cxt.arc(46, 46, 30, 0, 360);
+			cxt.fillStyle = "white";
+			cxt.fill();
+			//画空心圆
+			cxt.closePath();
+		}
+
+		function fnOnlyClear(){
+			var canvas = document.getElementById("canvas");
+			var cxt = canvas.getContext("2d");
+			canvas.style.width = 92 + "px";
+			canvas.style.height = 92 + "px";
+			canvas.height = 92;
+			canvas.width = 92;
+		}
+
+		function fnClearCanvas() {
+			var canvas = document.getElementById("canvas");
+			var cxt = canvas.getContext("2d");
+			canvas.style.width = 92 + "px";
+			canvas.style.height = 92 + "px";
+			canvas.height = 92;
+			canvas.width = 92;
+			fnDrawInitRecordBtn();
+		}
+	</script>
+</html>

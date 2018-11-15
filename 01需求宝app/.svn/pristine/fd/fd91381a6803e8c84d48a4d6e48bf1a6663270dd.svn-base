@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <style>
+    	body,html{
+            background-color: transparent;
+        }
+        .detail_wrap {
+            position: relative;
+            background-color: transparent;
+            position: relative;
+        }
+
+        .wrap_rule{
+            width: calc(100% - 62px);
+            padding: 26px 15px 16px 15px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            font-family: PingFangSC-Regular;
+            font-size: 14px;
+            color: #333333;
+            letter-spacing: -0.41px;
+            line-height: 24px;
+        }
+        .detail_wrap p.title {
+            background: url("../../image/rank/title_rule.png") no-repeat;
+            background-size: 176px 44px;
+            height: 44px;
+            width: 176px;
+            font-family: PingFangSC-Medium;
+            font-size: 16px;
+            color: #F54D10;
+            letter-spacing: -0.47px;
+            line-height: 36px;
+            text-align: center;
+            margin: 0 auto;
+            margin-bottom: -15px;
+            position: relative;
+        }
+        .detail-rule{
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .rank_detail{
+            display: flex;
+            font-family: PingFangSC-Regular;
+            font-size: 14px;
+            color: #333333;
+            letter-spacing: 0;
+            line-height: 24px;
+        }
+        h3{
+            font-family: PingFangSC-Medium;
+            font-size: 16px;
+            color: #333333;
+            letter-spacing: -0.47px;
+            line-height: 24px;
+            font-weight: normal;
+        }
+        h4{
+            width: 44px;
+            font-weight: normal;
+        }
+        .rank_detail p{
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="detail_wrap">
+    <p class="title">排行榜规则</p>
+    <div class="wrap_rule">
+        为鼓励优质原创内容、评论、分享等行为，激励更多社区粉丝参与到社区内容建设中来，特建立社区活跃排行榜，根据每月活跃贡献，进行综合评分排名，详细指标如下：
+    </div>
+</div>
+<div class="detail_wrap detail-rule">
+    <p class="title">详细指标</p>
+    <div class="wrap_rule">
+        <h3>1、牛人榜</h3>
+        <div class="rank_detail">
+            <h4>指数：</h4>
+            <p>话题发布数*37%+评论数*23%+点赞数.话题*19%+点赞数.评论*7%+分享数*14%</p>
+        </div>
+        话题发布数=统计月每个微店主ID话题发布总数<br>
+        评论数=统计月每个微店主ID话题评论总数（话题ID去重）<br>
+        点赞数.话题=统计月每个微店主ID点赞话题总数<br>
+        点赞数.评论=统计月每个微店主ID点赞评论总数<br>
+        分享数=统计月每个微店主ID分享总数
+        <h3>2、红人榜</h3>
+        <div class="rank_detail">
+            <h4>指数：</h4>
+            <p>获取粉丝量*37%+获得评论量*23%+获得点赞量*40%</p>
+        </div>
+        获取粉丝量=统计月每个微店主ID（本月当日粉丝余量-上月粉丝余量） <br>
+        获得评论量=统计月每个微店主ID话题（本月当月获评总余量-上月获评总余量） <br>
+        获得点赞量=统计月每个微店主ID话题（本月当月获赞总余量-上月获赞总余量）
+        <h3>3、话题榜</h3>
+        <div class="rank_detail">
+            <h4>指数：</h4>
+            <p>指数=获评数*47%+获赞数*31%+被分享数*22%</p>
+        </div>
+        <p>获评数=统计月每个话题新增获评数</p>
+        <p>获赞数=统计月每个话题新增获赞数</p>
+        <p>被分享数=统计月每个话题被分享数</p>
+        <h3>4、计算时间段</h3>
+        <p>本月：每日凌晨5点计算当月1号00：00开始~昨日24：00社区排行排行</p>
+        <p>上月：当月凌晨4点计算上个自然月1号00：00开始~月末最后一个自然日24：00社区排行</p>
+
+        <h3>5、统计范围</h3>
+        <p>1）社区统计指标行为发生时间为pk时间段，不考虑话题创建时间。</p>
+        <p>2）征集话题与其子话题不参与话题榜的排名；参与牛人排行榜、红人排行榜。</p>
+        <p>3）榜单人员范围：</p>
+        <p>3-1）友圈排行榜</p>
+        <p>榜单人员范围：我、我关注的人、我的粉丝、我的二级、我的上级</p>
+        <p>其他指标同社区部分排行榜</p>
+        <p>3-2）社区的三个榜单：不包括“圈主”和“管理员”，圈主/管理员参与友圈排行；</p>
+        <p>3-3）牛人榜当月话题输出量不低于1篇，未达1篇不参与榜单排名，达到1篇后次日参与本月榜单排名。</p>
+
+        <h3>6、已经排名完成的历史数据（例如：上月数据）不再因为个别指标数据发生变动而变动。</h3>
+
+        <h3>7、最终解释权归顺逛社区所有。</h3>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript">
+	apiready = function(){
+		//fnRefreshOpen();
+	};
+</script>
+</html>

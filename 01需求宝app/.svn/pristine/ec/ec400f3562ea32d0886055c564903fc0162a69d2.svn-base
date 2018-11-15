@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>我的收赏</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/reward_comment.css"/>
+		<style>
+			.no-data{
+				text-align: center;
+				height: 100%;
+				overflow: hidden;
+			}
+			.no-data img{
+				height:97px;
+				width: 124px;
+				margin:64px 0 12px 0;
+			}
+			.no-data p{
+				font-size: 14px;
+				color: #999;
+				margin-bottom:24px;
+			}
+			.no-data div{
+				height: 38px;
+				width: 126px;
+				margin:0 auto;
+				border-radius: 100px;
+				border:1px solid #FF6026;
+				color: #FF6026;
+				font: 16px/38px '';
+			}
+			.original_text,.my_reply{
+                word-wrap:break-word;
+                word-break: break-all;
+			}
+			.commtent_list .wrap {
+				position: relative;
+				width: 0.933333rem;
+				height: 0.933333rem;
+			}
+
+			.wrap img.red_vip,.wrap img.yellow_vip,.wrap img.purple_vip{
+				position :absolute;
+				right: 0;
+				bottom : 0;
+				width : 12px;
+				height : 12px;
+			}
+			.comment_expression_img {
+				width: 66px;
+				height: 66px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="warp">
+            <div v-if="list.length == 0" class="no-data">
+                <img src="../../image/mine/nopl.png" alt="">
+                <p>去晒晒你的神评论~</p>
+                <div tapmode onclick="fnOpenMain()">去评论</div>
+            </div>
+			<div class="my_commtent">
+				<div v-for="item in list" class="commtent_list">
+					<div class="wrap">
+						<div class="comm_li_img" @click="fnOpenUser(item)">
+							<img v-if="item.userImg" v-bind:src="item.userImg" onerror="fnImgError(this)">
+							<img v-else src="../../image/home/tmp_default_header.png" alt="">
+						</div>
+						<img v-if="item.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png">
+						<img v-if="item.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png">
+						<img v-if="item.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png">
+					</div>
+					<div class="comm_li_cont">
+						<div class="vip_name">
+							<span @click="fnOpenUser(item)">{{item.userName || item.userCode}}</span>
+							<span class="at_time">{{item.commentTime1}}</span>
+						</div>
+						<div class="reply">
+							<div class="my_reply meui_5_line meui_flex_con_no_w">
+								我的评论：
+								 <img v-if="!item.comment && (item.commentImgs && item.commentImgs.indexOf('shunguang/expression') != -1)"
+                         			class="comment_expression_img" :src="item.commentImgs" alt=""/>
+                         		 <span v-else v-text="fnCommentContent(item)"></span>
+							</div>
+							<div class="img_reply" v-if="item.tipAmount">
+								金币+{{item.tipAmount}}
+							</div>
+						</div>
+						<div class="original" @click="openDetails(item.dataTypeNew,item.storyId)">
+							<div class="original_img" v-show="item.mainImg">
+								<img  :src="item.mainImg">
+                                <!--<img v-else src="../../image/tmp.jpg" alt="">-->
+                            </div>
+							<div v-if="item.storyContent" class="original_text meui_flex_con_no_w" v-text="item.storyContent">
+							</div>
+							<div v-else class="original_text meui_flex_con_no_w">该话题已被删除
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript">
+		var pageIndex = 1;
+		apiready = function() {
+			//fnRefreshOpen();
+			fnGetUserCollectionStoryList();
+			fnSetRefresh(function() {
+				fnGetUserCollectionStoryList(false, true);
+			});
+			addBottomListener(function() {
+				pageIndex++;
+				fnGetUserCollectionStoryList(true, false);
+			});
+		};
+		var vue = new Vue({
+			el : '.warp',
+			data : {
+				list : [/*{
+                    "commentTime1": "29分钟前",
+                    "storyContent": "啊啊啊high",
+                    "storyCreateTime": "2018-08-08 16:46:40.0",
+                    "userName": "很长很长的昵称是什么样的昵称呢",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/07/774f781b297d45b6aa872512dacde688.jpg",
+                    "talentFlag": 1,
+                    "dataTypeNew": 1,
+                    "delStatus": 0,
+                    "id": 1321896,
+                    "storyId": 103501,
+                    "comment": "擦擦",
+                    "userCode": "138993746"
+                }, {
+                    "commentTime1": "2天前",
+                    "storyContent": "\uD83D\uDCA2颇有婆婆家让我搜哦心魄 Mr\n\n\n有婆婆显示屏'\n让我去外婆一起\n\n\n外婆随心所欲\n我让我去外婆一起'\n我哦朋友圈^_^\n\n外婆随心所欲朋友",
+                    "storyCreateTime": "2018-08-06 16:33:45.0",
+                    "mainImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-shopping-web/ordercommentv3controller/image/2018/08/8f5449d737b24050936d347b28e947c8.gif",
+                    "userName": "433",
+                    "userImg": "",
+                    "talentFlag": 1,
+                    "dataTypeNew": 1,
+                    "delStatus": 0,
+                    "id": 1321814,
+                    "storyId": 103385,
+                    "comment": "哈哈",
+                    "userCode": "138993636"
+                }, {
+                    "commentTime1": "5天前",
+                    "storyContent": "\uD83D\uDC43\uD83E\uDD18\uD83D\uDE01\uD83D\uDE2C\uD83D\uDE06\uD83D\uDE0A\uD83D\uDE0C\uD83D\uDE09\uD83D\uDE06\uD83D\uDE06☺️☺️☺️☺️\uD83D\uDC7F\uD83D\uDE3A\uD83D\uDC80\uD83D\uDC80\uD83D\uDC80\uD83D\uDC80\uD83D\uDC80\uD83E\uDD16\uD83E\uDD16\uD83E\uDD16\uD83E\uDD16\uD83E\uDD16\uD83D\uDE3E\uD83E\uDD14\uD83D\uDE0A\uD83D\uDE0A\uD83D\uDE0A\uD83D\uDE07\uD83D\uDE07\uD83D\uDE07\uD83D\uDE07\uD83D\uDE1C☺️\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE06\uD83D\uDE0A\uD83D\uDE0A\uD83D\uDE0A\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D\uD83D\uDE1D",
+                    "storyCreateTime": "2018-08-03 10:12:52.0",
+                    "mainImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-shopping-web/ordercommentv3controller/image/2018/07/69b1da4bc40c4fd49d9fb69d3d47ecb4.jpg",
+                    "userName": "很长很长的昵称是什么样的昵称呢",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/07/774f781b297d45b6aa872512dacde688.jpg",
+                    "talentFlag": 1,
+                    "dataTypeNew": 1,
+                    "delStatus": 0,
+                    "id": 1321781,
+                    "storyId": 102499,
+                    "comment": "d",
+                    "userCode": "138993746"
+                }, {
+                    "commentTime1": "5天前",
+                    "storyContent": "我在写作业",
+                    "storyCreateTime": "2018-08-03 10:03:41.0",
+                    "mainImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-shopping-web/ordercommentv3controller/image/2018/08/7b447f725e244d4eac11964cf0a3e5a3.jpg",
+                    "userName": "很长很长的昵称是什么样的昵称呢",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/07/774f781b297d45b6aa872512dacde688.jpg",
+                    "talentFlag": 1,
+                    "dataTypeNew": 3,
+                    "delStatus": 0,
+                    "id": 1321780,
+                    "storyId": 103313,
+                    "comment": "啊啊啊",
+                    "userCode": "138993746"
+                }, {
+                    "commentTime1": "6天前",
+                    "storyContent": "中央音乐学院",
+                    "storyCreateTime": "2018-08-02 09:29:10.0",
+                    "mainImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-shopping-web/ordercommentv3controller/image/2018/08/39292fc4c6cf4b3ebdfcf19d0b39c2d7.jpg",
+                    "userName": "很长很长的昵称是什么样的昵称呢",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/07/774f781b297d45b6aa872512dacde688.jpg",
+                    "talentFlag": 1,
+                    "dataTypeNew": 3,
+                    "delStatus": 0,
+                    "id": 1321670,
+                    "storyId": 103304,
+                    "comment": "请输入",
+                    "userCode": "138993746"
+                }, {
+                    "commentTime1": "6天前",
+                    "storyContent": "中央音乐学院",
+                    "storyCreateTime": "2018-08-02 09:28:55.0",
+                    "mainImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-shopping-web/ordercommentv3controller/image/2018/08/39292fc4c6cf4b3ebdfcf19d0b39c2d7.jpg",
+                    "userName": "很长很长的昵称是什么样的昵称呢",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/07/774f781b297d45b6aa872512dacde688.jpg",
+                    "talentFlag": 1,
+                    "dataTypeNew": 3,
+                    "delStatus": 0,
+                    "id": 1321669,
+                    "storyId": 103304,
+                    "comment": "好尴尬",
+                    "userCode": "138993746"
+                }, {
+                    "commentTime1": "6天前",
+                    "storyContent": "中央音乐学院",
+                    "storyCreateTime": "2018-08-02 09:28:46.0",
+                    "mainImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-shopping-web/ordercommentv3controller/image/2018/08/39292fc4c6cf4b3ebdfcf19d0b39c2d7.jpg",
+                    "userName": "很长很长的昵称是什么样的昵称呢",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/07/774f781b297d45b6aa872512dacde688.jpg",
+                    "talentFlag": 1,
+                    "dataTypeNew": 3,
+                    "delStatus": 0,
+                    "id": 1321668,
+                    "storyId": 103304,
+                    "comment": "哦哦",
+                    "userCode": "138993746"
+                }, {
+                    "commentTime1": "6天前",
+                    "storyContent": "中央音乐学院",
+                    "storyCreateTime": "2018-08-02 09:28:43.0",
+                    "mainImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-shopping-web/ordercommentv3controller/image/2018/08/39292fc4c6cf4b3ebdfcf19d0b39c2d7.jpg",
+                    "userName": "很长很长的昵称是什么样的昵称呢",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/07/774f781b297d45b6aa872512dacde688.jpg",
+                    "talentFlag": 1,
+                    "dataTypeNew": 3,
+                    "delStatus": 0,
+                    "id": 1321667,
+                    "storyId": 103304,
+                    "comment": "全是肉啊",
+                    "userCode": "138993746"
+                }, {
+                    "commentTime1": "6天前",
+                    "storyContent": "中央音乐学院",
+                    "storyCreateTime": "2018-08-02 09:28:38.0",
+                    "mainImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-shopping-web/ordercommentv3controller/image/2018/08/39292fc4c6cf4b3ebdfcf19d0b39c2d7.jpg",
+                    "userName": "很长很长的昵称是什么样的昵称呢",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/07/774f781b297d45b6aa872512dacde688.jpg",
+                    "talentFlag": 1,
+                    "dataTypeNew": 3,
+                    "delStatus": 0,
+                    "id": 1321666,
+                    "storyId": 103304,
+                    "comment": "拉卡拉",
+                    "userCode": "138993746"
+                }, {
+                    "commentTime1": "8天前",
+                    "storyContent": "dddddddddddddddddddddddddddddddddddddddddddddddddddd",
+                    "storyCreateTime": "2018-07-31 13:48:01.0",
+                    "mainImg": "http://sg-video-test.oss-cn-beijing.aliyuncs.com/story/video/2018/06/5e0d5b4b13074ee2b5543fd9deb984d7.mp4.jpg",
+                    "userName": "头号大拿Z4qV",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/06/d318540fab4247c8b9e4ded679e11cf8.jpg",
+                    "talentFlag": 0,
+                    "dataTypeNew": 3,
+                    "delStatus": 0,
+                    "id": 1321647,
+                    "storyId": 101525,
+                    "comment": "4",
+                    "userCode": "138306870"
+                }, {
+                    "commentTime1": "8天前",
+                    "storyContent": "dddddddddddddddddddddddddddddddddddddddddddddddddddd",
+                    "storyCreateTime": "2018-07-31 13:45:45.0",
+                    "mainImg": "http://sg-video-test.oss-cn-beijing.aliyuncs.com/story/video/2018/06/5e0d5b4b13074ee2b5543fd9deb984d7.mp4.jpg",
+                    "userName": "头号大拿Z4qV",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/06/d318540fab4247c8b9e4ded679e11cf8.jpg",
+                    "talentFlag": 0,
+                    "dataTypeNew": 3,
+                    "delStatus": 0,
+                    "id": 1321646,
+                    "storyId": 101525,
+                    "comment": "",
+                    "userCode": "138306870"
+                }, {
+                    "commentTime1": "8天前",
+                    "storyContent": "dddddddddddddddddddddddddddddddddddddddddddddddddddd",
+                    "storyCreateTime": "2018-07-31 13:41:40.0",
+                    "mainImg": "http://sg-video-test.oss-cn-beijing.aliyuncs.com/story/video/2018/06/5e0d5b4b13074ee2b5543fd9deb984d7.mp4.jpg",
+                    "userName": "头号大拿Z4qV",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/06/d318540fab4247c8b9e4ded679e11cf8.jpg",
+                    "talentFlag": 0,
+                    "dataTypeNew": 3,
+                    "delStatus": 0,
+                    "id": 1321645,
+                    "storyId": 101525,
+                    "comment": "1擦擦擦啊啊啊啊啊啊啊啊吧功能模块-社区榜单\t\t\nt_uc_rank\t上月~本月的数据（定期清理）\t前端使用\nt_uc_rank_active_history\t活跃排行榜\t后端使用\nt_uc_rank_popularity_history\t被捧排行榜\t后端使用\nt_uc_rank_story_history\t话题排行榜\t后端使用",
+                    "userCode": "138306870"
+                }, {
+                    "commentTime1": "8天前",
+                    "storyContent": "把几乎同你讲",
+                    "storyCreateTime": "2018-07-31 11:51:44.0",
+                    "userName": "头号大拿Z4qV",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/06/d318540fab4247c8b9e4ded679e11cf8.jpg",
+                    "talentFlag": 0,
+                    "dataTypeNew": 1,
+                    "delStatus": 0,
+                    "id": 1321644,
+                    "storyId": 103260,
+                    "comment": "h哈哈哈(ಡ&omega;ಡ)hiahiahia",
+                    "userCode": "138306870",
+                    "commentImgs": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-shopping-web/ordercommentv3controller/image/2018/07/530a04106b024810ac7ffcaa25ffb74d.gif"
+                }, {
+                    "commentTime1": "8天前",
+                    "storyContent": "把几乎同你讲",
+                    "storyCreateTime": "2018-07-31 11:51:17.0",
+                    "userName": "头号大拿Z4qV",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/06/d318540fab4247c8b9e4ded679e11cf8.jpg",
+                    "talentFlag": 0,
+                    "dataTypeNew": 1,
+                    "delStatus": 0,
+                    "id": 1321643,
+                    "storyId": 103260,
+                    "comment": "顺电",
+                    "userCode": "138306870",
+                    "commentImgs": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-shopping-web/ordercommentv3controller/image/2018/07/86a43468bbb7495fb3241433da1ff3d1.jpg"
+                }, {
+                    "commentTime1": "8天前",
+                    "storyContent": "把几乎同你讲",
+                    "storyCreateTime": "2018-07-31 11:50:55.0",
+                    "userName": "头号大拿Z4qV",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/06/d318540fab4247c8b9e4ded679e11cf8.jpg",
+                    "talentFlag": 0,
+                    "dataTypeNew": 1,
+                    "delStatus": 0,
+                    "id": 1321642,
+                    "storyId": 103260,
+                    "comment": "",
+                    "userCode": "138306870",
+                    "commentImgs": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-shopping-web/ordercommentv3controller/image/2018/07/8cb4166d4a93498483998d6151be79b2.jpg"
+                }, {
+                    "commentTime1": "8天前",
+                    "storyContent": "把几乎同你讲",
+                    "storyCreateTime": "2018-07-31 11:50:42.0",
+                    "userName": "头号大拿Z4qV",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/06/d318540fab4247c8b9e4ded679e11cf8.jpg",
+                    "talentFlag": 0,
+                    "dataTypeNew": 1,
+                    "delStatus": 0,
+                    "id": 1321641,
+                    "storyId": 103260,
+                    "comment": "",
+                    "userCode": "138306870",
+                    "commentImgs": "http://cdn09.ehaier.com/shunguang/expression/haier/haier4.gif"
+                }, {
+                    "commentTime1": "8天前",
+                    "storyContent": "把几乎同你讲",
+                    "storyCreateTime": "2018-07-31 11:50:16.0",
+                    "userName": "头号大拿Z4qV",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/06/d318540fab4247c8b9e4ded679e11cf8.jpg",
+                    "talentFlag": 0,
+                    "dataTypeNew": 1,
+                    "delStatus": 0,
+                    "id": 1321640,
+                    "storyId": 103260,
+                    "comment": "",
+                    "userCode": "138306870",
+                    "commentImgs": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-shopping-web/ordercommentv3controller/image/2018/07/84508b56bf134d0d81bf691cee75ad00.jpg"
+                }, {
+                    "commentTime1": "8天前",
+                    "storyContent": "把几乎同你讲",
+                    "storyCreateTime": "2018-07-31 11:49:53.0",
+                    "userName": "头号大拿Z4qV",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/06/d318540fab4247c8b9e4ded679e11cf8.jpg",
+                    "talentFlag": 0,
+                    "dataTypeNew": 1,
+                    "delStatus": 0,
+                    "id": 1321639,
+                    "storyId": 103260,
+                    "comment": "",
+                    "userCode": "138306870",
+                    "commentImgs": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-shopping-web/ordercommentv3controller/image/2018/07/09fb6d7a56e147e29c1db5dea980523e.jpg"
+                }, {
+                    "commentTime1": "8天前",
+                    "storyContent": "把几乎同你讲",
+                    "storyCreateTime": "2018-07-31 11:49:17.0",
+                    "userName": "头号大拿Z4qV",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/06/d318540fab4247c8b9e4ded679e11cf8.jpg",
+                    "talentFlag": 0,
+                    "dataTypeNew": 1,
+                    "delStatus": 0,
+                    "id": 1321638,
+                    "storyId": 103260,
+                    "comment": "",
+                    "userCode": "138306870",
+                    "commentImgs": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-shopping-web/ordercommentv3controller/image/2018/07/8f6d7cd9835148d3b66fb14775b97b00.jpg"
+                }, {
+                    "commentTime1": "8天前",
+                    "storyContent": "把几乎同你讲",
+                    "storyCreateTime": "2018-07-31 11:49:05.0",
+                    "userName": "头号大拿Z4qV",
+                    "userImg": "http://sg-file-test.oss-cn-beijing.aliyuncs.com/mobile-app-platform-web/imagev3controller/image/2018/06/d318540fab4247c8b9e4ded679e11cf8.jpg",
+                    "talentFlag": 0,
+                    "dataTypeNew": 1,
+                    "delStatus": 0,
+                    "id": 1321637,
+                    "storyId": 103260,
+                    "comment": "",
+                    "userCode": "138306870",
+                    "commentImgs": "http://cdn09.ehaier.com/shunguang/expression/haier/haier3.gif"
+                }*/]
+			},
+			methods : {
+                openDetails : function(_dataTypeNew, _id) {
+                    fnOpenWin('topic_details', '../topic/', {
+                        type : _dataTypeNew,
+                        id : _id
+                    });
+                },
+                fnCommentContent : function(item){
+                	var content = item.comment;
+                	if(fnIsEmpty(content) && !fnIsEmpty(item.commentImgs)){
+                		return '[图片]';
+                	}
+                	return content;
+                },
+                fnOpenUser : function(item) {
+//                    alert($api.getStorage('userId'))
+                    api.readFile({
+                        path: api.boxDir + '/userid.txt'
+                    }, function (ret, err) {
+                        if (ret) {
+                            var _userid = ret.data;
+                            if (_userid === ''){
+                                fnOpenLogin();
+                                return
+                            }
+                            if (item.userCode == _userid) {
+                                fnOpenWin('mine', null);
+                            } else {
+                                fnOpenWin('ta_page', '../ta_page/', {
+                                    userId : item.userCode
+                                });
+                            }
+                        }
+                    })
+                }
+			}
+		});
+        function fnOpenLogin() {
+            api.sendEvent({
+                name : 'APICloudCallNaviteMethod',
+                extra : {
+                    type : 1,
+                    canCallBack : 1,
+                    toPageName : 'Login'
+                }
+            });
+        }
+        function fnOpenMain() {
+            api.closeToWin({
+                name: 'root',
+                animation: {
+                    type: 'push',
+                    subType: 'from_left',
+                    duration: 300
+                }
+            });
+        }
+		function fnGetUserCollectionStoryList(isLoadMore,isRefresh) {
+			$service.get('user/getUserCommentStoryList.ajax', {
+				pageIndex : pageIndex,
+				pageSize : 20,
+				storyType : 1
+			}, function(ret, err) {
+				api.refreshHeaderLoadDone();
+				if(ret) {
+					if(ret.data.list && ret.data.list.length > 0) {
+                        api.sendEvent({
+                            name: 'munityNum',
+                            extra: {leftNum: ret.data.count}
+                        });
+						if(isRefresh) {
+							vue.list = [];
+						}
+						fnAppendData(vue.list, ret.data.list);
+					} else {
+						if(isLoadMore) {
+							fnToast("没有更多");
+						}else if(isRefresh) {
+//							fnToast("获取数据失败");
+						}
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+	</script>
+</html>

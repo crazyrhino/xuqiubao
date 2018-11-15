@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>全部圈子</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/all_community.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+	</head>
+	<body>
+		<div id="header"  class="rank_header">
+			<div class="rank_content">
+				<div class="rank_back" tapmode onclick="fnBack()"></div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+			var header = $api.byId('header');
+			fnSysHeaderStyleById();
+			api.openFrame({
+				name : api.winName + '_frame',
+				url : api.pageParam.url+'?openType=app',
+				rect : {
+					y : header.offsetHeight + 1,
+					h : api.winHeight - header.offsetHeight
+				}
+			});
+		};
+
+
+        function fnBack() {
+            api.historyBack({
+                frameName: api.winName + '_frame'
+            }, function(ret, err) {
+                if (!ret.status) {
+                    api.closeWin();
+                }
+            });
+        }
+	</script>
+</html>

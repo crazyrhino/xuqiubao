@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>我的收赏</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/reward_comment.css"/>
+		<style>
+			.no-data{
+				text-align: center;
+				height: 100%;
+				overflow: hidden;
+			}
+			.no-data img{
+				height:97px;
+				width: 124px;
+				margin:64px 0 12px 0;
+			}
+			.no-data p{
+				font-size: 14px;
+				color: #999;
+				margin-bottom:24px;
+			}
+			.no-data div{
+				height: 38px;
+				width: 126px;
+				margin:0 auto;
+				border-radius: 100px;
+				border:1px solid #FF6026;
+				color: #FF6026;
+				font: 16px/38px '';
+			}
+			.original_text{
+				word-wrap:break-word;
+				word-break: break-all;
+			}
+
+			.commtent_list .wrap {
+				position: relative;
+				width: 0.933333rem;
+				height: 0.933333rem;
+			}
+
+			.wrap img.red_vip,.wrap img.yellow_vip,.wrap img.purple_vip{
+				position :absolute;
+				right: 0;
+				bottom : 0;
+				width : 12px;
+				height : 12px;
+			}
+
+		</style>
+	</head>
+	<body>
+		<div class="warp">
+			<div class="my_commtent">
+				<div class="no-data" v-if="list.length == 0">
+					<img src="../../image/mine/nodz.png" alt="">
+					<p>你的赞妙手回春，衰草重生~</p>
+					<div tapmode onclick="fnOpenMain();">去点赞</div>
+				</div>
+				<div v-for="item in list" class="commtent_list">
+					<div class="wrap">
+						<div class="comm_li_img" @click="fnOpenUser(item)">
+							<img v-bind:src="item.userImg" onerror="fnImgError(this)">
+						</div>
+						<img v-if="item.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png">
+						<img v-if="item.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png">
+						<img v-if="item.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png">
+					</div>
+					<div class="comm_li_cont">
+						<div class="vip_name">
+							<span @click="fnOpenUser(item)">{{item.userName}}</span>
+							<span class="at_time">{{item.createDate1}}</span>
+						</div>
+						<div class="original" @click="openDetails(4,item.id)">
+							<div class="original_img">
+								<img v-bind:src="item.mainImg" onerror="fnImgError(this)">
+							</div>
+							<div class="original_text meui_flex_con_no_w" v-text="item.storyContentText"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript">
+		var pageIndex = 1;
+		apiready = function() {
+			//fnRefreshOpen();
+			fnGetUserPraiseStoryList();
+			fnSetRefresh(function() {
+				pageIndex = 1;
+				fnGetUserPraiseStoryList(false, true);
+			});
+			addBottomListener(function() {
+				pageIndex++;
+				fnGetUserPraiseStoryList(true, false);
+			});
+		};
+		var vue = new Vue({
+			el : '.warp',
+			data : {
+				list : []
+			},
+			methods : {
+                openDetails : function(_dataTypeNew, _id) {
+                    fnOpenWin('topic_details', '../topic/', {
+                        type : _dataTypeNew,
+                        id : _id
+                    });
+                },
+                fnOpenUser : function(item) {
+                    api.readFile({
+                        path: api.boxDir + '/userid.txt'
+                    }, function (ret, err) {
+                        if (ret) {
+                            var _userid = ret.data;
+                            if (_userid === ''){
+                                fnOpenLogin();
+                                return
+                            }
+                            if (item.userCode == _userid) {
+                                fnOpenWin('mine', null);
+                            } else {
+                                fnOpenWin('ta_page', '../ta_page/', {
+                                    userId : item.userCode
+                                });
+                            }
+                        }
+                    })
+                }
+			}
+		});
+        function fnOpenLogin() {
+            api.sendEvent({
+                name : 'APICloudCallNaviteMethod',
+                extra : {
+                    type : 1,
+                    canCallBack : 1,
+                    toPageName : 'Login'
+                }
+            });
+        }
+        function fnOpenMain() {
+            fnOpenWin("business_school_win", "../community/");
+        }
+		function fnGetUserPraiseStoryList(isLoadMore, isRefresh) {
+			$service.get('user/getUserPraiseStoryList.ajax', {
+				pageIndex : pageIndex,
+				pageSize : 20,
+				storyType : 2
+			}, function(ret, err) {
+				api.refreshHeaderLoadDone();
+				if (ret) {
+					if (ret.data.list && ret.data.list.length > 0) {
+						fnSetTotalCount(ret.data.count);
+						if (isRefresh) {
+							vue.list = [];
+						}
+						fnAppendData(vue.list, ret.data.list);
+					} else {
+						if (isLoadMore) {
+							fnToast("没有更多");
+						} else if (isRefresh) {
+//							fnToast("获取数据失败");
+						}
+					}
+				}
+			});
+		}
+		
+		function fnSetTotalCount(count){
+			api.execScript({
+				name : api.winName,
+	            script: 'fnSetTotalCount("class_count",'+count+');'
+            });
+		}
+
+		function fnAppendData(oldArr, data) {
+			for (var i = 0; i < data.length; i++) {
+				if (fnIsEmpty(data[i].mainImg)) {
+					data[i].mainImg = '../../image/home/tmp_default_header.png';
+				}
+				if (fnIsEmpty(data[i].userImg)) {
+					data[i].userImg = '../../image/home/tmp_default_header.png';
+				}
+				if (fnIsEmpty(data[i].userName)) {
+					data[i].userName = data[i].userCode;
+				}
+				oldArr.push(data[i]);
+			}
+			return oldArr;
+		}
+	</script>
+</html>

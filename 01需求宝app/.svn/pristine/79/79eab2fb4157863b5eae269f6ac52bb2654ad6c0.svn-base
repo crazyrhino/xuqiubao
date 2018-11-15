@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<style>
+			body, html {
+				background: rgba(0,0,0,0);
+			}
+			.footer {
+				width: 100%;
+				background: rgba(0,0,0,0);
+			}
+			.footer_bottom {
+				position: relative;
+				width: 100%;
+				height: 49px;
+			}
+			.right_btn {
+				position: absolute;
+				right: 12px;
+				top: 10px;
+				height: 30px;
+				padding-left: 15px;
+				padding-right: 15px;
+				line-height: 32px;
+				text-align: center;
+				background: #FF6026;
+				border-radius: 30px;
+				color: #FFF;
+			}
+			.select_imgs {
+				height: 87px;
+				padding-left: 16px;
+				border-bottom: 2px solid #343434;
+				overflow-y: hidden;
+				display: none;
+			}
+			.slide-box {
+				display: -webkit-box;
+				overflow-x: scroll;
+				-webkit-overflow-scrolling: touch;
+				overflow-y: hidden;
+			}
+			.slide-item {
+				width: 60px;
+				height: 60px;
+				margin-right: 10px;
+				margin-top: 15px;
+				border: 0px;
+				box-sizing: border-box;
+			}
+			.slide-item.active {
+				border: 2px solid #FF6026;
+			}
+			.img {
+				width: 60px;
+				height: 60px;
+			}
+			.img.active {
+				width: 56px;
+				height: 56px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="footer">
+			<div class="select_imgs">
+				<div class="slide-box list">
+					<div v-for="item in list" tapmode="meui_click" v-on:click="fnSelect(item)">
+						<div v-if="item.showing" class="slide-item active">
+							<img class="img active" v-bind:src="item.thumbPath" alt="" />
+						</div>
+						<div v-else class="slide-item">
+							<img class="img" v-bind:src="item.thumbPath" alt="" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="footer_bottom">
+				<div class="right_btn" tapmode="meui_click" onclick="fnComplete()">
+					完成
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript">
+		var vue;
+		var selectedImgs = [];
+		var imgs;
+		apiready = function() {
+			//fnRefreshOpen();
+			selectedImgs = JSON.parse(api.readFile({
+				sync : true,
+				path : api.boxDir + '/selectedImgs.txt'
+			}));
+			imgs = JSON.parse(api.readFile({
+				sync : true,
+				path : api.boxDir + '/imgs.txt'
+			}));
+			fnInitVue();
+			fnIsShowSelectImgs();
+		};
+		function fnIsShowSelectImgs() {
+			if (selectedImgs && selectedImgs.length > 0) {
+				fnShowSelectImgs();
+			} else {
+				fnHideSelectImgs();
+			}
+		}
+
+		function fnInitVue() {
+			vue = new Vue({
+				el : '.list',
+				data : {
+					list : selectedImgs
+				},
+				methods : {
+					fnSelect : function(item) {
+						for (var i = 0; i < selectedImgs.length; i++) {
+							if (item.path == selectedImgs[i].path) {
+								this.$set(this.$data.list[i], 'showing', true);
+							} else {
+								this.$set(this.$data.list[i], 'showing', false);
+							}
+						}
+						for (var i = 0; i < imgs.length; i++) {
+							if (item.path == imgs[i].path) {
+								api.execScript({
+									name : api.winName,
+									script : 'fnSetShowImgIndex(' + i + ');'
+								});
+							}
+						}
+					}
+				}
+			});
+		}
+
+		function fnResetSelectImgs() {
+			selectedImgs = JSON.parse(api.readFile({
+				sync : true,
+				path : api.boxDir + '/selectedImgs.txt'
+			}));
+			vue.list = selectedImgs;
+			fnIsShowSelectImgs();
+		}
+
+		function fnShowSelectImgs() {
+			fnSetDisplay(".select_imgs", true);
+			api.setFrameAttr({
+				name : api.frameName,
+				rect : {
+					x : 0,
+					y : api.winHeight - 138,
+					w : api.winWidth,
+					h : 138
+				}
+			});
+		}
+
+		function fnHideSelectImgs() {
+			fnSetDisplay(".select_imgs", false);
+			api.setFrameAttr({
+				name : api.frameName,
+				rect : {
+					x : 0,
+					y : api.winHeight - 49,
+					w : api.winWidth,
+					h : 49
+				}
+			});
+		}
+
+		function fnComplete() {
+			if (api.pageParam.winName && typeof api.pageParam.topicType != 'undefined') {
+				if (api.pageParam.frameName) {
+					api.execScript({
+						name : api.pageParam.winName,
+						frameName : api.pageParam.frameName,
+						script : 'fnGetSelectedImgs();'
+					});
+				} else {
+                	 if(api.pageParam.winName == 'root' && api.pageParam.topicType == 'image'){
+                        api.execScript({
+                            name : 'root',
+                            frameName : 'edit_topic_frame',
+                            script : 'fnGetSelectedImgs();'
+                        });
+                    }else{
+                         api.execScript({
+                             name : api.pageParam.winName,
+                             script : 'fnGetSelectedImgs();'
+                         });
+					 }
+				}
+			} else if(api.pageParam.winName && api.pageParam.frameName && typeof api.pageParam.topicType == 'undefined'){
+				api.execScript({
+					name : api.pageParam.winName,
+					frameName : api.pageParam.frameName,
+					script : 'fnGetSelectedImgs();'
+				});
+			} else {
+				api.execScript({
+					name : 'edit_topic',
+					frameName : 'edit_topic_frame',
+					script : 'fnGetSelectedImgs();'
+				});
+			}
+
+		}
+	</script>
+</html>

@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>视频话题列表frame</title>
+    <meta name="viewport"
+          content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+    <link rel="stylesheet" href="../../css/aliPlayer.css"/>
+    <style type="text/css">
+        /***********视频列表部分*******/
+        body {
+            background-color: #F4F4F4;
+        }
+        [v-cloak] {
+            display: none;
+        }
+        .no-data{
+            text-align: center;
+            overflow: hidden;
+            height: 100%;
+            background: #fff;
+        }
+        .no-data img{
+            height:97px;
+            width: 6.2rem;
+            margin:7.8rem auto 12px auto;
+        }
+        .no-data p{
+            font-size: 15px;
+            color: #999;
+        }
+        .video_item {
+            box-sizing: border-box;
+            padding: 0.5rem 0.8rem 0 0.8rem;
+            background: #fff;
+            margin-bottom: 0.2rem;
+        }
+
+        .video_top {
+            display: flex;
+            flex-direction: row;
+            position: relative;
+            width: 100%;
+        }
+
+        .user_head {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: url(../../image/home/tmp_default_header.png) no-repeat;
+            background-size: 2rem;
+        }
+        .red_vip, .yellow_vip, .purple_vip {
+            position: absolute;
+            top: 1.2rem;
+            left: 1.2rem;
+            height: .75rem;
+            width: .75rem;
+        }
+        .user_info {
+            margin-left: 0.4rem;
+            width: 70%
+        }
+
+        .user_name {
+            font-size: 0.8rem;
+            color: #333;
+            margin: 0;
+        }
+
+        .user_info_detail {
+            font-size: 0.5rem;
+            color: #999;
+        }
+
+        .from {
+            margin-left: 0.64rem;
+        }
+
+        .more {
+            position: absolute;
+            right: 0.15rem;
+            width: 1.2rem;
+            height: 1.2rem;
+            transform: translateY(-50%);
+            -webkit-transform: translateY(-50%);
+            top: 50%;
+        }
+
+        .video_body_wrap {
+            color: #333;
+            font-size: 0.7rem;
+            letter-spacing: 0;
+            position: relative;
+        }
+
+        .video_title {
+            margin: 0.5rem 0 0.6rem 0;
+            color: #333;
+            font-size: 0.7rem;
+            text-align: left;
+        }
+
+        .video_inner {
+            position: relative;
+            background-color: #000;
+            width: 100%;
+            height: 12.9rem;
+        }
+
+        .video_loading_img {
+            position: absolute;
+            width: 2rem;
+            height: 2rem;
+            left: 50%;
+            top: 50%;
+            margin-top: -1rem;
+            margin-left: -1rem;
+            background: url(../../image/loading.png) no-repeat center;
+            background-size: 2rem;
+            z-index: 99;
+            -webkit-animation: run 3s linear 0s infinite;
+        }
+
+        @-webkit-keyframes run {
+            from {
+                -webkit-transform: rotate(0deg);
+            }
+            to {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        .video_cover_img {
+            position: absolute;
+            width: 100%;
+            height: 12.9rem;
+            left: 0;
+            top: 0;
+            z-index: 99;
+            /*background-image: url("../../image/tmp.jpg");*/
+            background-color: #8FA8CC;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .video_play_btn ,.video_pause_btn{
+            position: absolute;
+            width: 2.2rem;
+            height: 2.2rem;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 99;
+        }
+
+        .video_duration {
+            position: absolute;
+            height: 1rem;
+            width: 2.8rem;
+            line-height: 1rem;
+            right: 0.4rem;
+            bottom: 0.4rem;
+            color: #FFF;
+            font-size: 0.6rem;
+            z-index: 10000;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 1rem;
+        }
+        .video_no_wifi {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            z-index: 88;
+        }
+        .no_wifi_toast {
+            position: absolute;
+            left: 50%;
+            top: 3.25rem;
+            margin-left: -6rem;
+            width: 12rem;
+            height: 3.25rem;
+            line-height: 1.1rem;
+            padding: 0.45rem 1.15rem;
+            font-size: 0.8rem;
+            color: #FFF;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.70);
+            border-radius: 0.4rem;
+            box-sizing: border-box;
+        }
+        .no_wifi_play {
+            position: absolute;
+            left: 50%;
+            top: 7.65rem;
+            margin-left: -2.35rem;
+            width: 4.7rem;
+            height: 1.5rem;
+            line-height: 1.5rem;
+            font-size: 0.7rem;
+            color: #FF6026;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.55);
+            border-radius: 0.75rem;
+            box-sizing: border-box;
+        }
+        .no_wifi_play_img {
+            position: absolute;
+            width: 1.2rem;
+            height: 1.2rem;
+            top: 3px;
+            left: 0.75rem;
+        }
+        .no_wifi_go_on {
+            position: absolute;
+            width: 2rem;
+            height: 1.5rem;
+            line-height: 1.5rem;
+            text-align: center;
+            right: 0.75rem;
+            top: 0px;
+        }
+        .video_no_net {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            z-index: 100;
+        }
+        .no_net_toast {
+            position: absolute;
+            left: 50%;
+            top: 3.25rem;
+            margin-left: -6rem;
+            width: 12rem;
+            height: 1.6rem;
+            line-height: 1.6rem;
+            font-size: 0.8rem;
+            color: #fff;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.70);
+            border-radius: 0.4rem;
+            box-sizing: border-box;
+        }
+        .no_net_play {
+            position: absolute;
+            left: 50%;
+            top: 7.65rem;
+            margin-left: -2.35rem;
+            width: 4.7rem;
+            height: 1.5rem;
+            line-height: 1.5rem;
+            font-size: 0.7rem;
+            color: #fff;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.55);
+            border-radius: 0.75rem;
+            box-sizing: border-box;
+            z-index: 100;
+        }
+        .video_control_wrap{
+            position: absolute;
+            width:17.15rem;
+            height:100%;
+            left:0;
+            top:0;
+        }
+        .video_control {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 99;
+        }
+        .progress_bar {
+            width: 0px;
+            height: 0.1rem;
+            background: #FF6026;
+        }
+        .progress_outer {
+            position: absolute;
+            left: 0px;
+            top: -9px;
+            padding: 0.25rem;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 1rem;
+            background: rgba(0, 0, 0, 0);
+            box-sizing: border-box;
+        }
+        .progress_end {
+            padding: 0.1rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 0.5rem;
+            background: rgba(255, 96, 38, 0.35);
+            box-sizing: border-box;
+        }
+        .progress_end_inner {
+            width: 0.3rem;
+            height: 0.3rem;
+            border-radius: 0.3rem;
+            background: rgba(255, 96, 38, 1);
+        }
+        .top_video_time {
+            float: left;
+            height: 2rem;
+            line-height: 2rem;
+            padding-left: 0.8rem;
+            font-size: 0.6rem;
+            color: #FFF;
+        }
+        .video_bottom {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            height: 2rem;
+            line-height: 2rem;
+        }
+
+        .video_nums {
+            display: flex;
+            flex-direction: row;
+            width: 54%;
+        }
+
+        .video_nums li {
+            flex: 1;
+            height: 2rem;
+            line-height: 2rem;
+            text-align: right;
+        }
+
+        .num_img {
+            width: 1.2rem;
+            height: 1.2rem;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .num_txt {
+            font-size: 0.6rem;
+            color: #999;
+        }
+
+        .fine-label {
+            width: 0.9rem;
+            height: 0.9rem;
+            background: url(../../image/rank/jx@3x.png) no-repeat;
+            background-size: contain;
+            vertical-align: sub;
+            margin-right: 0.4rem;
+            position: absolute;
+            left:0;
+            top:50%;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+<body>
+<ul class="list" id="list">
+    <div v-if="list.length == 0" class="no-data">
+        <img src="../../image/empty/nojz@2x.png" alt="">
+        <p>暂无动态</p>
+    </div>
+    <li class="video_item"  v-for="(item,index) in list" :key="index" id="item.id" @click="goToDetail(item.id)" v-cloak>
+        <!--个人信息头部-->
+        <div class="video_top">
+            <!--<img class="user_head" :src="item.userHead" @click.stop="gotoUserInfo(item)"/>-->
+            <img class="user_head" :src="item.userHead" @click.stop="gotoUserInfo(item)"/>
+            <img v-if="item.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png" alt=""/>
+            <img v-if="item.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png" alt=""/>
+            <img v-if="item.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png" alt=""/>
+            <div class="user_info">
+                <h3 class="user_name aui-ellipsis-1" v-text="item.userName">
+                    </h3>
+                <div class="user_info_detail">
+                    <span class="time">{{formatDateTime(item.publishTime)}}</span>
+                    <!--<span class="from">来自 顺逛PC</span>-->
+                </div>
+            </div>
+            <img class="more" src="../../image/edit_topic/more@3x.png" @click.stop="fnShare(item)"/>
+        </div>
+        <!--视频容器-->
+        <div class="video_body_wrap">
+            <div class="video_title aui-ellipsis-2">
+                {{item.title}}
+            </div>
+            <div class="video_body">
+                <div class="video_inner" @click.stop="videoPlaying(item,index)">
+                    <div :id="'video_' + item.id" tapmode></div>
+                    <div v-show="item.imgShow" class="video_cover_img"
+                         :style="{'background-image':'url('+item.storyMediaList[0].url+'?x-oss-process=video/snapshot,t_3000,f_jpg )'}"
+                         alt="">
+                    </div>
+                    <img v-show="!item.startPlay" class="video_play_btn"
+                         src="../../image/edit_topic/play.png" @click.stop="startPlaying(item, index)"/>
+                    <!--缓冲loading-->
+                    <div class="video_loading_img" v-show="item.isWaiting"></div>
+                    <!--无wifi提示-->
+                    <div class="video_no_wifi" v-show="!item.itemWifi">
+                        <div class="no_wifi_toast">
+                            当前处于非wifi网络状态,已暂停播放,是否继续
+                        </div>
+                        <div class="no_wifi_play" tapmode @click.stop="fnPlayNoWifi()">
+                            <img class="no_wifi_play_img" src="../../image/edit_topic/play.png" alt=""/>
+                            <span class="no_wifi_go_on">继续</span>
+                        </div>
+                    </div>
+                    <!--无网络提示-->
+                    <div class="video_no_net" v-show="!item.itemNet">
+                        <div class="no_net_toast">
+                            视频加载失败，请检查网络
+                        </div>
+                        <!--<span class="no_net_go_on" @click.stop="fnPlayRefresh()"></span>-->
+                        <div class="no_net_play" tapmode @click.stop="fnPlayReplay()">
+                            点击重试
+                        </div>
+                    </div>
+                    <!--重播图片-->
+                    <!--<img v-show="item.reLoad" class="video_play_btn"-->
+                         <!--src="../../image/edit_topic/cb@2x.png" @click.stop.self="fnPlayPause(item, index)"/>-->
+                    <!--视频控制器-->
+                    <div class="video_control_wrap" v-show="item.isControl">
+                        <!--播放暂停按钮-->
+                        <img v-show="!item.playing" class="video_play_btn"
+                             src="../../image/edit_topic/play.png" @click.stop.self="fnPlayPause(item, index)"/>
+                        <img v-show="item.playing" class="video_pause_btn" @click.stop.self="fnPlayPause(item, index)"
+                             src="../../image/edit_topic/pause.png"/>
+                        <div class="video_control">
+                            <!--进度条-->
+                             <div class="progress_bar" :style="{'width':item.processWidth}"></div>
+                            <!--进度位置-->
+                            <div class="progress_outer" :style="{'left':item.processLeft}">
+                                <div class="progress_end">
+                                    <div class="progress_end_inner"></div>
+                                </div>
+                            </div>
+                            <!--视频时间-->
+                            <div class="top_video_time">
+                                <span class="current_time" v-text="item.duration"></span>/<span class="video_duration_con" v-text="item.durationTime"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="video_duration" v-text="item.duration" v-show="item.isDuration"></div>
+            </div>
+        </div>
+        <!--评论点赞功能-->
+        <div class="video_bottom">
+            <div v-if="item.isChoice != 0" class="fine-label"></div>
+            <ul class="video_nums">
+                <li><img class="num_img" src="../../image/community/gk@3x.png" alt=""/>
+                    <span class="num_txt" v-text="fnShowCount(item.browserNumber)">23</span>
+                </li>
+                <li>
+                    <img class="num_img" src="../../image/community/Message@3x.png" alt=""/>
+                    <span class="num_txt" v-text="fnShowCount(item.commentNumber)">24</span>
+                </li>
+                <li>
+                    <img v-if="item.userPraiseFlag == 0" class="num_img" src="../../image/community/zan@3x.png"
+                         alt="" @click.stop="fnPraise(item,index)"/>
+                    <img v-else class="num_img" src="../../image/mine/zans.png" alt=""
+                    @click.stop="fnPraise(item,index)"/>
+                    <span class="num_txt" v-text="fnShowCount(item.praiseNumber)">55</span>
+                </li>
+            </ul>
+        </div>
+    </li>
+</ul>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript" src="../../script/aliPlayer.js"></script>
+<script type="text/javascript" src="../../script/vue.js"></script>
+<script type="text/javascript" src="../../script/signature.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+
+
+<script type="text/javascript">
+    var pageIndex = 1;
+    var totalCount = 0;
+    var vm;
+    var currentPlayingVideoIndex = "";
+    var shareTopicInfo;
+    var isShare = false;
+    var playerCurrent;
+    var playerArr = [];
+    apiready = function () {
+        initVue();
+        initView();
+        initListener();
+        initParam();
+    };
+    function initParam() {
+        $app.fnSetRefresh(function () {
+            api.refreshHeaderLoadDone();
+            // console.log(playerCurrent);
+            // console.log(vm.list);
+            if(vm.list[currentPlayingVideoIndex].player){
+                vm.list[currentPlayingVideoIndex].player.pause();
+            }
+            currentPlayingVideoIndex = "";
+            pageIndex = 1;
+            vm.list = [];
+            // fnRemoveVideo();
+            // for (var i = 0; i < vm.list.length;i++) {
+            //         vm.list[i].player = null;
+            // }
+            getVideoListData(true);
+        })
+    }
+    function initVue() {
+        vm = $app.MyVue({
+            el: "#list",
+            data: {
+                list: [],
+                hasWifi:true,//默认是true有wifi
+                hasNet:true,//默认是有网络
+                continuePlay:false
+            },
+            methods: {
+                goToDetail: function (id) {
+                    fnHideTabBar();
+                    $app.openWin("topic_details", {
+                        type: 3,
+                        id: id,
+                        preWinName: api.winName,
+                        preFrameName: api.frameName
+                    }, {
+                        url: "../topic/topic_details.html?v=" + new Date().getTime()
+                    });
+                },
+                gotoUserInfo: function (item) {
+                    api.readFile({
+                        path: api.boxDir + '/userid.txt'
+                    }, function (ret, err) {
+                        if (ret) {
+                            //ret:{"data":"138306870,"status":"true"}
+                            var _userid = ret.data;
+                            if (_userid === '') {//如果没有userid
+                                fnOpenLogin();
+                                return
+                            }
+                            if (item.userId == _userid) {
+                                $app.openWin('mine', {}, {url: '../mine/mine'});
+                            } else {
+                                $app.openWin('ta_page', {userId: item.userId}
+                                    , {url: '../ta_page/ta_page.html?v=' + new Date().getTime()});
+                            }
+                        }
+                    })
+                },
+                videoPlaying: function (item, index) {
+                    if (item.player) {
+                        if (item.player.getStatus() == 'playing' || item.player.getStatus() == 'pause' || item.player.getStatus() == 'ready' || item.player.getStatus() == 'ended') {
+                            //切换控制器
+                            if(!item.isControl){
+                                item.isControl = true;
+                                item.isDuration = false;
+                                vm.$forceUpdate();
+                            }else{
+                                item.isControl = false;
+                                item.isDuration = true;
+                                vm.$forceUpdate();
+                            }
+                        }
+                    }
+                },
+                formatDateTime: function(datetime) { //格式化时间，几天前
+                    if (!datetime)
+                        return "";
+                    var tempDate;
+                    tempDate = datetime.replace(/-/g,':').replace(' ',':');
+                    tempDate = tempDate.split(':');
+                    tempDate = new Date(tempDate[0],(tempDate[1]-1),tempDate[2],tempDate[3],tempDate[4],tempDate[5]);
+                    var current_date = new Date().getTime();
+                    var mul = current_date - tempDate;
+                    var time = parseInt(mul / 1000);
+                    if (time < 60) {
+                        return "刚刚";
+                    } else if (time < 3600) {
+                        return parseInt(time / 60) + " 分钟前";
+                    } else if (time < 86400) {
+                        return parseInt(time / 3600) + " 小时前";
+                    }
+                    return datetime.split(' ')[0];
+                },
+                startPlaying:function (item, index) {
+                    //关掉正在播放的
+                    if ((currentPlayingVideoIndex || currentPlayingVideoIndex === 0) && vm.list[currentPlayingVideoIndex].playing) {
+                        vm.list[currentPlayingVideoIndex].player.pause();
+                        vm.list[currentPlayingVideoIndex].playing = false;
+                        vm.list[currentPlayingVideoIndex].isControl = true;
+                        item.isDuration = false;
+                        vm.$forceUpdate();
+                    }
+                    currentPlayingVideoIndex = index;
+                    if (!item.player) {
+                        initAliPlayer(item, index, function (player) {
+                            player.on('play', function () {
+                                vm.list[currentPlayingVideoIndex].startPlay = true;
+                                Vue.set(vm.list[currentPlayingVideoIndex], 'playing', true);
+                                Vue.set(vm.list[currentPlayingVideoIndex], 'imgShow', false);
+                                vm.list[currentPlayingVideoIndex].isWaiting = false;
+                                vm.$forceUpdate();//强制更新视图
+                            });
+                            player.on('pause', function () {
+                                vm.list[currentPlayingVideoIndex].playing = false;
+                                vm.$forceUpdate();
+                            });
+                            player.on('waiting', function(e) {
+                                vm.list[currentPlayingVideoIndex].isWaiting = true;
+                            });
+                            player.on('playing', function(e) {
+                                if(vm.list[currentPlayingVideoIndex].isWaiting){
+                                    vm.list[currentPlayingVideoIndex].isWaiting = false;
+                                    Vue.set(vm.list[currentPlayingVideoIndex], 'imgShow', false);
+                                }
+                            });
+                            player.on('ended', function () {
+                                vm.list[currentPlayingVideoIndex].imgShow = true;
+                                vm.list[currentPlayingVideoIndex].isControl = false;
+                                vm.list[currentPlayingVideoIndex].playing = false;
+                                vm.list[currentPlayingVideoIndex].isDuration = true;
+                                vm.list[currentPlayingVideoIndex].startPlay = false;
+                                //将duration制成总时间
+                                vm.list[currentPlayingVideoIndex].duration = vm.list[currentPlayingVideoIndex].durationTime;
+                                vm.$forceUpdate();
+                            });
+                            player.on('timeupdate', function () {
+                                //检测是不是wifi
+                                //检测网络
+                                // if (!vm.continuePlay) {
+                                //     vm.list[currentPlayingVideoIndex].itemWifi = testWifi();
+                                // }
+                                //视频duration控制器
+                                vm.$set(vm.list[currentPlayingVideoIndex], 'duration', fnDuration(player.getCurrentTime()));
+                                vm.$forceUpdate();
+                                //进度条
+                                var width = (parseInt($api.cssVal($api.dom(".video_control_wrap"),"width"))) * (player.getCurrentTime() / player.getDuration());
+                                vm.list[currentPlayingVideoIndex].processWidth = width + 'px';
+                                vm.list[currentPlayingVideoIndex].processLeft = width - 10 + 'px';
+
+                                // var width = api.systemType === 'android' ? api.frameWidth * (player.getCurrentTime() / player.getDuration()) : api.winWidth * (player.getCurrentTime() / player.getDuration());
+                                // $api.dom('.progress_bar').style.width = width + 'px';
+                                // $api.dom('.progress_outer').style.left = width - 10 + 'px';
+
+                            });
+                            player.on('error', function (e) {
+                                // alert('error');
+                                //当加载失败
+                                // if(e.paramData.error_code == 4008 || e.paramData.error_code == 4400){
+                                //     vm.hasNet = testNet();//检测是不是没有网络
+                                //     if(vm.hasNet){//如果有网
+                                vm.list[currentPlayingVideoIndex].itemNet = false;
+                                vm.list[currentPlayingVideoIndex].isWaiting = false;
+                                vm.list[currentPlayingVideoIndex].playing = false;
+                                vm.list[currentPlayingVideoIndex].isControl = false;
+                                vm.$forceUpdate();
+                                // vm.list[currentPlayingVideoIndex].reLoad = true;
+                                // vm.$forceUpdate();
+                                // todo
+                                // }
+                                // }
+                            })
+                        });
+                    }else{
+                        item.player.play();
+                        item.startPlay = true;
+                    }
+                },
+                fnPlayPause:function (item, index)   {
+                    //关掉正在播放的
+                    if(currentPlayingVideoIndex || currentPlayingVideoIndex === 0 && vm.list[currentPlayingVideoIndex].playing){
+                        vm.list[currentPlayingVideoIndex].player.pause();
+                        // console.log(vm.list[currentPlayingVideoIndex].player);
+                        vm.list[currentPlayingVideoIndex].playing = false;
+                        vm.list[currentPlayingVideoIndex].isControl = true;
+                        item.isDuration = false;
+                        vm.$forceUpdate();
+                    }
+                    currentPlayingVideoIndex = index;
+                    if(item.player){
+                        // console.log(vm.list);
+                        if (item.player.getStatus() == 'pause' || item.player.getStatus() == 'ready') {
+                            item.playing = true;
+                            item.player.play();
+                            vm.$forceUpdate();
+                        }else{
+                            item.playing = false;
+                            item.player.pause();
+                            vm.$forceUpdate();
+                        }
+                    }
+                },
+                fnPlayNoWifi:function () {
+                    vm.continuePlay = true;
+                    vm.list[currentPlayingVideoIndex].itemWifi = true;
+                    vm.list[currentPlayingVideoIndex].player.play();
+                    vm.$forceUpdate();
+                },
+                fnPlayReplay: function () {
+                    vm.list[currentPlayingVideoIndex].player.replay();
+                    vm.list[currentPlayingVideoIndex].itemNet = true;
+                },
+                fnShare : function(item) {
+                    api.readFile({
+                        path: api.boxDir + '/userid.txt'
+                    }, function (ret, err) {
+                        if (ret) {
+                            var _userid = ret.data;
+                            if (_userid === '') {
+                                fnOpenLogin();
+                                return;
+                            }
+                            api.setFrameAttr({
+                                name: 'edit_btn_frame',
+                                hidden: true
+                            });
+                            api.setFrameAttr({
+                                name: 'scroll_top_btn_frame',
+                                hidden: true
+                            });
+                            fnHideTabBar();
+                            shareTopicInfo = item;
+                            isShare = true;
+                            $app.openFrame('list_share_frame', null, null, {
+                                frameName: api.frameName
+                            }, {
+                                bounces: false
+                            })
+                        }
+                    });
+                },
+                fnPraise:function(item,index){
+                    $http.GET(UrlRouter.getPraiseStory, {
+                        values: {
+                            storyId: item.id,
+                            userCode: item.userId
+                        }
+                    }, function (ret, err) {
+                        if (item.userPraiseFlag == 0) {
+                            vm.$set(vm.list[index], 'userPraiseFlag', 1);
+                            vm.$set(vm.list[index], 'praiseNumber', item.praiseNumber + 1);
+                        } else {
+                            vm.$set(vm.list[index], 'userPraiseFlag', 0);
+                            vm.$set(vm.list[index], 'praiseNumber', item.praiseNumber - 1);
+                        }
+                    });
+                },
+                fnReplaceComment: function (comment) {
+                    if (!$app.isEmpty(comment)) {
+                        comment = comment.replace(/<br\s*\/?>/gi, "\r\n");
+                        comment = comment.replace(/<br\/>/g, "\r\n");
+                        comment = comment.replace(/<br>/g, "\r\n");
+                        comment = comment.replace(/<[^>]+>/g, "");
+                        return comment;
+                    }
+                    return '';
+                },
+                fnShowCount: function (count) {
+                    if (count >= 10000) {
+                        return (count/10000).toFixed(1) + '万';
+                    }
+                    return count;
+                }
+            },
+            mounted:function () {
+                // //监听滚动关闭视频
+                document.addEventListener("scroll",function () {
+                    var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                    var domList = $api.domAll('.video_item');
+                    for(var i = 0;i < domList.length;i++) {
+                        var domOffset_Top = $api.offset(domList[i]).t;
+                        var itemScrollTop = domOffset_Top - scrollTop;
+                        if (itemScrollTop < -250) {
+                            if(currentPlayingVideoIndex === i){
+                                if(vm.list[i].playing){
+                                    vm.list[i].player.pause();
+                                    vm.list[i].playing = false;
+                                    vm.list[i].isControl = true;
+                                    vm.list[i].isDuration = false;
+                                    vm.$forceUpdate();
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        })
+    }
+
+    function initView() {
+        getVideoListData();
+    }
+
+    //获取视频数据列表
+    function getVideoListData(isRefresh) {
+        if (!isRefresh) {
+            $app.showProgress();
+        }
+        $http.GET(UrlRouter.getVideoList, {
+            values: {
+                searchType: 6,
+                pageIndex: pageIndex,
+                pageSize: 10
+            }
+        }, function (ret) {
+            $app.hideProgress();
+            api.refreshHeaderLoadDone();
+            if (ret.ok == 1) {
+                totalCount = ret.data.totalCount;
+                if (ret.data.list.length != 0) {//有数据
+                    if(isRefresh){
+                        vm.list = [];
+                    }
+                    for (var i = 0; i < ret.data.list.length; i++) {
+                        //播放器控件变量
+                        // durationTime:"",
+                        // duration:"",
+                        // playing:"",//视频是否在播放 默认不播放false
+                        // imgShow:""//视频占位图是否显示 默认显示true
+                        //isControl:false;//控制器默认不显示
+                        //startPlay:false//视频的总开关
+                        //isWaiting:false//视频加载图片默认false
+                        var duration = 0;
+                        if (ret.data.list[i].storyMediaList[0].ext) {
+                            duration = JSON.parse(ret.data.list[i].storyMediaList[0].ext).duration;
+                            duration = fnDuration(duration);
+                            ret.data.list[i]["durationTime"] = duration;
+                            ret.data.list[i]["duration"] = duration;
+                        }
+                        ret.data.list[i]["playing"] = false;
+                        ret.data.list[i]["imgShow"] = true;
+                        ret.data.list[i]["player"] = null;
+                        ret.data.list[i]["isControl"] = false;
+                        ret.data.list[i]["isDuration"] = true;
+                        ret.data.list[i]["startPlay"] = false;
+                        ret.data.list[i]["isWaiting"] = false;
+                        ret.data.list[i]["processWidth"] = 0;
+                        ret.data.list[i]["processLeft"] = 0;
+                        ret.data.list[i]["reLoad"] = false;
+                        ret.data.list[i]["itemNet"] = true;
+                        ret.data.list[i]["itemWifi"] = true;
+                        //list数据
+                        vm.list.push(ret.data.list[i]);
+
+                    }
+                }
+            }
+        })
+    }
+
+    function initAliPlayer(item, index, callback) {
+        item.player = new Aliplayer({
+            id: 'video_' + item.id,
+            width: '100%',
+            height: "258px",
+            useH5Prism: true,
+            source: item.storyMediaList[0].url,
+            autoplay: true,
+            showBuffer: true,
+            playsinline: true,
+            x5_video_position: 'center',
+            preload: true,
+            skinLayout: false
+        }, function (player) {
+            // alert("播放器创建好了");
+            playerArr.push(player);
+            if (callback) {
+                callback(player);
+            }
+        });
+    }
+
+    function initListener() {
+        $event.addEventListener('change_frame_event', function (ret) {
+            if (vm.list[currentPlayingVideoIndex].player != null) {
+                vm.list[currentPlayingVideoIndex].player.pause();
+            }
+        });
+        //上拉加载
+        $event.scrollBottomListener(function () {
+            if(totalCount > pageIndex * 10 ){
+                pageIndex++;
+                getVideoListData();
+            }else{
+                $app.toast('没有更多数据');
+            }
+        });
+        $event.addEventListener('NaviteCallAPICloudMethod', function (ret) {
+            api.hideProgress();
+            var ret = ret.value;
+            if (ret.type == 3) {
+                api.hideProgress();
+                if (ret.success == 1) {
+                    isShare = true;
+                    fnSuccess();
+                    $app.toast('分享成功');
+                } else {
+                    $app.toast('分享失败');
+                }
+            } else if (ret.type == 13) {
+                if (ret.tag == 'resume') {
+                    fnSuccess();
+                }
+            }
+        });
+    }
+    function fnSuccess() {
+        api.setFrameAttr({
+            name: 'edit_btn_frame',
+            hidden: false
+        });
+        api.setFrameAttr({
+            name: 'scroll_top_btn_frame',
+            hidden: false
+        });
+        api.closeFrame({
+            name: 'list_share_frame'
+        });
+        if(isShare){
+            $event.isShowHomeTab(true);
+            isShare = false
+        }
+    }
+    function fnRemoveVideo(){
+        for (var i = 0; i < playerArr.length; i++) {
+            var parent = $api.byId(playerArr[i].el().id);
+            var video = parent.getElementsByTagName('video')[0];
+            parent.removeChild(video);
+        }
+    }
+    //网络检测
+    function testWifi() {
+        var connectionType = api.connectionType;
+        if(connectionType == 'wifi'){//如果是wifi
+            return true;
+        }else if(connectionType !== 'wifi'){//4G/3G/2G网络
+            //暂停
+            if(vm.continuePlay){
+                return true;
+            }else{
+                vm.list[currentPlayingVideoIndex].player.pause();
+                // vm.list[currentPlayingVideoIndex].isWaiting = false;
+                vm.list[currentPlayingVideoIndex].playing = false;
+                vm.list[currentPlayingVideoIndex].isControl = false;
+                return false;
+            }
+        }
+    }
+    function testNet() {
+        var connectionType = api.connectionType;
+        if(connectionType == 'none'){//无网络
+            vm.list[currentPlayingVideoIndex].player.pause();
+            //显示无网络的弹框
+            vm.list[currentPlayingVideoIndex].itemNet = false;
+            vm.list[currentPlayingVideoIndex].isWaiting = false;
+            vm.list[currentPlayingVideoIndex].playing = false;
+            vm.list[currentPlayingVideoIndex].isControl = false;
+            vm.$forceUpdate();
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    function fnOpenLogin() {
+        $event.callRNEvent(1,1,{
+            toPageName:'Login'
+        });
+    }
+    function fnShareNative(platformType) {
+        var storyContent = vm.fnReplaceComment(shareTopicInfo.summary);
+        var url = SHARE_HOST + '/topic_details_frame.html?'+fnGetShareUrl();
+        var title = shareTopicInfo.title ? shareTopicInfo.title + '-顺逛微社区' :shareTopicInfo.userName + '的话题-顺逛微社区'; //分享标题
+        var content = storyContent ? storyContent.substr(0, 30):'马上进入，参与话题讨论吧...';
+        var pic = shareTopicInfo.mainImg && shareTopicInfo.mainImg.indexOf('../') == '-1' ? shareTopicInfo.mainImg : 'http://www.ehaier.com/mstatic/wd/v2/img/sg.png';//分享图片，写绝对路径  是否后台获取
+        if($app.isEmpty(pic)) {
+            pic = 'http://www.ehaier.com/mstatic/wd/v2/img/sg.png';
+        }
+        api.showProgress();
+        api.sendEvent({
+            name : 'APICloudCallNaviteMethod',
+            extra : {
+                type : 3,
+                canCallBack : 1,
+                command : [title, content, pic, url, 0, platformType]
+            }
+        });
+    }
+
+    function fnCopy(){
+        var clipBoard = api.require('clipBoard');
+        clipBoard.set({
+            value: SHARE_HOST + '/topic_details_frame.html?' + fnGetShareUrl()
+        }, function(ret, err) {
+            if(ret &&　ret.status){
+                $app.toast('复制成功');
+                fnSuccess()
+            }else{
+                $app.toast('复制失败');
+            }
+        });
+    }
+    function fnGetShareUrl() {
+        var memberId = api.readFile({
+            sync : true,
+            path : api.boxDir + '/userid.txt'
+        });
+        if ($app.isEmpty(memberId)) {
+            memberId = shareTopicInfo.userCode;
+        }
+        var params = {
+            type : shareTopicInfo.dataTypeNew,
+            id : shareTopicInfo.id,
+            memberId : memberId
+        };
+        return new Base64().encode(JSON.stringify(params));
+    }
+    //工具函数
+    function fnDuration(duration) {
+        if (duration) {
+            duration = parseInt(duration);
+            var second = parseInt(duration) % 60;
+            var min = parseInt(duration / 60);
+            if (min < 10) {
+                min = '0' + min;
+            }
+            if (second < 10) {
+                second = '0' + second;
+            }
+            return min + ":" + second;
+        }
+        return '00:00';
+    }
+    function fnHideTabBar() {
+        $event.isShowHomeTab(false)
+    }
+</script>
+</html>

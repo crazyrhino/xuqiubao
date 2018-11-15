@@ -1,0 +1,131 @@
+body,html {
+	background: #EEE;
+	height: 100%;
+}
+
+body,html{
+	background: #EEE;
+}
+header {
+	width: 100%;
+	height: 1.173333rem;
+	background: #FFF;
+}
+.header_div{
+	position : relative;
+	width: 100%;
+	height: 1.173333rem;
+	line-height: 1.173333rem;
+}
+.c_back_btn {
+	position: absolute;
+	top: 0px;
+	left : 0.160000rem;
+	width: 1.173333rem;
+	height: 1.173333rem;
+	background-image: url(../image/label/back.png);
+	background-size: 0.640000rem;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+.c_title {
+	height: 1.173333rem;
+	line-height: 1.333333rem;
+	font-size: 0.453333rem;
+	color : #000;
+}
+.c_circle_base_info{
+	height: 2.346667rem;
+	padding-left : 0.426667rem;
+	padding-top : 0.373333rem;
+	background: #FFF;
+}
+.c_circle_head{
+	width: 1.600000rem;
+	height: 1.600000rem;
+	border-radius: 1.600000rem;
+}
+.c_circle_name{
+	height: 1.600000rem;
+	padding-left : 0.373333rem;
+	font-size : 0.453333rem;
+	line-height: 1.600000rem;
+}
+.c_cricle_desc_div{
+	height : 1.920000rem;
+	margin-top : 0.213333rem;
+	padding-left : 0.426667rem;
+	padding-top : 0.373333rem;
+	background: #FFF;
+}
+.c_desc_label{
+	height: 0.586667rem;
+	font-size: 0.426667rem;
+	line-height: 0.586667rem;
+	color : #333;
+}
+.c_desc{
+	margin-top : 0.160000rem;
+	font-size: 0.320000rem;
+	line-height: 0.453333rem;
+	color : #666;
+}
+.c_circle_owner_div{
+	background: #FFF;
+}
+.c_owner_label_div{
+	margin-top : 0.213333rem;
+	padding-top : 0.320000rem;
+	padding-left : 0.426667rem;
+	padding-bottom : 0.320000rem;
+}
+.c_owner_img{
+	width: 0.586667rem;
+	height: 0.586667rem;
+}
+.c_owner_label{
+	height: 0.586667rem;
+	padding-left : 0.240000rem;
+	line-height: 0.586667rem;
+	font-size: 0.426667rem;
+	color : #333;
+}
+.c_owner_info{
+	padding-top : 0.266667rem;
+	padding-left : 0.426667rem;
+	padding-bottom : 0.266667rem;
+	padding-right : 0.426667rem;
+}
+.c_owner_head{
+	width: 1.066667rem;
+	height: 1.066667rem;
+	border-radius: 1.066667rem;
+	background: url(../image/home/tmp_default_header.png) no-repeat;
+	background-size: 1.066667rem;
+}
+.c_owner_name{
+	height: 1.066667rem;
+	padding-left : 0.426667rem;
+	line-height: 1.066667rem;
+	font-size: 0.373333rem;
+	color : #333;
+}
+.c_follow_img{
+	width : 1.706667rem;
+	height : 0.693333rem;
+	margin-top: 0.186667rem;
+}
+.c_num{
+	font-size: 0.320000rem;
+	color : #999;
+}
+.c_unjoin_btn{
+	width : 100%;
+	height: 1.173333rem;
+	margin-top : 0.213333rem;
+	line-height: 1.173333rem;
+	font-size: 0.426667rem;
+	text-align: center;
+	color :red;
+	background: #FFF;
+}

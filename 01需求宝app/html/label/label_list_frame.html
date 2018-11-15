@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>标签</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/main.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/labelList.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+			.ellipsis-1{
+				display: -webkit-box;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				word-wrap: break-word;
+				word-break: break-all;
+				white-space: normal !important;
+				-webkit-line-clamp: 1;
+				-webkit-box-orient: vertical;
+			}
+			.recom_ellipsis{
+				width: calc(100% - 40px);
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="section_labellist" v-cloak>
+			<div class="commonLabel">
+				<div class="sub_header">
+					<img src="../../image/label/bqc.png" alt=""><span class="name">我的标签</span>
+					<!--<span class="name_alert">长按拖动顺序</span>-->
+				</div>
+				<div class="sub_content">
+					<!--<draggable :list="commonList" @start="dragging=true" @end="dragging=false">
+						<div class="item" v-for="item,index in commonList">
+							{{item.name}}
+						</div>
+					</draggable>-->
+						<div class="item" v-for="item,index in commonList">
+							<span class="ellipsis-1">{{item.name}}</span><img v-if="item.edit" class="deleteBtn" @click.stop="fnDeleteLabel(item,index)" src="../../image/label/delete.png" alt="">
+						</div>
+				</div>
+			</div>
+			<div class="recommendLabel">
+				<div class="sub_header">
+					<img src="../../image/label/bqb.png" alt=""><span class="name">推荐标签</span><span class="name_alert">点击添加到我的标签</span>
+				</div>
+				<div class="sub_content">
+					<div class="item bgFFF" v-for="item,index in reCommonList" tapmode @click="fnAddLabel(item,index)">
+						<span @click="fnAddLabel(item,index)" class="addBtn">+</span><span class="recom_ellipsis">{{item.name}}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/Sortable.js"></script>
+	<script type="text/javascript" src="../../script/vuedraggable.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+			fnGetUserCollectionTags();
+			fnGetRecommendTags();
+			fnBackListener(fnBack);
+		};
+		
+		function fnBack(){
+			api.execScript({
+				name : 'root',
+	            script: 'fnReGetTags();'
+            });
+		}
+		
+		function fnGetUserCollectionTags() {
+			$service.get('user/getUserCollectionTags.ajax', null, function(ret, err) {
+				if(ret){
+					if(ret.ok == 1){
+						fnAppendData(vue.commonList, ret.data.reverse());
+					}else{
+						fnToast(JSON.stringify(ret));
+					}
+				}else{
+					fnToast(err.msg);
+				}
+			});
+		}
+		function fnGetRecommendTags() {
+			$service.get('user/getUserRecommendTags.ajax', {
+				type : 1
+			}, function(ret, err) {
+				if (ret && ret.ok == 1) {
+					fnAppendData(vue.reCommonList, ret.data);
+				}else{
+					fnToast("操作失败");
+				}
+			});
+		}
+		
+		function fnAddTags(item,i){
+			$service.get('user/addUserTags.ajax', {
+				tagsId : item.id
+			}, function(ret, err) {
+				if(ret){
+					if(ret.ok == 1){
+						fnAddLabel(item,i);
+					}else{
+//						fnToast(ret.data.content);
+					}
+				}else{
+					fnToast(err.msg);
+				}
+			});
+		}
+		
+		function fnRemoveTags(item,i){
+			$service.get('user/deleteUserTags.ajax', {
+				tagsId : item.id
+			}, function(ret, err) {
+				if (ret && ret.ok == 1) {
+					fnDeleteLabel(item,i);
+				}else{
+					fnToast(ret.data.content);
+				}
+			});
+		}
+
+		var vue = new Vue({
+			el : '.section_labellist',
+			data : {
+				dragging : false,
+				commonList : [],
+				reCommonList : []
+			},
+			methods : {
+				fnAddLabel : function(item, i) {
+					fnAddTags(item,i);
+				},
+				fnDeleteLabel : function(item, i) {
+					fnRemoveTags(item, i);
+				}
+			}
+		});
+		
+		var currentEdit = true;
+		function fnEditLales(isEdit){
+			currentEdit = isEdit;
+			var tmp = [];
+			fnAppendData(tmp,vue.commonList,isEdit);
+			vue.commonList = [];
+			fnAppendData(vue.commonList,tmp,isEdit);
+		}
+		
+		function fnAppendData(oldArr, data, edit) {
+			for (var i = 0; i < data.length; i++) {
+				data[i].edit = edit;
+				oldArr.push(data[i]);
+			}
+			return oldArr;
+		}
+
+		function fnAddLabel(item, i) {
+			vue.reCommonList.splice(i, 1);
+			if(currentEdit){
+				item.edit = true;
+			}
+			vue.commonList.unshift(item);
+		}
+		
+		function fnDeleteLabel(item, i) {
+			vue.commonList.splice(i, 1);
+			vue.reCommonList.push(item);
+		}
+	</script>
+</html>

@@ -1,0 +1,123 @@
+body,html {
+	background: #000;
+}
+header{
+	width : 100%;
+	height: 44px;
+	line-height: 46px;
+	color : #FFF;
+	font-size: 17px;
+}
+.header_div{
+	position: relative;
+}
+.back_layout{
+	position: relative;
+	width : 64px;
+	height: 44px;
+	z-index: 99;
+}
+.back_btn{
+	position: absolute;
+	left : 16px;
+	top : 10px;
+	width: 24px;
+	height: 24px;
+	background: url(../image/ic_back_btn.png) no-repeat center;
+	background-size: 24px;
+}
+.back_txt{
+	position: absolute;
+	left : 29px;
+	top : 10px;
+	height: 24px;
+	line-height: 26px;
+}
+.title{
+	position: absolute;
+	left : 0px;
+	top : 0px;
+	width: 100%;
+	height: 44px;
+	text-align: center;
+}
+.cancle_btn{
+	position: absolute;
+	right : 0px;
+	top : 0px;
+	width : 60px;
+	height: 44px;
+	line-height: 46px;
+	text-align: center;
+}
+.footer{
+	position: absolute;
+	left : 0px;
+	bottom : 0px;
+	width: 100%;
+	height: 50px;
+	line-height: 52px;
+	color : #FFF;
+	font-size: 17px;
+}
+.left_btn{
+	position: absolute;
+	left : 0px;
+	top : 0px;
+	width : 80px;
+	height: 50px;
+	text-align : center;
+}
+.right_btn{
+	position: absolute;
+	right : 12px;
+	top : 10px;
+	height: 30px;
+	padding-left : 15px;
+	padding-right : 15px;
+	line-height: 32px;
+	text-align : center;
+	background: #FF6026;
+	border-radius: 30px;
+	color : #FFF;
+}
+.list{
+	padding-left: 5px;
+	box-sizing: border-box;
+	display: none;
+}
+.img_div{
+	position :relative;
+	float : left;
+	width: 87px;
+	height: 87px;
+	margin-right : 5px;
+	margin-top : 5px;
+}
+.img{
+	width: 100%;
+	height: 100%;
+}
+.select{
+	position: absolute;
+	right: 0px;
+	top : 0px;
+	width: 20px;
+	height: 20px;
+	background: rgba(0,0,0,0.5) url(../image/edit_topic/select_normal.png) no-repeat center;
+	background-size: 18px;
+	border-radius: 20px;
+}
+.selected{
+	position: absolute;
+	right: 0px;
+	top : 0px;
+	width: 20px;
+	height: 20px;
+	background : #FF6026;
+	line-height : 22px;
+	text-align : center;
+	color : #FFF;
+	font-size : 14px;
+	border-radius: 20px;
+}

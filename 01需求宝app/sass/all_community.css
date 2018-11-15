@@ -1,0 +1,181 @@
+html, body {
+	height: 100%;
+	background-color: #eee;
+	overflow: hidden;
+}
+.warp {
+	width: 100%;
+	height: 100%;
+}
+#header {
+	position : relative;
+	width: 100%;
+	height: 44px;
+	line-height: 44px;
+	background: #FFF;
+}
+.rank_content {
+	position: relative;
+	width: 100%;
+	height: 44px;
+	line-height: 44px;
+	font-size: 17px;
+	text-align: center;
+	border-bottom: 1px solid #EEEEEE;
+}
+.rank_back {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 44px;
+	height: 44px;
+	background: url(../image/rank/rank_back.png) no-repeat center;
+	background-size: 24px;
+}
+.search_div{
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	width: 44px;
+	height: 44px;
+	background: url(../image/home/search_icon.png) no-repeat center;
+	background-size: 24px;
+}
+.rule {
+	position: absolute;
+	right: 16px;
+	line-height: 44px;
+	font-size: 12px;
+	color: #666;
+}
+.color_ff {
+	color: #FF4400;
+}
+.left_community {
+	width: 26%;
+	margin-right: 6px;
+	margin-top: 8px;
+	overflow: scroll;
+}
+.each_part {
+	width: 100%;
+	text-align: center;
+	background: #fff;
+	height: 59px;
+	line-height: 59px;
+	margin-bottom: 1px;
+	font-size: 14px;
+	color: #333;
+}
+.part_active {
+	background: #eee;
+	color: #FF6026;
+}
+.frame-group {
+	padding-top: 11px;
+	margin-left: 6px;
+}
+.right_community {
+	background-color: #fff;
+	margin-right: 6px;
+	flex: 1;
+}
+.recommendation_list {
+	width: 100%;
+	padding: 20px 16px;
+	box-sizing: border-box;
+	border-bottom: 1px solid #eee;
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+}
+.recommendation_list .list_header {
+	width: 44px;
+	height: 44px;
+	position: relative;
+	background: url(../image/home/tmp_default_header.png) no-repeat;
+	background-size: 44px;
+	border-radius: 44px;
+}
+.recommendation_list .list_header .dot {
+	position: absolute;
+	left: 50%;
+	top: -5px;
+	color: #fff;
+	background-color: #FF6026;
+	font-size: 10px;
+	line-height: 12px;
+	padding-left: 5px;
+	padding-right: 5px;
+	border-radius: 100px;
+}
+.recommendation_list .list_header img {
+	border-radius: 50%;
+	overflow: hidden;
+	width: 100%;
+	height: 100%;
+}
+.recommendation_list .list_cont {
+	padding-left: 18px;
+	font-size: 14px;
+	flex: 1;
+}
+.recommendation_list .cont_name {
+	line-height: 20px;
+	color: #333;
+	font-size: 14px;
+}
+.recommendation_list .cont_num {
+	line-height: 20px;
+	padding-top: 6px;
+	font-size: 12px;
+	color: #999;
+}
+.smaller_part {
+	color: #999;
+	font-size: 12px;
+	padding-right: 12px;
+}
+.add_but {
+	display: inline-block;
+	width: 48px;
+	text-align: center;
+	height: 18px;
+	line-height: 18px;
+	border: 1px solid #FF6026;
+	border-radius: 100px;
+	font-size: 10px;
+	color: #FF6026;
+}
+
+.list_arrow {
+	width: 24px;
+	height: 24px;
+	float: right;
+}
+.list_arrow img {
+	width: 100%;
+	height: 100%;
+}
+.join-btn {
+	float: right;
+	width: 48px;
+	height: 18px;
+	line-height: 18px;
+	text-align: center;
+	border: 1px solid #FF6026;
+	border-radius: 100px;
+	color: #FF6026;
+	font-size: 10px;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: flex;
+	justify-content: center;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+}
+.list_time img {
+	width: 24px;
+	height: 24px;
+}

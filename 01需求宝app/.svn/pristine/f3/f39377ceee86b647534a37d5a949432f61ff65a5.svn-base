@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta content="yes" name="apple-touch-fullscreen">
+  <meta content="telephone=no,email=no" name="format-detection">
+  <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <title>知道</title>
+  <link rel="stylesheet" href="css/skin.css">
+  <style>
+  </style>
+</head>
+
+<body>
+    <header class="topTitles">
+        <div class="header_div" id="answer">
+            <span onclick="fnCancel()">取消</span>
+            <span>回答问题</span>
+            <span :style="hanzhi > 4 ? 'color: #ff9500' : 'color: #a7a7a7'" @click="submitsc" id="toptests">提交</span>
+        </div>
+    </header>
+  <script src="./js/jquery-1.11.1.min.js"></script>
+  <script src="./js/js.js"></script>
+  <script type="text/javascript" src="../../script/vue.js"></script>
+  <script type="text/javascript" src="../../script/api.js"></script>
+  <script type="text/javascript" src="../../script/service.js"></script>
+  <script type="text/javascript" src="../../script/fastclick.js"></script>
+  <script type="text/javascript" src="../../script/common.js?v=0"></script>
+  <script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+  <script>
+    apiready = function() {
+      $event.isShowHomeTab(false);
+      $app.fixStatusBar('#answer');
+      fnOpenFrameInWinMarginTop(0,false);
+			fnClosePreWin();
+            api.addEventListener({
+                name: 'keyback'
+            }, function(ret, err) {
+                api.closeWin({})
+            });
+      // 接受图片
+        api.addEventListener({
+            name: 'arrayImgListAns'
+        }, function(ret, err) {
+          answer.imgsList = ret.value.imgsList
+          answer.isBenDI = ret.value.isShangC
+        });
+
+        api.addEventListener({
+            name: 'myNumber'
+        }, function(ret, err) {
+            answer.contents = ret.value.keyContent
+            answer.hanzhi = ret.value.keyzh
+            answer.hanziN = ret.value.YesHanz
+            answer.hanNum = ret.value.YesNumber
+            answer.hanFh = ret.value.YesFhao
+            answer.hanBiao = ret.value.YesBiao
+        });
+    };
+    function fnClosePreWin(){
+			setTimeout(function () {
+                api.closeWin({
+                    name:'video_record'
+                });
+                api.closeWin({
+                    name:'select_video'
+                })
+                api.closeWin({
+                   name:'video_preview'
+                })
+            },1000);
+		}
+		
+		function fnOpenFrameInWinMarginTop(marginTop, isBounce) {
+			api.openFrame({
+				name : api.winName + '_frame',
+				url : api.winName + '_frame.html?v=' + new Date().getTime(),
+				rect : {
+					y : $api.dom('header').offsetHeight + marginTop,
+					h : api.winHeight - $api.dom('header').offsetHeight - marginTop
+				},
+				pageParam : api.pageParam,
+                softInputBarEnabled:true,  //可以设置是否去掉键盘上的工具条
+				bounces : isBounce,
+                softInputMode : 'pan',
+                reload : true,
+                allowEdit : true,
+                softInputDismissMode:['tap','drag']
+            });
+		}
+        function fnCancel() {
+            var jsfun = 'funcGotoBack();';
+            api.execScript({
+                frameName: 'answer_frame',
+                script: jsfun
+            });
+            var isRoot = api.readFile({
+                sync : true,
+                path : api.boxDir + '/isRoot.txt'
+            });
+            if(isRoot == 'isRoot'){
+                api.writeFile({
+                    path : api.boxDir + '/isRoot.txt',
+                    data : ''
+                });
+                api.writeFile({
+                    path : api.boxDir + '/topicId.txt',
+                    data : ''
+                });
+                api.sendEvent({
+                    name : 'APICloudCallNaviteMethod',
+                    extra : {
+                        type : 6
+                    }
+                });
+            }else{
+                api.execScript({
+                    frameName: api.winName + '_frame',
+                    script: 'fnHideKeyBoard();'
+                });
+                api.openFrame({
+                    name : 'exit_hints',
+                    url : '../popup/exit_hints.html',
+                    rect : {
+                        x : 0,
+                        y : 0,
+                        w : 'auto',
+                        h : 'auto'
+                    },
+                    pageParam : api.pageParam,
+                    bgColor : 'rgba(0,0,0,0)',
+                    bounces : false
+                });
+            }
+        }
+		function fnConfirm(){
+            api.execScript({
+                name : api.winName,
+                frameName : api.winName +'_frame',
+                script: 'fnCheck();'
+            });
+		}
+    var answer = new Vue({
+      el:'#answer',
+      data:{        
+          tittles:'',
+          imgList: [],
+          size: 0,
+          limit:3, //限制图片上传的数量
+          tempImgs:[],
+          contents:'',
+          keyNames:'',//判断多少个汉字
+          hanzhi:'',//判断有多少个字
+          keyContents:'',
+          imgsList:[],//RN返回的图片
+          isBenDI:'0',//是否本地上传图片
+          numberFrame:'',
+          hanziN:'',
+          hanNum:'',
+          hanFh:'',
+          hanBiao:''
+      },
+      methods:{
+        clearTimer:function() {
+            if (this.timer) {
+            clearTimeout(this.timer)
+            }
+        },
+        submitsc:function(){
+            var _this = this
+            if(_this.hanzhi >= 5){
+                $app.showProgress();
+                this.clearTimer()
+                if(_this.hanziN || _this.hanNum || _this.hanFh || _this.hanBiao){
+                    if(_this.isBenDI > 0){//证明有图片
+                            _this.timer = setTimeout(function(){
+                                if(_this.imgsList.length > 0){//看看图片有没有回传回来
+                                    var patt=/[\ud800-\udbff][\udc00-\udfff]/g; // 检测utf16字符正则
+                                    _this.contents = _this.contents.replace(patt, function(char){
+                                        var H, L, code;
+                                        if (char.length===2) {
+                                            H = char.charCodeAt(0); // 取出高位
+                                            L = char.charCodeAt(1); // 取出低位
+                                            code = (H - 0xD800) * 0x400 + 0x10000 + L - 0xDC00; // 转换算法
+                                            return "&#" + code + ";";
+                                        } else {
+                                            return char;
+                                        }
+                                    });
+                                    var shouImg = ''
+                                    var imgList = ''
+                                    for(var i=0;i<_this.imgsList.length;i++){
+                                        imgList += _this.imgsList[i].img+','
+                                        if(i == 0){
+                                            shouImg = _this.imgsList[i].img
+                                        }
+                                    }
+                                    var token = api.readFile({
+                                        sync: true,
+                                        path: api.boxDir + '/token.txt'
+                                    });
+                                    $http.POST(HOST +UrlRouter.qxAnswer,{
+                                        body: {
+                                        answersComment:_this.contents,//回答内容
+                                        issueId:api.pageParam.issueId,//需求ID
+                                        mainImgs:shouImg,//首图
+                                        issueAnswersImgs:imgList,//多张图逗号隔开
+                                        answersCommentTo:api.pageParam.names,
+                                        answersCommentToCode:api.pageParam.code
+                                        } 
+                                    },function(ret, err){
+                                        if(ret.ok == '1'){
+                                            $app.hideProgress();
+                                            var jsfun = 'funcGoto(1);';
+                                            api.execScript({
+                                                name: 'details',
+                                                frameName: 'details_frame',
+                                                script: jsfun
+                                            });
+                                            api.closeWin({})
+                                            _this.isBenDI='0'
+                                            _this.clearTimer()
+                                        }else{
+                                            $app.hideProgress();
+                                            fnToast('保存失败，请重试');
+                                            _this.clearTimer()
+                                        }
+                                    })
+                                }else{
+                                    fnToast('网络较差，请重试');
+                                    $app.hideProgress();
+                                    _this.clearTimer()
+                                }
+                            },3000)
+
+                            _this.timer = setTimeout(function(){
+                                fnToast('网络超时，请重试');
+                                $app.hideProgress();
+                            },5000)
+                    }else{
+                            var patt=/[\ud800-\udbff][\udc00-\udfff]/g; // 检测utf16字符正则
+                            _this.contents = _this.contents.replace(patt, function(char){
+                                var H, L, code;
+                                if (char.length===2) {
+                                    H = char.charCodeAt(0); // 取出高位
+                                    L = char.charCodeAt(1); // 取出低位
+                                    code = (H - 0xD800) * 0x400 + 0x10000 + L - 0xDC00; // 转换算法
+                                    return "&#" + code + ";";
+                                } else {
+                                    return char;
+                                }
+                            });
+                            var shouImg = ''
+                            var imgList = ''
+                            for(var i=0;i<_this.imgsList.length;i++){
+                                imgList += _this.imgsList[i].img+','
+                                if(i == 0){
+                                    shouImg = _this.imgsList[i].img
+                                }
+                            }
+                            var token = api.readFile({
+                                sync: true,
+                                path: api.boxDir + '/token.txt'
+                            });
+                            $http.POST(HOST +UrlRouter.qxAnswer,{
+                                body: {
+                                answersComment:_this.contents,//回答内容
+                                issueId:api.pageParam.issueId,//需求ID
+                                mainImgs:shouImg,//首图
+                                issueAnswersImgs:imgList,//多张图逗号隔开
+                                answersCommentTo:api.pageParam.names,
+                                answersCommentToCode:api.pageParam.code
+                                } 
+                            },function(ret, err){
+                                if(ret.ok == '1'){
+                                    $app.hideProgress();
+                                    var jsfun = 'funcGoto(1);';
+                                    api.execScript({
+                                        name: 'details',
+                                        frameName: 'details_frame',
+                                        script: jsfun
+                                    });
+                                    api.closeWin({})
+                                    _this.isBenDI='0'
+                                    _this.clearTimer()
+                                }else{
+                                    $app.hideProgress();
+                                    fnToast('保存失败，请重试');
+                                    _this.clearTimer()
+                                }
+                            })
+                    }
+                }else{
+                    $app.hideProgress();
+                    fnToast('请输入5个字以上的回答内容');
+                }
+            }else{
+                $app.hideProgress();
+                // 最外层没有输入内容
+                fnToast('请输入5个字以上的回答内容');
+            }
+        },
+        opensName:function(userList){
+          this.tittles = userList
+        },
+        backHome:function(){
+          api.closeWin({})
+        }
+      }
+    })
+  </script>
+  <script>
+    $('textarea').on( 'touchstart', function() {
+        $(this).focus();
+    });
+    $('input').on( 'touchstart', function() {
+        $(this).focus();
+    });
+    </script>
+</body>
+
+</html>

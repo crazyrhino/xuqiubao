@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<style>
+			body,html {
+				background: rgba(0,0,0,0);
+			}
+		</style>
+	</head>
+	<body></body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			//fnRefreshOpen();
+			fnOpenViewer();
+		};
+		function fnOpenCloseBtn() {
+			api.openFrame({
+				name : api.winName + '_close',
+				url : api.winName + '_close.html',
+				rect : {
+					x : api.winWidth - 50,
+					y : 18,
+					w : 48,
+					h : 48
+				}
+			});
+		}
+
+		function fnOpenIndexFrame(index, total) {
+			api.openFrame({
+				name : api.winName + '_index',
+				url : api.winName + '_index.html',
+				rect : {
+					x : api.winWidth/2 - 16,
+					y : api.winHeight - 40,
+					w : 50,
+					h : 50
+				},
+				pageParam : {
+					activeIndex : index,
+					totalNum : total
+				}
+			});
+		}
+
+		function fnOpenViewer() {
+			var UIPhotoViewer = api.require('UIPhotoViewer');
+			UIPhotoViewer.open({
+				images : api.pageParam.urlArr,
+				bgColor : '#000',
+				activeIndex : api.pageParam.activeIndex
+			}, function(ret, err) {
+				console.log(JSON.stringify(ret));
+				if (ret.eventType == 'show') {
+					fnOpenCloseBtn();
+					fnOpenIndexFrame(ret.index, api.pageParam.urlArr.length);
+				} else if (ret.eventType == 'change') {
+					api.execScript({
+						frameName : api.winName + '_index',
+						script : 'fnSetIndex(' + ret.index + ');'
+					});
+				}
+			});
+		}
+	</script>
+</html>

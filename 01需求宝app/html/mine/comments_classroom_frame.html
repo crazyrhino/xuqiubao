@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>我的收赏</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/reward_comment.css"/>
+		<style>
+			.no-data{
+				text-align: center;
+				height: 100%;
+				overflow: hidden;
+			}
+			.no-data img{
+				height:97px;
+				width: 124px;
+				margin:64px 0 12px 0;
+			}
+			.no-data p{
+				font-size: 14px;
+				color: #999;
+				margin-bottom:24px;
+			}
+			.no-data div{
+				height: 38px;
+				width: 126px;
+				margin:0 auto;
+				border-radius: 100px;
+				border:1px solid #FF6026;
+				color: #FF6026;
+				font: 16px/38px '';
+			}
+			.original_text,.my_reply{
+                word-wrap:break-word;
+                word-break: break-all;
+			}
+			.commtent_list .wrap {
+				position: relative;
+				width: 0.933333rem;
+				height: 0.933333rem;
+			}
+
+			.wrap img.red_vip,.wrap img.yellow_vip,.wrap img.purple_vip{
+				position :absolute;
+				right: 0;
+				bottom : 0;
+				width : 12px;
+				height : 12px;
+			}
+
+			.comment_expression_img {
+				width: 66px;
+				height: 66px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="warp">
+            <div v-if="list.length == 0" class="no-data">
+                <img src="../../image/mine/nopl.png" alt="">
+                <p>去晒晒你的神评论~</p>
+                <div tapmode onclick="fnOpenMain()">去评论</div>
+            </div>
+			<div class="my_commtent">
+				<div v-for="item in list" class="commtent_list">
+					<div class="wrap">
+						<div class="comm_li_img" @click="fnOpenUser(item)">
+							<img v-if="item.userImg" v-bind:src="item.userImg" onerror="fnImgError(this)">
+							<img v-else src="../../image/home/tmp_default_header.png" alt="">
+						</div>
+						<img v-if="item.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png">
+						<img v-if="item.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png">
+						<img v-if="item.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png">
+					</div>
+					<div class="comm_li_cont">
+						<div class="vip_name">
+							<span @click="fnOpenUser(item)">{{item.userName || item.userCode}}</span>
+							<span class="at_time">{{item.commentTime1}}</span>
+						</div>
+						<div class="reply">
+							<div class="my_reply meui_5_line meui_flex_con_no_w">
+								我的评论：
+								<img v-if="item.comment && item.comment.indexOf('comment_expression:') != -1"
+                         			class="comment_expression_img" v-bind:src="item.comment.substring(19)" alt=""/>
+                         		 <span v-else v-text="fnCommentContent(item)"></span>
+							</div>
+							<div class="img_reply" v-if="item.tipAmount">
+								金币+{{item.tipAmount}}
+							</div>
+						</div>
+						<div class="original" @click="openDetails(4,item.storyId)">
+							<div class="original_img">
+								<img v-if="item.mainImg" v-bind:src="item.mainImg">
+								<img v-else src="../../image/tmp.jpg" alt="">
+							</div>
+							<div v-if="item.storyContent" class="original_text" v-text="item.storyContent">
+							</div>
+							<div v-else class="original_text">该话题已被删除
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript">
+		var pageIndex = 1;
+		apiready = function() {
+			//fnRefreshOpen();
+			fnGetUserCollectionStoryList();
+			fnSetRefresh(function() {
+				fnGetUserCollectionStoryList(false, true);
+			});
+			addBottomListener(function() {
+				pageIndex++;
+				fnGetUserCollectionStoryList(true, false);
+			});
+		};
+		var vue = new Vue({
+			el : '.warp',
+			data : {
+				list : []
+			},
+			methods : {
+                openDetails : function(_dataTypeNew, _id) {
+                    fnOpenWin('topic_details', '../topic/', {
+                        type : _dataTypeNew,
+                        id : _id
+                    });
+                },
+                fnCommentContent : function(item){
+                	var content = item.comment;
+                	if(fnIsEmpty(content) && !fnIsEmpty(item.commentImgs)){
+                		return '[图片]';
+                	}
+                	return content;
+                },
+                fnOpenUser : function(item) {
+                    api.readFile({
+                        path: api.boxDir + '/userid.txt'
+                    }, function (ret, err) {
+                        if (ret) {
+                            var _userid = ret.data;
+                            if (_userid === ''){
+                                fnOpenLogin();
+                                return
+                            }
+                            if (item.userCode == _userid) {
+                                fnOpenWin('mine', null);
+                            } else {
+                                fnOpenWin('ta_page', '../ta_page/', {
+                                    userId : item.userCode
+                                });
+                            }
+                        }
+                    })
+                }
+			}
+		});
+
+        function fnOpenLogin() {
+            api.sendEvent({
+                name : 'APICloudCallNaviteMethod',
+                extra : {
+                    type : 1,
+                    canCallBack : 1,
+                    toPageName : 'Login'
+                }
+            });
+        }
+		function fnOpenMain() {
+            fnOpenWin("business_school_win", "../community/");
+        }
+		function fnGetUserCollectionStoryList(isLoadMore,isRefresh) {
+			$service.get('user/getUserCommentStoryList.ajax', {
+				pageIndex : pageIndex,
+				pageSize : 20,
+				storyType : 2
+			}, function(ret, err) {
+				api.refreshHeaderLoadDone();
+				if(ret) {
+					if(ret.data.list && ret.data.list.length > 0) {
+                        api.sendEvent({
+                            name: 'classroomNum',
+                            extra: {rightNum: ret.data.count}
+                        });
+						if(isRefresh) {
+							vue.list = [];
+						}
+						fnAppendData(vue.list, ret.data.list);
+					} else {
+						if(isLoadMore) {
+							fnToast("没有更多");
+						}else if(isRefresh) {
+//							fnToast("获取数据失败");
+						}
+					}
+				} else {
+					fnToast(err.msg);
+				}
+			});
+		}
+	</script>
+</html>

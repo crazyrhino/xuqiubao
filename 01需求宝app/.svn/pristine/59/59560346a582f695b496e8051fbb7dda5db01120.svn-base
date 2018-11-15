@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>社区榜单</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/letter_list_win.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+	</head>
+	<body>
+		<header id="header" class="rank_header">
+			<p class="rank_content">
+				<img class="rank_back" src="../../image/rank/rank_back.png" tapmode onclick="api.closeWin()">
+				<a id="options" class="options"> <span class="option">消息</span> <span class="option option_active">私信</span> </a>
+				<img class="mores" src="../../image/private_letter/qfxx.png" tapmode="" onclick="fnOpenSendMsg()">
+			</p>
+		</header>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript">
+		var myVue = null;
+		apiready = function() {
+			fnInitVue();
+			var header = $api.byId('header');
+			fnSysHeaderStyle()
+			var headerH = $api.offset(header).h;
+			api.openFrameGroup({
+				name : 'letter_list_group',
+				rect : {
+					x : 0,
+					y : headerH + 2,
+					w : 'auto',
+					h : 'auto'
+				},
+				frames : [{
+					name : 'letter_list',
+					url : 'letter_list.html',
+				}, {
+					name : 'letter_list2',
+					url : 'letter_list.html',
+				}]
+			}, function(ret, err) {
+				var index = ret.index;
+				myVue.index = index;
+			});
+		};
+		function fnInitVue() {
+			myVue = new Vue({
+				el : "#options",
+				data : {
+					index : 0,
+				}
+			})
+		}
+
+		function fnOpenSendMsg() {
+			fnOpenWin('send_mess_win');
+		}
+	</script>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/community_info.css"/>
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+			header{
+				position: fixed;
+				z-index: 9999;
+				width: 100%;
+			}
+			.main_wrap{
+				padding-top:70px;
+			}
+            .wrap{
+                position: relative;
+            }
+            .wrap img.red_vip,.wrap img.yellow_vip,.wrap img.purple_vip {
+                position :absolute;
+                right: 0;
+                bottom : 4px;
+                width : 12px;
+                height : 12px;
+            }
+            .wrap img.vip_icon{
+                position :absolute;
+                right: 0;
+                bottom : 4px;
+                width : 12px;
+                height : 12px;
+            }
+
+        </style>
+	</head>
+	<body>
+		<header id="header">
+			<div class="header_div">
+				<div class="c_back_btn" tapmode="meui_click" onclick="fnBack()"></div>
+				<div class="meui_txt_center c_title">
+					圈子资料
+				</div>
+			</div>
+		</header>
+		<div class="main_wrap">
+		<div class="c_circle_base_info meui_flex_wrap">
+			<img class="c_circle_head" src="../../image/home/tmp_default_header.png" alt="" />
+			<div class="c_circle_name"></div>
+		</div>
+		<div class="c_cricle_desc_div">
+			<div class="c_desc_label">
+				圈子介绍
+			</div>
+			<div class="c_desc"></div>
+		</div>
+		<div class="c_circle_owner_div">
+			<div class="c_owner_label_div meui_border_b meui_flex_wrap">
+				<img class="c_owner_img" src="../../image/community/qunz@2x.png" alt="" />
+				<div class="c_owner_label">
+					群主
+				</div>
+			</div>
+			<div class="c_owner_info meui_flex_wrap" tapmode="" onclick="fnOwnerOpenUser()">
+                <div class="wrap">
+                    <img class="c_owner_head" src="../../image/home/tmp_default_header.png" alt="" onerror="fnImgError(this)"/>
+                    <img id="red_vip" style="display: none;" class="red_vip" src="../../image/mine/red_vip.png">
+                    <img id="yellow_vip" style="display: none;" class="yellow_vip" src="../../image/mine/yellow_vip.png">
+                    <img id="purple_vip" style="display: none;" class="purple_vip" src="../../image/mine/purple_vip.png">
+                </div>
+				<div class="c_owner_name meui_flex_con"></div>
+				<img id="owner_follow" class="c_follow_img" src="../../image/rank/follow.png" alt="" tapmode="meui_click" onclick="fnOwnerFollow(event)"/>
+			</div>
+		</div>
+		<div class="c_circle_owner_div" id="list">
+			<div class="c_owner_label_div meui_border_b meui_flex_wrap">
+				<img class="c_owner_img" src="../../image/community/gly@2x.png" alt="" />
+				<div class="c_owner_label">
+					管理员 <span class="c_num">({{list.length}}人)</span>
+				</div>
+			</div>
+			<div v-for="(item,index) in list" class="c_owner_info meui_flex_wrap meui_border_b" tapmode="meui_click" v-on:click="fnOpenUser(item)">
+                <div class="wrap">
+                    <img class="c_owner_head" v-bind:src="item.userImg" alt="" onerror="fnImgError(this)"/>
+                    <img v-show="item.talentFlag == 1" class="red_vip" src="../../image/mine/red_vip.png">
+                    <img v-show="item.talentFlag == 2" class="yellow_vip" src="../../image/mine/yellow_vip.png">
+                    <img v-show="item.talentFlag == 3" class="purple_vip" src="../../image/mine/purple_vip.png">
+                </div>
+				<div class="c_owner_name meui_flex_con" v-text="item.userName"></div>
+				<img v-show="item.isFollow == 0 && userId != item.memberId" class="c_follow_img" src="../../image/rank/follow.png" alt="" tapmode="meui_click" v-on:click.stop="fnFollow(item,index)"/>
+				<img v-show="item.isFollow == 1 && userId != item.memberId" class="c_follow_img" src="../../image/rank/cancel_follow.png" alt="" tapmode="meui_click" v-on:click.stop="fnFollow(item,index)"/>
+			</div>
+		</div>
+
+			<div class="c_unjoin_btn" tapmode="meui_click"  onclick="fnUnjoinCircle()">
+				退出圈子
+			</div>
+
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript">
+		var mUserId;
+		apiready = function() {
+			//fnRefreshOpen();
+			fnInitUserId();
+			fnSysHeaderStyleById();
+			if (api.systemType == 'android'){
+				$api.css($api.dom('.main_wrap'),'padding-top:' + 55+ 'px');
+			}else{
+				$api.css($api.dom('.main_wrap'),'padding-top:' + (70 + api.safeArea.top)+ 'px');
+			}
+            $api.css($api.dom('.main_wrap'),'padding-bottom:' + api.safeArea.bottom + 'px');
+			fnInitBaseInfo();
+			fnGetTopicAdminFroTopicId();
+            setTimeout(function() {
+                fnInitStyle();
+            }, 300);
+		};
+		
+		function fnInitUserId(){
+			mUserId = api.readFile({
+			    sync: true,
+			    path : api.boxDir + '/userid.txt'
+			});
+			vue.userId = mUserId;
+		}
+		
+        function fnInitStyle() {
+            if(api.pageParam.id == '665' || api.pageParam.id == '662'){
+                var follow = $api.domAll('.c_follow_img');
+                for(var j = 0;j < follow.length;j++){
+                    $api.css(follow[j], "display:none");
+                }
+            }
+        }
+		var vue = new Vue({
+			el : '#list',
+			data : {
+                userId : '',
+				list : []
+			},
+			methods : {
+				fnFollow : function(item, index) {
+					var follow;
+					if (item.isFollow == 0) {
+						follow = 'Follow';
+					} else {
+						follow = 'UnFollow';
+					}
+					$service.get('user/follow.ajax', {
+						followId : item.memberId,
+						type : follow
+					}, function(ret, err) {
+						if (ret) {
+							if (ret.ok == 1) {
+								if (item.isFollow == 0) {
+									vue.$set(vue.$data.list[index], 'isFollow', 1);
+								} else {
+									vue.$set(vue.$data.list[index], 'isFollow', 0);
+								}
+							}
+						} else {
+							fnToast(err.msg);
+						}
+					});
+				},
+				fnOpenUser : function(item) {
+					fnOpenHome(item);
+//                  api.readFile({
+//                      path: api.boxDir + '/userid.txt'
+//                  }, function (ret, err) {
+//                      if (ret) {
+//                          var _userid = ret.data;
+//                          if (_userid === ''){
+//                              fnOpenLogin();
+//                              return
+//                          }
+//                          if (item.memberId == _userid) {
+//                              fnOpenWin('mine', '../mine/');
+//                          } else {
+//                              fnOpenWin('ta_page', '../ta_page/', {
+//                                  userId : item.memberId
+//                              });
+//                          }
+//                      }
+//                  });
+					/*if (item.memberId == $api.getStorage('userId')) {
+						fnOpenWin('mine', '../mine/');
+					} else {
+						fnOpenWin('ta_page', '../ta_page/', {
+							userId : item.memberId
+						});
+					}*/
+				}
+			}
+		});
+		
+		function fnOpenHome(item){
+			var token = api.readFile({
+						sync : true,
+						path : api.boxDir + '/token.txt'
+					});
+					if (fnIsEmpty(token)) {
+						api.sendEvent({
+							name : 'APICloudCallNaviteMethod',
+							extra : {
+								type : 1,
+								canCallBack : 1,
+								toPageName : 'Login'
+							}
+						});
+					}else {
+						if (token.indexOf('#') === -1) {
+			                api.sendEvent({
+								name : 'APICloudCallNaviteMethod',
+								extra : {
+									type : 1,
+									canCallBack : 1,
+									toPageName : 'Login'
+								}
+							});
+			                return;
+						}
+						api.readFile({
+							path : api.boxDir + '/userid.txt'
+						}, function(ret, err) {
+							if (ret) {
+								var _userid = ret.data;
+								if (item.memberId == _userid) {
+									fnOpenWin('mine', '../mine/');
+								} else {
+									fnOpenWin('ta_page', '../ta_page/', {
+										userId : item.memberId
+									});
+								}
+							}
+						});
+					}
+		}
+
+        function fnOpenLogin() {
+            api.sendEvent({
+                name : 'APICloudCallNaviteMethod',
+                extra : {
+                    type : 1,
+                    canCallBack : 1,
+                    toPageName : 'Login'
+                }
+            });
+        }
+		function fnOwnerOpenUser() {
+			if (owner) {
+				fnOpenHome(owner);
+//              api.readFile({
+//                  path: api.boxDir + '/userid.txt'
+//              }, function (ret, err) {
+//                  if (ret) {
+//                      var _userid = ret.data;
+//                      if (owner.memberId == _userid) {
+//                          fnOpenWin('mine', '../mine/');
+//                      } else {
+//                          fnOpenWin('ta_page', '../ta_page/', {
+//                              userId : owner.memberId
+//                          });
+//                      }
+//                  }
+//              });
+				/*if (owner.memberId == $api.getStorage('userId')) {
+					fnOpenWin('mine', '../mine/');
+				} else {
+					fnOpenWin('ta_page', '../ta_page/', {
+						userId : owner.memberId
+					});
+				}*/
+			}
+		}
+
+		function fnOwnerFollow(e) {
+			fnCancelBubble(e);
+			if (owner) {
+				var follow;
+				if (owner.isFollow == 0) {
+					follow = 'Follow';
+				} else {
+					follow = 'UnFollow';
+				}
+				$service.get('user/follow.ajax', {
+					followId : owner.memberId,
+					type : follow
+				}, function(ret, err) {
+					if (ret) {
+						if (ret.ok == 1) {
+							if (follow == 'Follow') {
+								fnSetImgSrc('owner_follow', '../../image/rank/cancel_follow.png');
+								owner.isFollow = 1;
+							} else {
+								fnSetImgSrc('owner_follow', '../../image/rank/follow.png');
+								owner.isFollow = 0;
+							}
+						}
+					} else {
+						fnToast(err.msg);
+					}
+				});
+			}else{
+				fnToast('数据异常','middle');
+			}
+		}
+
+		function fnInitBaseInfo() {
+			var circleInfo = api.pageParam.circleInfo;
+			fnSetImgSrc('.c_circle_head', circleInfo.topicImg);
+			fnSetTxt('.c_circle_name', circleInfo.topicName);
+			fnSetTxt('.c_desc', circleInfo.topicDescription);
+			if (circleInfo.isJoin == 1) {
+				fnSetVisibility('.c_unjoin_btn', true);
+			} else {
+				fnSetVisibility('.c_unjoin_btn', false);
+			}
+		}
+
+		function fnGetTopicAdminFroTopicId() {
+			$service.get('topic/getTopicAdminFroTopicId.ajax', {
+				topicId : api.pageParam.circleInfo.id
+			}, function(ret, err) {
+				if (ret.ok == 1) {
+					fnSetOwnerInfo(ret);
+					fnAppendData(vue.list, ret.data);
+				} else {
+					fnToast('获取数据失败');
+				}
+			});
+		}
+
+		function fnAppendData(oldArr, data) {
+			if (data.length > 1) {
+				for (var i = 1; i < data.length; i++) {
+					if (fnIsEmpty(data[i].userImg)) {
+						data[i].userImg = '../../image/home/tmp_default_header.png';
+					}
+					if (!fnIsEmpty(data[i].userName)) {
+		                if (data[i].userName.length > 10) {
+		                    data[i].userName = data[i].userName.substring(0, 10) + '...';
+		                }
+		            }
+					oldArr.push(data[i]);
+				}
+			}
+			return oldArr;
+		}
+
+		var owner;
+		function fnSetOwnerInfo(ret) {
+			if (ret.data && ret.data.length > 0) {
+				owner = ret.data[0];
+				if (fnIsEmpty(owner.userImg)) {
+					owner.userImg = '../../image/home/tmp_default_header.png';
+				}
+				if(mUserId == owner.memberId){
+				    $api.css($api.dom('#owner_follow'),'display:none')
+				}
+				fnSetImgSrc('.c_owner_head', owner.userImg);
+				if (!fnIsEmpty(owner.userName)) {
+	                if (owner.userName.length > 10) {
+	                    owner.userName = owner.userName.substring(0, 10) + '...';
+	                }
+	            }
+				fnSetTxt('.c_owner_name', owner.userName);
+				if (owner.isFollow == 1) {
+					fnSetImgSrc('owner_follow', '../../image/rank/cancel_follow.png');
+				} else {
+					fnSetImgSrc('owner_follow', '../../image/rank/follow.png');
+				}
+				if(owner.talentFlag == 1){
+					fnSetDisplay('red_vip',true);
+				}else if(owner.talentFlag == 2){
+					fnSetDisplay('yellow_vip',true);
+				}else if(owner.talentFlag == 3){
+                    fnSetDisplay('purple_vip',true);
+                }
+			}
+		}
+
+		function fnUnjoinCircle() {
+			api.openFrame({
+				name : 'unjoin_circle_confirm',
+				url : '../popup/unjoin_circle_confirm.html',
+				bgColor : 'rgba(0,0,0,0)'
+			});
+		}
+
+		function fnUnjoinCircleServer() {
+			$service.get('topic/unfocus.ajax', {
+				topicId : api.pageParam.circleInfo.id
+			}, function(ret, err) {
+				if (ret.ok == 1) {
+					fnToast('退出成功');
+//					fnSetVisibility('.c_unjoin_btn', false);
+					// api.closeToFrame({
+					// 	name : 'unjoin_circle_confirm'
+					// });
+//                  api.closeToWin({
+//                      name: 'community_detial'
+//                  });
+					api.execScript({
+						name : api.pageParam.name,
+            			frameName : api.pageParam.frameName,
+						script : 'fnReSetJoinBtn();'
+					});
+				} else {
+					if(ret.ok == 0){
+						fnToast(ret.data.content);
+					}
+				}
+			});
+		}
+	</script>
+</html>

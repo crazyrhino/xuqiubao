@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>搜索列表页面</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/search_list.css"/>
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+			body {
+				height: 100%;
+			}
+			.banner{
+				width: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="search-wrap">
+			<!--<img class="banner" src="../../image/banner_zb.jpg" alt="" tapmode onclick="fnCompetition()">-->
+			<div class="search-frame">
+				<div class="hot-search">
+					<div class="search-title">
+						热门搜索
+					</div>
+					<div class="hot-content">
+						<div v-for="item in list" class="hot-label" v-text="item.name" v-on:click="fnClickHotTag(item.name)"></div>
+					</div>
+				</div>
+				<div class="history-search">
+					<div class="search-title list-flex list-flex-h list-flex-center meui_border_b">
+						<span class="list-flex-flex1">最近搜索</span>
+						<span v-show="historyList.length > 0" class="delete-btn" tapmode onclick="fnOpenModel()"></span>
+					</div>
+					<div class="history-content">
+						<div v-for="item in historyList" class="item meui_single_line" v-text="item" v-on:click="fnClickHotTag(item)">
+						</div>
+					</div>
+					<div class="history-null">
+						<img src="../../image/empty/no_search_result.png" alt="">
+						<div class="null-alert">
+							暂无搜索记录
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript">
+        var userid;
+		apiready = function() {
+			//fnRefreshOpen();
+            $api.fixTabBar($api.dom('#search-wrap'));
+            userid = api.readFile({
+                sync: true,
+                path: api.boxDir + '/userid.txt'
+            });
+            fnGetHotTags();
+			fnGetHistory();
+        };
+		var vue = new Vue({
+			el : '.search-frame',
+			data : {
+				list : [],
+				historyList : []
+			},
+			methods : {
+				fnClickHotTag : function(keyword) {
+					fnClickHotTag(keyword);
+				}
+			}
+		});
+		function fnGetHotTags() {
+			$service.get('tag/hot.ajax', {
+				pageNo : 1,
+				pageSize : 6
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.ok == 1) {
+						fnAppendData(vue.list, ret.data);
+					} else {
+					}
+				} else {
+					fnToast(err.errMsg);
+				}
+			});
+		}
+        function fnCompetition() {
+            api.sendEvent({
+                name : 'APICloudCallNaviteMethod',
+                extra : {
+                    type : 1,
+                    canCallBack : 1,
+                    toPageName : 'CommunityWeb',
+                    toPageParams : {url: ''}
+                }
+            })
+        }
+
+		function fnClearHistory() {
+			$api.rmStorage(userid + 'search_history');
+			vue.historyList = [];
+			fnSetDisplay('.history-content',false);
+			fnSetDisplay('.history-null',true);
+			api.closeFrame({
+				name : 'delete_history_search'
+            });
+		}
+
+		function fnGetHistory(){
+			var history = $api.getStorage(userid + "search_history");
+			if(history && history.length > 0){
+				vue.historyList = history.reverse();
+				fnSetDisplay('.history-content',true);
+				fnSetDisplay('.history-null',false);
+			}
+		}
+
+        function fnSaveStorage(searchStr) {
+			var searchHistory = $api.getStorage(userid + 'search_history');
+			if (searchHistory) {
+				if (searchHistory.length > 20) {
+					searchHistory.splice(0, 1);
+				}
+			} else {
+				searchHistory = [];
+			}
+			if (fnIsExist(searchHistory, searchStr)) {
+				return;
+			}
+            // fnLog(userid);
+			searchHistory.push(searchStr);
+			$api.setStorage(userid + 'search_history', searchHistory);
+			vue.historyList = searchHistory.reverse();
+			fnSetDisplay('.history-content',true);
+			fnSetDisplay('.history-null',false);
+		}
+
+		function fnIsExist(searchHistory, searchStr) {
+			if (searchHistory && searchHistory.length > 0) {
+				for (var i = 0; i < searchHistory.length; i++) {
+					if (searchHistory[i] == searchStr) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		function fnClickHotTag(name) {
+			api.execScript({
+				name : api.winName,
+				script : 'fnSetInputValue("' + name + '");'
+			});
+		}
+
+		function fnOpenModel() {
+			api.openFrame({
+				name : 'delete_history_search',
+				url : './delete_history_search.html',
+				bounces : false,
+				rect : {
+					x : 0,
+					y : 0,
+					w : 'auto',
+					h : 'auto'
+				},
+				bgColor : 'rgba(0,0,0,0)'
+			});
+		}
+	</script>
+</html>

@@ -1,0 +1,25 @@
+body, html {
+	background: #FFF;
+}
+header {
+	width: 100%;
+	height: 44px;
+	line-height: 44px;
+	background: #FFF;
+}
+.rank_content{
+	position: relative;
+	width: 100%;
+	height: 44px;
+	line-height: 44px;
+	font-size:17px;
+	text-align: center;
+	border-bottom: 1px solid #EEE;
+}
+.rank_back{
+	position: absolute;
+	left: 16px;
+	top: 7px;
+	width: 24px;
+	height: 24px;
+}

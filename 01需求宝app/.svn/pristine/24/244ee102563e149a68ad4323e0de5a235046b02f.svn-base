@@ -1,0 +1,124 @@
+body,html {
+	background: #000;
+}
+header{
+	width : 100%;
+	height: 1.173333rem;
+	line-height: 1.226667rem;
+	color : #FFF;
+	font-size: 0.453333rem;
+}
+.header_div{
+	position: relative;
+}
+.back_layout{
+	position: relative;
+	width : 1.706667rem;
+	height: 1.173333rem;
+	z-index: 99;
+}
+.back_btn{
+	position: absolute;
+	left : 0.426667rem;
+	top : 0.266667rem;
+	width: 0.640000rem;
+	height: 0.640000rem;
+	background: url(../image/ic_back_btn.png) no-repeat center;
+	background-size: 0.640000rem;
+}
+.back_txt{
+	position: absolute;
+	left : 0.773333rem;
+	top : 0.266667rem;
+	height: 0.640000rem;
+	line-height: 0.693333rem;
+}
+.title{
+	position: absolute;
+	left : 0px;
+	top : 0px;
+	width: 100%;
+	height: 1.173333rem;
+	text-align: center;
+}
+.cancle_btn{
+	position: absolute;
+	right : 0px;
+	top : 0px;
+	width : 1.600000rem;
+	height: 1.173333rem;
+	line-height: 1.226667rem;
+	text-align: center;
+}
+.footer{
+	position: absolute;
+	left : 0px;
+	bottom : 0px;
+	width: 100%;
+	height: 1.333333rem;
+	line-height: 1.386667rem;
+	color : #FFF;
+	font-size: 0.453333rem;
+}
+.left_btn{
+	position: absolute;
+	left : 0px;
+	top : 0px;
+	width : 2.133333rem;
+	height: 1.333333rem;
+	text-align : center;
+}
+.right_btn{
+	position: absolute;
+	right : 0.320000rem;
+	top : 0.266667rem;
+	height: 0.800000rem;
+	padding-left : 0.400000rem;
+	padding-right : 0.400000rem;
+	line-height: 0.853333rem;
+	text-align : center;
+	background: #FF6026;
+	border-radius: 0.800000rem;
+	color : #FFF;
+}
+.list{
+	padding-left: 0.133333rem;
+	-webkit-box-sizing: border-box;
+	        box-sizing: border-box;
+	display: none;
+}
+.img_div{
+	position :relative;
+	float : left;
+	width: 2.320000rem;
+	height: 2.320000rem;
+	margin-right : 0.133333rem;
+	margin-top : 0.133333rem;
+}
+.img{
+	width: 100%;
+	height: 100%;
+}
+.select{
+	position: absolute;
+	right: 0px;
+	top : 0px;
+	width: 0.533333rem;
+	height: 0.533333rem;
+	background: rgba(0,0,0,0.5) url(../image/edit_topic/select_normal.png) no-repeat center;
+	background-size: 0.480000rem;
+	border-radius: 0.533333rem;
+}
+.selected{
+	position: absolute;
+	right: 0px;
+	top : 0px;
+	width: 0.533333rem;
+	height: 0.533333rem;
+	background : #FF6026;
+	line-height : 0.586667rem;
+	text-align : center;
+	color : #FFF;
+	font-size : 0.373333rem;
+	border-radius: 0.533333rem;
+}

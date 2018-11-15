@@ -1,0 +1,377 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>编辑页关联产品</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/search_editor_win.css" />
+		<script type="text/javascript" src="../../script/flexible.js"></script>
+		<style>
+			html, body {
+				height: 100%;
+			}
+			#search-wrap {
+				height: 100%;
+				display: -webkit-box;
+				-webkit-box-orient: vertical;
+				-webkit-flex-flow: column;
+			}
+			#main {
+				-webkit-box-flex: 1;
+				-webkit-flex: 1;
+			}
+			#search-wrap .header {
+				height: 44px;
+				line-height: 44px;
+				padding: 0 15px;
+				border-bottom: 1px solid #eee;
+			}
+			#search-wrap .header .search-btn {
+				height: 44px;
+				font-size: 17px;
+				color: #999999;
+				margin-left: 15px;
+			}
+			#search-wrap .header .back {
+				width: 24px;
+				height: 44px;
+				background-image: url(../../image/label/back.png);
+				background-repeat: no-repeat;
+				background-position: center;
+				background-size: 24px 24px;
+				margin-right: 3px;
+				z-index: 100;
+			}
+			#search-wrap .header .search {
+				height: 30px;
+				line-height: 32px;
+				background: #EEEEEE;
+				border-radius: 100px;
+				padding-left: 30px;
+				font-size: 14px;
+				color: #666;
+				background-image: url(../../image/home/search_icon.png);
+				background-position: 10px center;
+				background-repeat: no-repeat;
+				background-size: 18px 18px;
+			}
+			.mean_list {
+				border-bottom: 1px solid #eee;
+			}
+			.listname {
+				height: 44px;
+				line-height: 44px;
+				text-align: center;
+				padding-top: 0;
+				padding-bottom: 0 ;
+			}
+			.list_bor {
+				border-right: 1px solid #EEE;
+				width: 100%;
+				font-size: 14px;
+				line-height: 44px;
+				color: #666;
+			}
+			.name_active {
+				color: #333;
+				position: relative;
+			}
+			.name_active h3{
+				height: 2px;
+				width: 41px;
+				background-color: #FF6026;
+				left: 50%;
+				transform: translateX(-50%);
+				-webkit-transform: translateX(-50%);
+				position: absolute;
+				bottom: 0;
+			}
+			.listname:last-child .list_bor {
+				border-right: none;
+			}
+			.subbtn_footer {
+				padding-right: 16px;
+				padding-left: 16px;
+				padding-bottom: 10px;
+			}
+			.subbtn {
+				width: 100%;
+				border-radius: 20px;
+				background-color: #2977FF;
+				color: #fff;
+				font-size: 18px;
+				text-align: center;
+				line-height: 40px;
+			}
+
+			.title {
+				position: absolute;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 44px;
+				text-align: center;
+				font-size: 16px;
+				visibility: hidden;
+			}
+			.input_search{
+				padding-left: 3px;
+				padding-right: 8px;
+				width : 100%;
+				outline: none;
+			}
+			input[type="search"]::-webkit-search-cancel-button {
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="search-wrap">
+			<div id="header" class="header list-flex list-flex-h list-flex-center">
+				<span class="back" tapmode="" onclick="api.closeWin()"></span>
+				<div id="input" class="search list-flex-flex1">
+					<form action="javascript:fnSearch();">
+						<input class="input_search" type="search" placeholder="搜索">
+					</form>
+				</div>
+				<div class="title">
+					选择关联商品
+				</div>
+			</div>
+			<div class="mean_list list-flex">
+				<div class="listname list-flex-flex1" tapmode="meui_click" onclick="fnSelectTab(0)">
+					<span class="list_bor name_active">全部商品 <h3></h3></span>
+				</div>
+				<div class="listname list-flex-flex1" tapmode="meui_click" onclick="fnSelectTab(1)">
+					<span class="list_bor">购买商品 <h3></h3></span>
+				</div>
+				<div class="listname list-flex-flex1" tapmode="meui_click" onclick="fnSelectTab(2)">
+					<span class="list_bor">我的收藏 <h3></h3></span>
+					<h3></h3>
+				</div>
+			</div>
+			<div id="main"></div>
+			<footer class="subbtn_footer list-flex list-flex-center"  tapmode="meui_click" onclick="fnConfirm()">
+				<div class="subbtn">
+					确定(<span class="num">0</span>)
+				</div>
+			</footer>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/fastclick.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript">
+		var selectGoods = [];
+		apiready = function() {
+            $api.css($api.dom('footer'),'padding-bottom:' + (api.safeArea.bottom + 15) + 'px');
+			fnSysHeaderStyleById();
+			if(api.systemType != 'android'){
+				$api.fixStatusBar($api.dom('.title'));
+			}
+			fnOpenFrameGroup();
+            // //fnRefreshOpen();
+            // fnInitInput();
+            selectGoods = api.pageParam.selectGoods;
+			// fnSetSelectedNum(parseInt($api.getStorage("selected_num")));
+            fnSetSelectedNum(selectGoods.length);
+			$api.rmStorage('selectGoods');
+			fnInitEventListener()
+            fnBackListener(fnBack)
+		}
+		function fnInitHeader() {
+			var header = $api.byId('header');
+			fnSysHeaderStyle()
+			$api.fixStatusBar($api.dom('.title'));
+		}
+
+		function fnSetSelectedNum(num) {
+			fnSetTxt('.num', num);
+		}
+
+		function fnInitEventListener() {
+			api.addEventListener({
+				name : 'selectedNum'
+			}, function(ret) {
+				if (ret.value.selectedNum < 6) {
+					fnSetTxt('.num', ret.value.selectedNum);
+                    api.writeFile({
+                        path : api.boxDir + '/selected_num.txt',
+                        data : ret.value.selectedNum
+                    });
+				} else {
+				}
+			})
+            api.addEventListener({
+                name : 'selectedGoods'
+            }, function(ret) {
+                if (ret.value.selected) {
+                    if (selectGoods.length > 0) {
+                        for (var n = 0; n < selectGoods.length; n++) {
+                            if (selectGoods[n].productId != ret.value.item.productId) {
+                                selectGoods.push(ret.value.item);
+                                break;
+                            }
+                        }
+                    } else {
+                        selectGoods.push(ret.value.item);
+                    }
+                } else {
+                    for (var i = 0; i < selectGoods.length; i++) {
+                        if (selectGoods[i].productId == ret.value.item.productId) {
+                            selectGoods.splice(i, 1);
+                            break;
+                        }
+                    }
+                }
+                $api.setStorage('selectGoods', selectGoods);
+                api.sendEvent({
+                    name : 'haveSelectedGoods',
+                    extra : {
+                        selectGoods : selectGoods
+                    }
+                })
+            });
+		}
+
+		var currentIndex = 0;
+		function fnSelectTab(index) {
+			currentIndex = index;
+			var tabs = $api.domAll('.list_bor');
+			for (var i = 0; i < 3; i++) {
+				if (index == i) {
+					$api.addCls(tabs[i], 'name_active');
+				} else {
+					$api.removeCls(tabs[i], 'name_active');
+				}
+			}
+			fnSetVisibility('input', true);
+			fnSetVisibility('.title', false);
+			if (index == 1) {
+				fnSetVisibility('input', false);
+				fnSetVisibility('.title', true);
+			} else {
+
+			}
+			api.setFrameGroupIndex({
+				name : 'goods_group',
+				index : index
+			});
+		}
+
+		function fnOpenFrameGroup() {
+			var navOffset = $api.offset($api.dom('.mean_list'));
+			var headerH = navOffset.h + navOffset.t;
+			var footer = $api.dom('.subbtn_footer');
+			var footerOffset = $api.offset(footer);
+			var frameH = api.winHeight - headerH - footerOffset.h;
+			var frames = [];
+			frames.push({
+				name : 'topic_goods_frame1',
+				url : 'topic_goods_frame1.html?v=' + new Date().getTime(),
+				bounces : true,
+				pageParam : api.pageParam
+			});
+			frames.push({
+				name : 'topic_goods_frame2',
+				url : 'topic_goods_frame2.html',
+				bounces : true,
+				pageParam : api.pageParam
+			});
+			frames.push({
+				name : 'topic_goods_frame3',
+				url : 'topic_goods_frame3.html?v=' + new Date().getTime(),
+				bounces : true,
+				pageParam : api.pageParam
+			});
+			api.openFrameGroup({
+				name : 'goods_group',
+				rect : {
+					x : 0,
+					y : headerH,
+					w : 'auto',
+					h : frameH
+				},
+				index : 0,
+				frames : frames,
+				preload : 4,
+				scrollEnabled : false
+			}, function(ret, err) {
+                // //fnRefreshOpen();
+			});
+		}
+
+		var UIInput;
+		function fnInitInput() {
+			var input = document.getElementById('input');
+			UIInput = api.require('UIInput');
+			UIInput.open({
+				rect : {
+					x : input.offsetLeft + 30,
+					y : input.offsetTop,
+					w : input.offsetWidth - 40,
+					h : input.offsetHeight
+				},
+				styles : {
+					bgColor : '#eee',
+					size : 14,
+					color : '#333',
+					placeholder : {
+						color : '#999',
+						size : 14
+					}
+				},
+				autoFocus : false,
+				placeholder : '搜索',
+				keyboardType : 'search',
+			}, function(ret) {
+				if (ret.eventType == 'search') {
+					fnSearch();
+				}
+			});
+		}
+
+		function fnSearch() {
+            if (fnIsEmpty($api.dom('.input_search').value)) {
+                fnToast('关键字不能为空');
+            } else {
+                fnExecSearch($api.dom('.input_search').value);
+            }
+        }
+
+		function fnExecSearch(ret) {
+			var frameName;
+			if (currentIndex == 0) {
+				frameName = 'topic_goods_frame1';
+			} else if (currentIndex == 2) {
+				frameName = 'topic_goods_frame3';
+			} else if (currentIndex == 3) {
+				frameName = 'topic_goods_frame4';
+			}
+			api.execScript({
+				name : api.winName,
+				frameName : frameName,
+				script : 'fnSearchProductCommonLoadItem("' + ret + '",false,true);'
+			});
+		}
+
+		function fnConfirm() {
+		    if(api.pageParam.winName == 'root' && api.pageParam.topicType == 'image'){
+                api.execScript({
+                    name : api.pageParam.winName,
+                    frameName : 'edit_topic_frame',
+                    script : 'fnFillGoods('+JSON.stringify(selectGoods)+');'
+                });
+			}else {
+                api.execScript({
+                    name : api.pageParam.winName,
+                    frameName : api.pageParam.winName + '_frame',
+                    script : 'fnFillGoods('+JSON.stringify(selectGoods)+');'
+                });
+			}
+		}
+	</script>
+</html>

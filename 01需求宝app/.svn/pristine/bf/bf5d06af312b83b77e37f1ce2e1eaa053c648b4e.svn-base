@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>私信</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/letter_list.css" />
+	</head>
+	<body>
+		<div class="recommendations">
+			<div class="recommendation_conts">
+				<div class="recommendation_list">
+					<div class="list_header"><img src="../../image/test_img/person.jpeg">
+						<div class="dot">
+							99+
+						</div>
+					</div>
+					<div class="list_cont">
+						<p class="cont_name">
+							Sophia索菲亚
+						</p>
+						<p class="cont_num">
+							用户最后一句留言
+						</p>
+					</div>
+					<div class="list_time">
+						2小时前
+					</div>
+				</div>
+				<div class="recommendation_list">
+					<div class="list_header"><img src="../../image/test_img/person.jpeg">
+					</div>
+					<div class="list_cont">
+						<p class="cont_name">
+							Sophia索菲亚
+						</p>
+						<p class="cont_num">
+							用户最后一句留言
+						</p>
+					</div>
+					<div class="list_time">
+						2小时前
+					</div>
+				</div>
+				<div class="recommendation_list" tapmode="" onclick="fnOpenMasskWin()">
+					<div class="list_header"><img src="../../image/private_letter/zy2x.png">
+					</div>
+					<div class="list_cont">
+						<p class="cont_name">
+							群发助手
+						</p>
+					</div>
+					<div class="list_time">
+						2小时前
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript">
+		var BASE_URL = HOST + '/v3/sgpm/';
+		apiready = function() {
+			var header = $api.byId('header');
+			fnSysHeaderStyle()
+			fnGetRecentContacts();
+		};
+		
+		function fnGetRecentContacts() {
+			$service.get('getRecentContacts.ajax', {
+			}, function(ret, err) {
+				if (ret.ok == 1) {
+				}
+			});
+		}
+		
+		function fnOpenMasskWin() {
+			api.openWin({
+				name : 'mass_helper_win',
+				url : 'mass_helper_win.html'
+			});
+		}
+	</script>
+</html>

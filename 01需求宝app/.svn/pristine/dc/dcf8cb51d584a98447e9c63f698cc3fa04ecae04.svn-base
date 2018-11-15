@@ -1,0 +1,101 @@
+.flex_container {
+	display: -webkit-flex;
+	display: flex;
+}
+.line2 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	word-wrap:break-word;
+}
+
+.title{
+	position: absolute;
+	top: 16px;
+	left: 33px;
+	width: 310px;
+	line-height: 22px;
+	color: white;
+	font-size: 16px;
+	z-index: 1000000;
+}
+.play{
+	width: 40px;
+	height: 40px;
+	position: absolute;
+	left: 168px;
+	top: 77px;
+	z-index: 1000000;
+	
+}
+.play img{
+	width: 40px;
+	height: 40px;
+	z-index: 1000000;
+	
+}
+.time{
+	width: 32px;
+	height: 14px;
+	position: absolute;
+	top: 162px;
+	left: 324px;
+	font-size: 12px;
+	color: white;
+}
+.bottom_bar {
+	align-items: center;
+	padding: 18px 11px 18px 15px;
+	background: #FFF;
+}
+
+.left_bar {
+	margin-right: auto;
+}
+
+.right_bar {
+	align-items: center;
+}
+
+.writer_headIcon {
+	width: 16px;
+	height: 16px;
+	border-radius: 16px;
+	background: #EEE;
+}
+
+.writer_name {
+	height: 16px;
+	font-size: 12px;
+	color: #999999;
+	margin-left: 6px;
+}
+
+.bottom_icon {
+	width: 24px;
+	height: 24px;
+	margin-left: 12px;
+	background-size: cover;
+}
+
+.icon1 {
+	background-image: url(../image/community/gk@3x.png);
+}
+
+.icon2 {
+	background-image: url(../image/community/Message@3x.png);
+}
+
+.icon3 {
+	background-image: url(../image/community/zan@3x.png);
+}
+.icon4 {
+	background-image: url(../image/home/share_grad@3x.png);
+}
+
+.bottom_num {
+	font-size: 12px;
+	color: #999999;
+}

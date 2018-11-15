@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<style>
+			body {
+			}
+		</style>
+	</head>
+	<body></body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript">
+		var url;
+		apiready = function() {
+			url = api.pageParam.video_record.path;
+            fnPreview(url);
+			fnOpenPreviewControl();
+            fnBackListener(fnBack);
+		};
+		
+		var timeout;
+		function fnHideProgress() {
+			timeout = setTimeout(function(){
+				api.execScript({
+					frameName : api.winName +'_frame',
+		            script: 'fnHideProgress();'
+	            });
+			},1000);
+		}
+		
+		function fnOpenPreviewControl() {
+			api.openFrame({
+				name : 'video_only_preview_frame',
+				url : 'video_only_preview_frame.html?v=' + new Date().getTime(),
+				bgColor : 'rgba(0,0,0,0)',
+				pageParam : api.pageParam
+			});
+		}
+
+		function fnPreview(url) {
+			fnLogStr(url);
+			fnVideoPreview(url);
+		}
+		
+		function fnVideoPreview(url) {
+			var videoPlayer = api.require('videoPlayer');
+			videoPlayer.open({
+				rect : {
+					x : 0,
+					y : 0,
+					w : api.winWidth,
+					h : api.winHeight+5
+				},
+                bg:'#000',
+			    path: url
+			}, function(ret, err) {
+			    if (ret && ret.status && ret.eventType == 'show') {
+			    	fnHideProgress();
+			    	fnPlayListener();
+					fnAddPlayEndListener();
+				}
+			});
+		}
+		
+		var interval;
+		var isPlayingFlag = 0;
+		//RN中，按home键退到后台，视频会自动暂停，通过该方法使应用回到前台时能够继续播放
+		function fnPlayListener() {
+			var flag = 0;
+			interval = setInterval(function(){
+				if(flag == 2){
+					isPlayingFlag = isPlaying;
+					flag = 0;
+				}
+				else {
+					if(isPlaying == isPlayingFlag && isPlaying > 0) {
+						var videoPlayer = api.require('videoPlayer');
+						videoPlayer.start();
+					}
+				}
+				flag++;
+			},500);
+		}
+
+		var isHide = false;
+		var isPlaying = 0;
+		function fnAddPlayEndListener() {
+			isPlaying = 0;
+			var videoPlayer = api.require('videoPlayer');
+			videoPlayer.addEventListener({
+			    name: 'play'
+			}, function(ret, err) {
+			    fnLog(ret);
+			    if (ret.eventType == 'complete') {
+			        videoPlayer.start();
+			    }
+			    if(ret.eventType == 'playing') {
+			    	if(isPlaying == 0){
+			    		api.execScript({
+		                    frameName : api.winName +'_frame',
+			            	script: 'fnHideProgress();'
+	                    });
+			    	}
+			    	isPlaying++;
+			    	// if(isHide){
+			    	// 	return;
+			    	// }
+//			     	api.hideProgress();
+			     	// isHide = true;
+			    }
+			});
+		}
+
+		function fnClosePlayer() {
+			var videoPlayer = api.require('videoPlayer');
+			videoPlayer.stop();
+		}
+	</script>
+</html>

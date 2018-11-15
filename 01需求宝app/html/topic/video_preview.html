@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<style>
+			body {
+			}
+		</style>
+	</head>
+	<body></body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript">
+		var url;
+		var time;
+		apiready = function() {
+			//fnRefreshOpen();
+			url = api.pageParam.video_record.path;
+			fnPreview(url);
+			// fnInitEventListener();
+			fnBackListener(fnBack)
+		};
+		function fnOpenPreviewControl() {
+		    api.pageParam['time'] = time;
+			api.openFrame({
+				name : 'video_preview_frame',
+				url : 'video_preview_frame.html',
+				bgColor : 'rgba(0,0,0,0)',
+				pageParam : api.pageParam
+			});
+		}
+
+		function fnReOpenPreview() {
+			api.closeWin({
+				name : 'edit_video_topic'
+			});
+			fnPreview(url);
+			setTimeout(function() {
+				api.bringFrameToFront({
+					from : 'video_preview_frame'
+				});
+			}, 500);
+		}
+
+		function fnPreview(url) {
+			api.showProgress();
+			if(api.systemType == 'ios') {
+				var UIAlbumBrowser = api.require('UIAlbumBrowser');
+				if(api.systemType === 'ios') {
+                    UIAlbumBrowser.transVideoPath({
+                        path: url,
+                    }, function (ret, err) {
+                        api.hideProgress();
+                        if (ret.status) {
+                            api.pageParam.video_record['resourceId'] = api.pageParam.video_record.path;
+                            api.pageParam.video_record.path = ret.albumVideoPath;
+                            api.pageParam.video_record.fileSize = ret.fileSize;
+                            fnVideoPreview(ret.albumVideoPath);
+                        } else {
+                            fnToast(JSON.stringify(err));
+                        }
+                    });
+                }else {
+                    UIAlbumBrowser.transPath({
+                        path: url,
+                    }, function (ret, err) {
+                        api.hideProgress();
+                        if (ret.status) {
+                            api.pageParam.video_record.path = ret.path;
+                            fnVideoPreview(ret.path);
+                        } else {
+                            fnToast(JSON.stringify(err));
+                        }
+                    });
+				}
+			}else{
+				fnVideoPreview(url);
+			}
+		}
+
+		function fnVideoPreview(url) {
+			var videoPlayer = api.require('videoPlayer');
+			videoPlayer.open({
+				rect : {
+					x : 0,
+					y : 0,
+					w : api.winWidth,
+					h : api.winHeight+5
+				},
+				bg:'#000',
+			    path: url
+			}, function(ret, err) {
+                api.hideProgress();
+                if (ret && ret.status && ret.eventType == 'show') {
+			        time = ret.duration;
+			        fnPlayListener();
+					fnAddPlayEndListener();
+					fnOpenPreviewControl();
+				}
+			});
+		}
+		
+		var interval;
+		var isPlayingFlag = 0;
+		//RN中，按home键退到后台，视频会自动暂停，通过该方法使应用回到前台时能够继续播放
+		function fnPlayListener() {
+			var flag = 0;
+			interval = setInterval(function(){
+				if(flag == 2){
+					isPlayingFlag = isPlaying;
+					flag = 0;
+				}else{
+					if(isPlaying == isPlayingFlag &&　isPlaying > 0){
+						var videoPlayer = api.require('videoPlayer');
+						videoPlayer.start();
+					}
+				}
+				flag++;
+			},500);
+		}
+
+		var isPlaying = 0;
+		function fnAddPlayEndListener() {
+			isPlaying = 0;
+			var videoPlayer = api.require('videoPlayer');
+			videoPlayer.addEventListener({
+				name : 'play'
+			}, function(ret, err) {
+				if (ret.eventType == 'complete') {
+					videoPlayer.start();
+				}
+				if (ret.eventType == 'playing') {
+					isPlaying++;
+				}
+			});
+		}
+
+		function fnClosePlayer() {
+			var videoPlayer = api.require('videoPlayer');
+			videoPlayer.stop();
+			videoPlayer.close();
+		}
+	</script>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport"
+			  content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>选择标签</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/main.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/swiper.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/selectionLabel.css" />
+		<style>
+            .selection_content .btn{
+                background-color: #ccc;
+            }
+		</style>
+	</head>
+	<body>
+		<div class="selection_content" v-cloak>
+			<div class="_total">
+				你想在这里看些什么？
+			</div>
+			<div class="subtotal">
+				选择后顺逛将为您推荐精彩内容
+			</div>
+			<div class="_slide">
+				<div class="swiper-container">
+					<div class="swiper-wrapper">
+						<div class="swiper-slide">
+							<div v-for="(item,index) in list1" @click="fnSelectLable(item,index)" class="term" :class="{'selected':item.choice}">
+								{{item.name}}
+							</div>
+						</div>
+						<div class="swiper-slide">
+							<div v-for="(item,index) in list2" @click="fnSelectLable(item,index+10)" class="term" :class="{'selected':item.choice}">
+								{{item.name}}
+							</div>
+						</div>
+					</div>
+					<!-- 如果需要分页器 -->
+					<div class="swiper-pagination"></div>
+				</div>
+			</div>
+			<div class="btn_alert">
+				已选{{chocied}}个
+			</div>
+			<div class="btn" tapmode="meui_click" onclick="fnConfirm()">
+				选好了？进入社区
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/vue.js"></script>
+	<script type="text/javascript" src="../../script/swiper.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script>
+		apiready = function() {
+			fnInitPostion();
+			fnGetLabelList();
+//          fnHideTabBar();
+		}
+		function fnInitPostion() {
+			if (api.systemType == 'android') {
+				$api.dom('.selection_content').style.paddingTop = '25px';
+			} else {
+				$api.dom('.selection_content').style.paddingTop = api.safeArea.top + 20 + 'px';
+			}
+		}
+
+		var vue = new Vue({
+			el : ".selection_content",
+			data : {
+				list1 : [],
+				list2 : [],
+				chocied : 0
+			},
+			methods : {
+				fnSelectLable : function(item, index) {
+					fnSelectLable(item, index)
+				}
+			}
+		});
+		function fnSelectLable(item, i) {
+			if (item.choice) {
+				if (i < 10) {
+					vue.$set(vue.$data.list1[i], 'choice', false);
+				} else {
+					vue.$set(vue.$data.list2[i - 10], 'choice', false);
+				}
+				vue.chocied = vue.chocied > 0 && vue.chocied - 1;
+				// fnRemoveTags(item);
+			} else {
+				if (i < 10) {
+					vue.$set(vue.$data.list1[i], 'choice', true);
+				} else {
+					vue.$set(vue.$data.list2[i - 10], 'choice', true);
+				}
+				vue.chocied = vue.chocied + 1;
+				// fnAddTags(item);
+			}
+            if(vue.chocied == 0){
+                $api.css($api.dom('.btn'),'background:#ccc');
+            }else{
+                $api.css($api.dom('.btn'),'background:#FF6026');
+            }
+		}
+
+		function filterArr(arr, it) {
+			if (!arr.length) {
+				return;
+			}
+			arr.filter(function(item, index) {
+				if (item.id == it.id) {
+					arr.splice(index, 1)
+				}
+			})
+			return arr;
+		}
+
+		function fnGetLabelList() {
+			$service.get('user/getUserRecommendTags.ajax', {
+				type : 0
+			}, function(ret, err) {
+				if (ret && ret.ok == 1) {
+					for (var i = 0; i < ret.data.length; i++) {
+						if (i < 10) {
+							vue.list1.push(ret.data[i]);
+						} else {
+							vue.list2.push(ret.data[i]);
+						}
+					}
+                    var swiper = new Swiper('.swiper-container', {
+                        autoHeight : true,
+                        pagination : {
+                            el : '.swiper-pagination',
+                            type : 'bullets',
+                        }
+                    });
+				} else {
+					fnToast("获取标签列表失败");
+				}
+			});
+		}
+		
+		function fnAddTags(item){
+			$service.get('user/addUserTags.ajax', {
+				tagsId : item.id
+			}, function(ret, err) {
+				if(ret){
+					if(ret.ok == 1){
+					}else{
+						fnToast(ret.data.content);
+					}
+				}else{
+					fnToast(err.msg);
+				}
+			});
+		}
+		
+		function fnRemoveTags(item) {
+			$service.get('user/deleteUserTags.ajax', {
+				tagsId : item.id
+			}, function(ret, err) {
+				if (ret && ret.ok == 1) {
+				}else{
+					fnToast(ret.data.content);
+				}
+			});
+		}
+
+		var isLoading = false;
+		function fnConfirm() {
+			if(isLoading){
+				return;
+			}
+			isLoading = true;
+			if(vue.chocied == 0){
+				fnToast('至少选择一个标签','middle');
+				isLoading = false;
+				return;
+			}
+			var ids = [];
+			for(var key in vue.list1){
+			    if (vue.list1[key].choice){
+			        ids.push(vue.list1[key].id);
+                }
+            }for(var i in vue.list2){
+                if (vue.list2[i].choice){
+                    ids.push(vue.list2[i].id);
+                }
+            }
+            isLoading = false;
+            $service.get('user/batchAddUserTags.ajax', {
+                tagIds : ids.join(',')
+            }, function(ret, err) {
+            	isLoading = false;
+                if(ret){
+                    if(ret.ok == 1){
+//                  	fnShowTabBar();
+                    	api.execScript({
+							name : 'root',
+							script : 'fnReGetTags();'
+						});
+                        api.closeFrame({
+                            name: api.frameName
+                        });
+                    }else{
+                        fnToast(ret.data.content);
+                    }
+                }else{
+                    fnToast(err.msg);
+                }
+            });
+		}
+	</script>
+</html>

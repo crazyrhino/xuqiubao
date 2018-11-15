@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>话题详情页</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/meui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/swiper.css" />
+    <link rel="stylesheet" href="../../css/topic_details_move.css">
+    <script type="text/javascript" src="../../script/flexible.js"></script>
+  </head>
+  <body>
+    <div id="wrap" class="list-flex list-flex-v">
+      <header id="header" class="rank_header">
+    		<p class="rank_content"><img class="rank_back" src="../../image/rank/rank_back.png" tapmode onclick="api.closeWin()"><span class="slh"><img src="../../image/mine/more@2x.png" alt=""></span></p>
+    	</header>
+      <div id="main" class="list-flex-flex1"></div>
+      </footer>
+    </div>
+  </body>
+  <script type="text/javascript" src="../../script/api.js"></script>
+  <script type="text/javascript" src="../../script/mapi.js"></script>
+  <script type="text/javascript" src="../../script/vue.js"></script>
+  <script type="text/javascript" src="../../script/swiper.js"></script>
+  <script type="text/javascript">
+    var muVue=null,mySwiper=null;
+    apiready = function() {
+    	//fnRefreshOpen();
+      var header = $api.byId('header');
+      fnSysHeaderStyle()
+      var headerH = $api.offset(header).h;
+      api.openFrame({
+          name: 'participate_details',
+          url: './participate_details.html',
+          rect: {
+              x: 0,
+              y: headerH,
+              w: 'auto',
+              h: 'auto',
+          },
+          pageParam:api.pageParam,
+          bounces: false,
+      });
+    }
+  </script>
+</html>

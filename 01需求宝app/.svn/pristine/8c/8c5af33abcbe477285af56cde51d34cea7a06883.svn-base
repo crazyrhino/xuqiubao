@@ -1,0 +1,89 @@
+/*选择标签 selectionLabel.html*/
+header.selection_label{
+  height: 63px;
+  line-height: 63px;
+  text-align: right;
+}
+.selection_label .msg-btn{
+  width:21px;
+  height: 21px;
+  margin-right: 17px;
+  margin-top: 21px;
+  background-image: url(../image/closeWin.png);
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.selection_content{
+  text-align: center;
+  padding-left: 17px;
+  padding-right: 16px;
+  padding-top: 4px;
+}
+.selection_content ._total{
+  font-size: 22px;
+  color: #000;
+  line-height: 30px;
+}
+.selection_content .subtotal{
+  font-size: 12px;
+  color: #999;
+  line-height: 17px;
+  margin-top: 5px;
+}
+.selection_content ._slide{
+  margin-top: 44px;
+}
+.selection_content .swiper-container{
+  padding-bottom: 19px;
+}
+.selection_content ._slide .term{
+  box-sizing: border-box;
+  display: inline-block;
+  font-size: 14px;
+  color: #666;
+  padding:7px 28px;
+  padding-right: 24px;
+  border-radius: 20px;
+  border:1px solid  #eee;
+  margin-bottom: 13px;
+  margin-right: 10px;
+}
+.selection_content ._slide .term.active{
+  background: #2979FF;
+  color: #fff;
+  border-color: #2979FF;
+}
+.selection_content ._slide .term.selected{
+  background: #FF6026;
+  color: #fff;
+  border-color: #FF6026;
+}
+
+.selection_content .swiper-slide,
+.swiper-wrapper{
+  padding: 0;
+}
+.selection_content .swiper-pagination{
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+}
+.selection_content .btn_alert{
+  font-size: 12px;
+  color: #999999;
+  margin-bottom: 9px;
+  margin-top: 40px;
+}
+.selection_content .btn{
+  background: #FF6026;
+  border-radius: 100px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  color: #fff;
+  font-size: 17px;
+}
+
+[v-cloak]{
+  display: none;
+}

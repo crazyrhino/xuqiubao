@@ -1,0 +1,1534 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>征集详情</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/flex-layout.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/collect_detail_frame2.css?v=1"/>
+    <style>
+        .detail img {
+            display: block !important;
+            width: auto !important;
+            height: auto !important;
+        }
+
+        .aui-ellipsis-3 {
+            display: -webkit-box;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+            word-break: break-all;
+            white-space: normal !important;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .buy-btn {
+            float: right;
+            padding: 2px 5px;
+            border-radius: 30px;
+            border: 1px solid #ff9900;
+            color: #ff9900;
+            text-align: center;
+            font-size: 14px;
+            position: absolute;
+            right: 20px;
+        }
+
+        .auto_height {
+            height: auto;
+        }
+
+        .detail .detailBox {
+            display: block;
+            overflow: hidden;
+        }
+        .detail .detailBox span{
+            display: inline;
+        }
+        .detail {
+            overflow: hidden;
+        }
+
+        .detail_max {
+            max-height: 80px;
+        }
+
+        .space {
+            height: 50px;
+            background: rgba(0, 0, 0, 0);
+        }
+
+        .bottomFix {
+            z-index: 999999;
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+</div>
+<script type="text/template" id="data-tpl">
+
+    <div class="comSec mb0 border-b">
+        <h2 class="pageTitle">{{=it.recruitName}}</h2>
+        <div class="mainImg">
+            <img src="{{=it.mainImg}}" width="100%" alt="">
+            {{? it.recruitStatus == "0"}}
+            <div class="status purple">
+                马上开始
+            </div>
+            {{?? it.recruitStatus == "1"}}
+            <div class="status orange">
+                征集中
+            </div>
+            {{?? it.recruitStatus == "2"}}
+            <div class="status grey">
+                已结束
+            </div>
+            {{?}}
+        </div>
+    </div>
+    <div class="comSec pt-0">
+        <div class="flex-column flex-between flex-middle flex-none color-999 fs12 border-b py-10">
+            {{? it.recruitStatus == "0"}}
+            <div class="aui-ellipsis-1 flex-auto">
+                征集活动于：<strong style="color:#ff6600">{{=it.statusName}}</strong>开始
+            </div>
+            {{?? it.recruitStatus == "1"}}
+            <div class="aui-ellipsis-1 flex-auto">
+                {{? parseInt(it.storyNum) > 0}}
+                征集时间：{{=it.statusName}}
+                {{??}}
+                征集时间：{{=it.statusName}}
+                {{?}}
+            </div>
+            <div class="flex-column flex-middle">
+                {{? it.subStoryNum > 0}}
+                <img src="../../image/edit_topic/circle_active.png" class="img-round" style="height: 20px;" alt="">
+                {{??}}
+                <img src="../../image/edit_topic/circle.png" class="img-round" style="height: 20px;" alt="">
+                {{?}}
+                <div class="ml5">
+                    {{? it.subStoryNum == "0"}}暂无人参与{{??}}{{=it.subStoryNum||"0"}}次参与{{?}}
+                </div>
+            </div>
+            {{?? it.recruitStatus == "2"}}
+
+            <div class="flex-column flex-middle">
+                {{? it.subStoryNum > 0}}
+                <img src="../../image/edit_topic/circle_active.png" class="img-round" style="height: 20px;" alt="">
+                {{??}}
+                <img src="../../image/edit_topic/circle.png" class="img-round" style="height: 20px;" alt="">
+                {{?}}
+                <div class="ml5">
+                    {{=it.subStoryNum||"0"}}次参与
+                </div>
+            </div>
+            <div class="roundBtn bg-orange color-white" tapmode onclick="openWinner('{{=it.id}}')">中奖名单</div>
+            {{?}}
+        </div>
+
+        <!--		虚拟奖励-->
+        {{? it.rewardType == 1}}
+        <div class="" style="margin-bottom:10px;">
+            <div class="py-10 color-666">
+                {{=it.rulesMsg||''}}
+            </div>
+            <ul class="giftList color-orange">
+                <li class="gold">
+                    {{? __DATA__.rulesType == 1||__DATA__.rulesType == 2}}瓜分{{??}}每人获得{{?}}
+                    {{=it.rewardAmount||''}}
+                    个金币
+                </li>
+            </ul>
+        </div>
+        {{?? it.rewardType == 2}}
+        <div class="" style="margin-bottom:10px;">
+            <div class="py-10 color-666">
+                {{=it.rulesMsg||''}}
+            </div>
+            <ul class="giftList color-orange">
+                <li class="diamond">
+                    {{? __DATA__.rulesType == 1||__DATA__.rulesType == 2}}瓜分{{??}}每人获得{{?}}
+                    {{=it.rewardAmount||'0'}}
+                    个钻石
+                </li>
+            </ul>
+        </div>
+        {{?}}
+        <!--		实物奖励-->
+        {{? it.rewardType == 3}}
+        <div class="py-10 color-666">
+            {{=it.rulesMsg||''}}
+        </div>
+        {{?}}
+        <div id="products-wrap">
+            {{?__DATA__.goodsDescription}}
+            <!--第三方商品-->
+            <div class="reward bg-grey padded-10 flex-column">
+                <div class="photo bgCover mr10" style="background-image: url({{=__DATA__.goodsImg}});"></div>
+                <div class="textBox flex-auto flex-row flex-between flex-none">
+                    <div>
+                        <div class="name aui-ellipsis-3 color-333 fs16">
+                            {{=cutString(__DATA__.goodsDescription,35)}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{?}}
+        </div>
+    </div>
+    <div class="comSec pb-5">
+        <div class="detail {{? parseInt(it.subStoryNum) > 0}}hidden{{?}}" id="detail">
+            <div class="excerpt aui-ellipsis-3">{{=it.descriptionText||''}}</div>
+            <div class="detailBox">
+                {{=it.recruitDescription||''}}
+                <div style="margin-top: 25px;" id="relativeGoods">
+
+                </div>
+            </div>
+        </div>
+        {{? parseInt(it.subStoryNum) > 0}}
+        <div class="readAll" onClick="readAll(this);">
+            <span class="down">查看全文</span><span class="up">收起</span>
+        </div>
+        {{?}}
+    </div>
+    {{? parseInt(it.subStoryNum) > 0}}
+    <div class="navBox">
+        <ul class="nav clearfix">
+            <li data-type=1>
+                热门
+            </li>
+            <li data-type=2 class="active">
+                最新
+            </li>
+        </ul>
+    </div>
+
+    <div class="flowListBox">
+        <div class="flowList" id="story-wrap">
+            <div class="grid-sizer item"></div>
+        </div>
+    </div>
+    {{?}}
+    {{? parseInt(it.recruitStatus) == 0 || (parseInt(it.recruitStatus) == 2 && it.storyNum == 0)}}
+    {{??}}
+    <div class="bottomSpace"></div>
+    {{?}}
+
+    <div class="bottomFix" id="footer-wrap">
+
+    </div>
+
+
+</script>
+<script type="text/template" id="products-tpl">
+    {{for(var i in it.data){}}
+
+    <div class="reward bg-grey padded-10 flex-column">
+        <div class="photo centerImgBox mr10"><img src="{{=it.data[i].image}}" alt="">
+        </div>
+        <div class="textBox flex-auto flex-row flex-between flex-none">
+            <div>
+                <div class="name aui-ellipsis color-333 fs16">
+                    {{=it.data[i].name}}
+                </div>
+                <div class="desc aui-ellipsis color-666 fs14">
+                    {{=it.data[i].title}}
+                </div>
+            </div>
+            <div class="flex-column flex-middle">
+                <div class="color-orange fs17 mr10">
+                    ￥{{=it.data[i].price}}
+                </div>
+                <!--<del class="color-999">￥2866</del>-->
+                <!--{{? it.goodsType == 2}}
+                <div class="buy-btn" tapmode onclick="openGoodsDetail('{{=__DATA__.goodsId}}')">
+                去购买
+                </div>
+                {{?}}
+            </div>-->
+
+            </div>
+        </div>
+
+        {{}}}
+
+</script>
+<script type="text/template" id="relativeGoods-tpl">
+    {{for(var i in it.data){}}
+    <div tapmode onclick="openGoodsDetail('{{=__DATA__.goodsId}}')" class="reward bg-grey padded-10 flex-column">
+        <div class="photo centerImgBox mr10"><img src="{{=it.data[i].image}}" alt="">
+        </div>
+        <div class="textBox flex-auto flex-row flex-between flex-none">
+            <div>
+                <div class="name aui-ellipsis color-333 fs16">
+                    {{=it.data[i].name}}
+                </div>
+                <div class="desc aui-ellipsis color-666 fs14">
+                    {{=it.data[i].title}}
+                </div>
+            </div>
+            <div class="flex-column flex-middle">
+                <div class="color-orange fs17 mr10">
+                    ￥{{=it.data[i].price}}
+                </div>
+                <del class="color-999">￥2866</del>
+                {{? it.goodsType == 2}}
+                <div class="buy-btn" tapmode onclick="openGoodsDetail('{{=__DATA__.goodsId}}')">
+                    去购买
+                </div>
+                {{?}}
+            </div>
+
+        </div>
+    </div>
+
+    {{}}}
+
+</script>
+<script type="text/template" id="story-tpl">
+    {{for(var i in it){}}
+    <div class="item story-item" tapmode onclick="openDetail('{{=it[i].id}}','{{=it[i].dataTypeNew}}')">
+        {{? it[i].mainImg}}
+        <div class="media">
+            {{? it[i].dataTypeNew == 3}}
+            <div class="playBtn"><img src="../../image/edit_topic/play.png" alt=""></div>
+            {{?}}
+            <img src="{{=it[i].mainImg}}" alt="">
+        </div>
+        {{?}}
+        <div class="text">
+            <div class="title aui-ellipsis-2">
+                {{=it[i].storyContent||''}}
+            </div>
+            <div class="flex-column flex-middle flex-between flex-none color-999 fs12">
+                <div class="flex-column flex-middle">
+                    <div class="avatar mr5">
+                        {{? it[i].userImg}}
+                        <img src="{{=it[i].userImg||'../../image/home/tmp_default_header.png'}}" alt="">
+                        {{??}}
+                        <img src="../../image/home/tmp_default_header.png" alt="">
+                        {{?}}
+                    </div>
+                    <div class="name">
+                        {{=cutString(it[i].userName,8)}}
+                    </div>
+                </div>
+                <div class="laud {{? it[i].isPraise != 0}}on{{?}}" id="laudcount-{{=it[i].id}}"
+                     data-status="{{=it[i].isPraise}}" tapmode
+                     onclick="doLaud('{{=it[i].id}}','{{=it[i].userCode}}','{{=it[i].isPraise}}')">
+                    {{=it[i].praiseNumber||"0"}}
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ } }}
+
+</script>
+<script type="text/template" id="footer-tpl">
+
+    {{? __DATA__.recruitStatus == "0"}}
+    {{?? parseInt(__DATA__.recruitStatus) == 1}}
+    {{? parseInt(__DATA__.storyNum) == 0}}
+    <!--征集中--没有作品-->
+    <div class="btmBtn flex-column flex-center flex-middle color-white bg-orange" id="canyuBtn" tapmode
+         onclick="fnPartake()">
+        <img src="../../image/collect/pic_hd.jpg" width="48"/>
+        <div>
+            参与征集
+        </div>
+    </div>
+    {{?? parseInt(__DATA__.storyNum) == 1 && __MINEDATA__}}
+    <!--征集中--一个作品-->
+    <div class="btmBar flex-column flex-middle flex-between flex-none">
+        <div class="btmBarInfo flex-column flex-center flex-middle bg-orange color-white" tapmode
+             onclick="openShareTopic()">
+            <div class="text-center" style="height: 40px;line-height:40px">
+                <div {{? __DATA__.rulesType !=1}} style="height: 40px;line-height:40px" {{?}}>
+                拉人气
+            </div>
+            {{? __DATA__.rulesType == 1&&__DATA__.rank}}
+            <!--竞争奖励时排名-->
+            <div class="fs10">
+                {{?__MINEDATA__[0].rank}}第{{=__MINEDATA__[0].rank}}名{{?}}
+            </div>
+            {{?}}
+        </div>
+        <img class="share_icon" src="../../image/community/share.png" height="24"/>
+    </div>
+    <div class="flex-auto aui-ellipsis-1 px-10" tapmode
+         onclick="openDetail('{{=__MINEDATA__[0].id}}','{{=__MINEDATA__[0].dataTypeNew}}')">
+        {{=__MINEDATA__[0].storyContent}}
+    </div>
+    <div class="flex-column flex-middle fs12 color-999 pr-15" tapmode
+         onclick="openDetail('{{=__MINEDATA__[0].id}}','{{=__MINEDATA__[0].dataTypeNew}}')">
+        <img src="../../image/community/Message@3x.png" height="24" alt="">
+        <div class="mr10">
+            {{=__MINEDATA__[0].commentNumber||'0'}}
+        </div>
+        <div class="laud {{? __MINEDATA__[0].isPraise != 0}}on{{?}}" id="laudcount2-{{=__MINEDATA__[0].id}}">
+            {{=__MINEDATA__[0].praiseNumber||'0'}}
+        </div>
+    </div>
+    </div>
+    {{?? parseInt(__DATA__.storyNum) > 1 && __MINEDATA__}}
+    <!--征集中--多个作品-->
+    <div class="btmBtn bg-white color-333" id="mineMore" onClick="openMineMore(1);">
+        我的作品（{{=__DATA__.storyNum}}）
+    </div>
+    {{?}}
+    {{?? parseInt(__DATA__.recruitStatus) == 2 && __MINEDATA__}}
+
+    <!--已结束--一个作品-->
+    <!--<div class="btmBar flex-column flex-middle flex-between flex-none">
+        {{? __MINEDATA__ && __MINEDATA__[0].isAwardOk == 1}}
+        <img class="jiangbei ml10" src="../../image/mine/zy04@2x.png" width="21" />
+        {{?}}
+        <div class="px-10 color-999 fs12">
+            第{{=__MINEDATA__[0].rank||'0'}}名
+        </div>
+        <div class="color-999">
+            |
+        </div>
+        <div class="flex-auto aui-ellipsis-1 px-10">
+            {{=__MINEDATA__[0].storyName}}
+        </div>
+        <div class="flex-column flex-middle fs12 color-999 pr-15">
+            <img src="../../image/community/Message@3x.png" height="24" alt="">
+            <div class="mr10">
+                {{=__MINEDATA__[0].commentNumber||'0'}}
+            </div>
+            <div class="laud">
+                {{=__MINEDATA__[0].praiseNumber||'0'}}
+            </div>
+        </div>
+    </div>-->
+    {{? __DATA__.storyNum > 0}}
+    <!--结束--多个作品-->
+    <div class="btmBtn flex-column flex-middle flex-between flex-none bg-white color-333" onClick="openMineMore();">
+        <!--TODO:此处有bug，不是锁定中奖名单就会显示奖杯，而是：除此条件外，并且我的作品有获奖才会展示奖杯-->
+        {{? __DATA__.lockingReward == 1 && __DATA__.winnerFlag == 1}}
+        <img class="jiangbei ml10" id="jiangbei" src="../../image/mine/zy04@2x.png" width="21"/>
+        {{??}}
+        <div></div>
+        {{?}}
+        <div>
+            我的作品（{{=__DATA__.storyNum}}）
+        </div>
+        <div></div>
+        <!--<img class="jiangbei mr10" style="opacity: 0;" src="../../image/mine/zy04@2x.png" width="21" />-->
+    </div>
+    {{?}}
+    {{?}}
+
+</script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/doT.min.js"></script>
+<script type="text/javascript" src="../../script/imagesloaded.pkgd.min.js"></script>
+<script type="text/javascript" src="../../script/masonry.pkgd.min.js"></script>
+<script type="text/javascript" src="../../script/service.js"></script>
+<script type="text/javascript" src="../../script/signature.js"></script>
+<script type="text/javascript">
+    // 截取字符串
+    function cutString(text, length) {
+        if (text.length > length) {
+            return text.substring(0, length) + "...";
+        } else {
+            return text;
+        }
+    }
+
+    // 去购买打开
+    function openGoodsDetail(goodsId) {
+        api.sendEvent({
+            name: 'APICloudCallNaviteMethod',
+            extra: {
+                type: 1,
+                canCallBack: 0,
+                toPageName: 'GoodsDetail',
+                toPageParams: {
+                    productId: goodsId
+                }
+            }
+        });
+    }
+
+    //nav滚动固定
+    $(window).scroll(function () {
+        if ($('.navBox').length) {
+            var navBoxTop = $('.navBox').offset().top;
+            var scrollTop = $(document).scrollTop();
+            if (scrollTop >= navBoxTop) {
+                $('.nav').addClass("fix");
+                if (api.systemType == 'android') {
+                    api.setFrameAttr({
+                        name: 'collect_detail_frame',
+                        bounces: false
+                    });
+                }
+
+            } else {
+                $('.nav').removeClass("fix");
+                if (api.systemType == 'android') {
+                    api.setFrameAttr({
+                        name: 'collect_detail_frame',
+                        bounces: true
+                    });
+                }
+            }
+        }
+    });
+
+    var id, rewardType, lockingReward;
+    var __DATA__;//全局征集详情数据
+    var __MINEDATA__;//全局我的作品数据
+    var pageIndex = 1, pageSize = 20, loadStatus = true;
+    var grid;
+    var storageUserId;
+
+    // 点赞
+    function doLaud(storyId, userCode) {
+        event.stopPropagation();
+        var _status = document.getElementById("laudcount-" + storyId).getAttribute("data-status");
+        var url = 'story/praiseStory.ajax';
+        var params = {
+            storyId: storyId,
+            userCode: userCode
+        }
+
+        $service.get(url, params, function (ret, err) {
+            if (ret) {
+                if (_status == "0") {
+                    document.getElementById("laudcount-" + storyId).setAttribute("data-status", "1");
+                    if (document.getElementById("laudcount-" + storyId)) {
+                        document.getElementById("laudcount-" + storyId).textContent = parseInt(document.getElementById("laudcount-" + storyId).textContent) + 1;
+                        document.getElementById("laudcount-" + storyId).classList.toggle("on");
+                    }
+                    if (document.getElementById("laudcount2-" + storyId)) {
+                        document.getElementById("laudcount2-" + storyId).textContent = parseInt(document.getElementById("laudcount2-" + storyId).textContent) + 1;
+                        document.getElementById("laudcount2-" + storyId).classList.toggle("on");
+                    }
+                } else {
+                    document.getElementById("laudcount-" + storyId).setAttribute("data-status", "0");
+                    if (document.getElementById("laudcount-" + storyId)) {
+                        document.getElementById("laudcount-" + storyId).textContent = parseInt(document.getElementById("laudcount-" + storyId).textContent) - 1;
+                        document.getElementById("laudcount-" + storyId).classList.toggle("on");
+                    }
+                    if (document.getElementById("laudcount2-" + storyId)) {
+                        document.getElementById("laudcount2-" + storyId).textContent = parseInt(document.getElementById("laudcount2-" + storyId).textContent) - 1;
+                        document.getElementById("laudcount2-" + storyId).classList.toggle("on");
+                    }
+                }
+
+
+            }
+        }, true);
+    }
+
+    apiready = function () {
+        api.setRefreshHeaderInfo({
+            loadingImg: 'widget://image/refresh.png',
+            bgColor: 'rgb(242,242,242)',
+            textColor: '#CCC',
+            textLoading: '刷新中',
+            textDown: '下拉刷新...',
+            textUp: '松开刷新...',
+            showTime: false
+        }, function (ret, err) {
+            pageIndex = 1;
+            loadStatus = true;
+            loadData();
+        });
+        api.parseTapmode();
+        id = api.pageParam.id;
+        loadData();
+        fnAddNativeListener(); //登录监听
+        storageUserId = api.readFile({//获取当前用户信息，作为分享使用
+            sync: true,
+            path: api.boxDir + '/userid.txt'
+        });
+        api.addEventListener({
+            name: 'scrolltobottom',
+            extra: {
+                threshold: 150
+            }
+        }, function (ret, err) {
+            // if (ret) {
+            if (loadStatus) {
+                getSubStoryList();
+            }
+            // }
+        });
+        api.addEventListener({
+            name: 'refresh'
+        }, function (ret, err) {
+            if (ret) {
+//          	alert('那边删了')
+                pageIndex = 1;
+                loadStatus = true;
+                loadData();
+            }
+        });
+
+        api.addEventListener({
+            name: 'collect_detail_disappear'
+        }, function (ret) {
+            api.removeEventListener({
+                name: 'needCheck'
+            });
+        })
+        api.addEventListener({
+            name: api.winName + '_appear'
+        }, function (ret) {
+            api.addEventListener({
+                name: 'needCheck'
+            }, function (ret, err) {
+                if (ret) {
+                    check()
+                }
+            });
+        })
+        api.addEventListener({
+            name: 'needCheck'
+        }, function (ret, err) {
+            if (ret) {
+                check()
+            }
+        });
+
+        api.addEventListener({
+            name: 'topicPublicSuccessEvent'
+        }, function (ret, err) {
+            if (ret) {
+                pageIndex = 1;
+                loadStatus = true;
+                loadData();
+            }
+        });
+
+        api.addEventListener({
+            name: 'copyCollect'
+        }, function (ret, err) {
+            fnCopy()
+        });
+
+
+        // 监听点赞
+        api.addEventListener({
+            name: 'topicLaudEvent'
+        }, function (ret, err) {
+            if (ret) {
+                if (ret.value.type == "1") {
+                    if (document.getElementById("laudcount-" + ret.value.id)) {
+                        document.getElementById("laudcount-" + ret.value.id).textContent = parseInt(document.getElementById("laudcount-" + ret.value.id).textContent) + 1;
+                        document.getElementById("laudcount-" + ret.value.id).classList.add("on");
+                    }
+
+                    if (document.getElementById("laudcount2-" + ret.value.id)) {
+                        document.getElementById("laudcount2-" + ret.value.id).textContent = parseInt(document.getElementById("laudcount2-" + ret.value.id).textContent) + 1;
+                        document.getElementById("laudcount2-" + ret.value.id).classList.add("on");
+                    }
+                    document.getElementById("laudcount-" + ret.value.id).setAttribute("data-status", "1");
+                } else {
+                    document.getElementById("laudcount-" + ret.value.id).setAttribute("data-status", "0");
+                    if (document.getElementById("laudcount-" + ret.value.id)) {
+                        var _laudCount1 = parseInt(document.getElementById("laudcount-" + ret.value.id).textContent) - 1;
+                        if (_laudCount1 <= 0) {
+                            _laudCount1 = 0;
+                        }
+                        document.getElementById("laudcount-" + ret.value.id).textContent = _laudCount1;
+                        document.getElementById("laudcount-" + ret.value.id).classList.remove("on");
+                    }
+
+                    if (document.getElementById("laudcount2-" + ret.value.id)) {
+                        var _laudCount2 = parseInt(document.getElementById("laudcount2-" + ret.value.id).textContent) - 1;
+                        if (_laudCount2 <= 0) {
+                            _laudCount2 = 0;
+                        }
+                        document.getElementById("laudcount2-" + ret.value.id).textContent = _laudCount2;
+                        document.getElementById("laudcount2-" + ret.value.id).classList.remove("on");
+                    }
+                }
+            }
+        });
+
+        //添加监听，当地址保存成功的时候，将中奖地址隐藏，显示奖杯
+        api.addEventListener({
+            name: 'showJB'
+        }, function (ret, err) {
+            if (ret) {
+                if (ret.value.index) {
+                    var index = ret.value.index;
+                    __MINEDATA__[index].provinceId = true;
+                }
+            }
+        });
+        api.addEventListener({
+            name: 'viewdisappear'
+        }, function (ret, err) {
+            api.removeEventListener({
+                name: 'NaviteCallAPICloudMethod'
+            });
+        });
+        api.addEventListener({
+            name: 'viewappear'
+        }, function (ret, err) {
+            api.addEventListener({
+                name: 'NaviteCallAPICloudMethod'
+            }, function (rets, err) {
+                var ret = rets.value;
+                if (ret.type == 9) {
+                    if (ret.success == 1) {
+                        fnOpenWin("video_record", '../topic/', {
+                            winName: api.winName,
+                            frameName: api.frameName,
+                            recruitId: api.pageParam.id,
+                            topicId: __DATA__.topicId,
+                            topicName: __DATA__.topicName
+                        });
+                        api.writeFile({
+                            path: api.boxDir + '/publish_back_winname.txt',
+                            data: api.winName
+                        }, function (ret, err) {
+
+                        });
+                        // $api.setStorage('publish_back_winname', api.winName);
+                    } else {
+                        // fnToast('没有相应权限', 'middle');
+                        api.alert({
+                            title: '提示',
+                            msg: '没有相机权限，请进入设置添加应用的相机/相册权限',
+                            buttons: ['确定']
+                        }, function (ret, err) {
+                            api.closeWin();
+                        });
+                    }
+                } else if (ret.type == 1) {
+                    if (ret.success == 1) {
+                        fnOnTokenCallBack(ret);
+                    } else {
+                        fnToast('登录失败', 'middle');
+                    }
+                } else if (ret.type == 3) {
+                    api.execScript({
+                        frameName: 'topic_share_frame',
+                        script: 'api.hideProgress()'
+                    });
+                    api.hideProgress();
+                    if (ret.success == 1) {
+                        fnToast('分享成功', 'middle');
+                        api.closeFrame({
+                            name: 'topic_share_frame'
+                        });
+                        api.closeFrame({
+                            name: 'collect_share_frame'
+                        });
+                    } else {
+                        fnToast(ret.message, 'middle');
+                    }
+                }else if(ret.type == 13){
+                    api.execScript({
+                        frameName: 'topic_share_frame',
+                        script: 'api.hideProgress()'
+                    });
+                    api.hideProgress();
+                    if(ret.tag == 'resume'){
+                        api.closeFrame({
+                            name: 'topic_share_frame'
+                        });
+                        api.closeFrame({
+                            name: 'collect_share_frame'
+                        });
+                    }
+                }
+            });
+        });
+    };
+
+    // 获取我的作品
+    function loadMineData() {
+        var params = {
+            recruitId: id,
+            pageIndex: 1,
+            pageSize: 100,
+            recruitOrStoryType: 0,
+            type: 1
+        }
+        $service.get('recruit/getSubStoryList.ajax', params, function (ret, err) {
+            if (ret) {
+                if (ret.ok == 1) {
+                    __MINEDATA__ = ret.data;
+                    if (mapMineData(__MINEDATA__) && __DATA__.lockingReward == 1) {
+//                  	alert('1111'+mapMineData(__MINEDATA__)+'------------------'+__DATA__.lockingReward)
+                        $("#jiangbei").show()
+                    } else {
+//                  	alert('2222'+mapMineData(__MINEDATA__)+'------------------'+__DATA__.lockingReward)
+
+                        $("#jiangbei").hide()
+                    }
+                    //（开始）这个地方为了解决bug 无论是发布成功  还是删除 重新回到这个界面之后 需要控制一下显隐
+//                  if(__MINEDATA__.length>0){
+//                  	api.setFrameAttr({
+//                  		name:'collect_topic_public_frm',
+//                          hidden: false
+//                      });
+//                  }else{
+//                  	api.setFrameAttr({
+//                  		name:'collect_topic_public_frm',
+//                          hidden: true
+//                      });
+//                  }
+                    //（结束）
+//                  alert(JSON.stringify(__MINEDATA__))
+                    for (var key in ret.data) {
+                        if (ret.data[key].isAwardOk ===1){
+                            __DATA__.winnerFlag = 1;
+                            break;
+                        }
+                    }
+                    if (!__DATA__.winnerFlag &&__DATA__.winnerFlag !== 1) {
+                        __DATA__.winnerFlag = 0;
+                    }
+                    var tpl = document.getElementById("footer-tpl").innerHTML;
+                    var fn = doT.template(tpl);
+                    document.getElementById("footer-wrap").innerHTML = fn(ret.data);
+                } else {
+
+                }
+            }
+        }, true)
+    }
+
+    // 获取征集数据
+    function loadData() {
+        api.showProgress({
+            style: 'default',
+            animationType: 'fade',
+            title: '',
+            text: '',
+            modal: false
+        });
+        $service.get('recruit/queryRecruitInfo.ajax', {
+            recruitId: id
+        }, function (ret, err) {
+            api.refreshHeaderLoadDone();
+            // console.log("-------------datadd----------"+JSON.stringify(ret))
+            if (ret) {
+                if (ret.ok == 1) {
+
+                    rewardType = ret.data.rewardType;
+                    lockingReward = ret.data.lockingReward;
+                    // alert(rewardType)
+                    __DATA__ = ret.data;
+//                  alert(__DATA__.participateNum);
+                    //开始  解决bug 控制显隐   当前没有参加的时候 就把羽毛隐藏 底部作为入口  当前如果参加过的话 就要把这个显示
+                    if (__DATA__.recruitStatus == "1" && parseInt(__DATA__.storyNum) > 0) {
+                        api.setFrameAttr({
+                            name: 'collect_topic_public_frm',
+                            hidden: false
+                        });
+                    } else {
+                        api.setFrameAttr({
+                            name: 'collect_topic_public_frm',
+                            hidden: true
+                        });
+                    }
+                    //结束
+
+                    __DATA__.statusName = fnTime(__DATA__.recruitStatus, __DATA__.beginTime, __DATA__.endTime);
+                    var tpl = document.getElementById("data-tpl").innerHTML;
+                    var fn = doT.template(tpl);
+                    document.getElementById("container").innerHTML = fn(ret.data);
+                    // 获取商品数据
+                    // 关联商品
+                    if (ret.data.goodsId) {
+                        getProductsDetailList(ret.data.goodsId, 2);
+                    }
+                    // 奖励商品
+                    if (ret.data.rewardGoodsId) {
+                        getProductsDetailList(ret.data.rewardGoodsId, 1);
+                    }
+
+                    grid = $('#story-wrap').masonry({
+                        columnWidth: '.grid-sizer',
+                        itemSelector: '.item',
+                        percentPosition: true
+                    });
+                    if (__DATA__.recruitStatus == "1" && parseInt(__DATA__.storyNum) > 0) {
+                        api.openFrame({
+                            name: 'collect_topic_public_frm',
+                            url: 'collect_topic_public_frm.html',
+                            rect: {
+                                w: 48,
+                                h: 48,
+                                marginLeft: api.winWidth - 64,
+                                marginTop: api.winHeight - 150
+                            },
+                            pageParam: {
+                                recruitId: api.pageParam.id,
+                                topicId: __DATA__.topicId,
+                                topicName: __DATA__.topicName,
+                                recruitType: __DATA__.recruitType
+                            },
+                            bounces: false,
+                            vScrollBarEnabled: false,
+                            hScrollBarEnabled: false,
+                            softInputDismissMode: ['tap', 'drag']
+                        });
+
+                    }
+                    if (__DATA__.subStoryNum > 0) {
+                        getSubStoryList();
+                        $('.nav li').click(function () {
+                            $('.nav li.active').removeClass('active');
+                            $(this).addClass('active');
+                            pageIndex = 1;
+                            loadStatus = true;
+                            getSubStoryList();
+                            $('html,body').animate({
+                                scrollTop: $('.navBox').offset().top
+                            }, 200);
+
+                        });
+
+                    } else {
+                        loadStatus = false;
+                    }
+                    var footerTpl = document.getElementById("footer-tpl").innerHTML;
+                    var footerFn = doT.template(footerTpl);
+                    document.getElementById("footer-wrap").innerHTML = footerFn(ret.data);
+                    if (__DATA__.storyNum > 0) {
+                        loadMineData();
+                    } else {//没有的话就把这个隐藏
+                        api.setFrameAttr({
+                            name: 'edit_btn_frame',
+                            hidden: true
+                        });
+                    }
+                    api.parseTapmode();
+                    $('#canyuBtn').click(function () {
+                        fnPartake();
+                    });
+                    $('#mineMore').click(function () {
+                        openMineMore(1)
+                    })
+                } else {
+
+                }
+            } else {
+            }
+            api.hideProgress();
+
+        }, true)
+    }
+
+    // 获取子话题
+    function getSubStoryList() {
+        loadStatus = false;
+        if (pageIndex == 1) {
+            if (document.getElementById("story-wrap")) {
+                document.getElementById("story-wrap").innerHTML = '';
+            }
+
+        }
+        api.showProgress({
+            style: 'default',
+            animationType: 'fade',
+            title: '',
+            text: '',
+            modal: false
+        });
+        // 获取是否热门或者最新
+        if (document.querySelector(".nav > li.active")) {
+            var type = document.querySelector(".nav > li.active").getAttribute("data-type");
+        } else {
+            var type = 2;
+        }
+
+        // console.log(pageIndex)
+        var params = {
+            recruitId: __DATA__.id,
+            pageIndex: pageIndex,
+            pageSize: pageSize,
+            recruitOrStoryType: 1,
+            type: type
+        }
+
+        $service.get('recruit/getSubStoryList.ajax', params, function (ret, err) {
+            api.refreshHeaderLoadDone();
+            if (ret) {
+                if (ret.ok == 1) {
+                    var tpl = document.getElementById("story-tpl").innerHTML;
+                    var fn = doT.template(tpl);
+                    if (ret.data && ret.data.length) {
+                        if (pageIndex == 1) {
+                            $('#story-wrap').html('<div class="grid-sizer item"></div>');
+                        }
+                        var $items = $(fn(ret.data));
+                        grid.append($items).masonry('appended', $items);
+                        grid.imagesLoaded().progress(function () {
+                            grid.masonry('layout');
+                        });
+
+
+                        pageIndex++;
+                        loadStatus = true;
+                    } else {
+                        api.toast({
+                            msg: '没有更多了',
+                            duration: 2000,
+                            location: 'middle'
+                        });
+                        loadStatus = false;
+                    }
+                    api.parseTapmode();
+
+
+                } else {
+
+
+                    loadStatus = false;
+                }
+            } else {
+                loadStatus = false;
+            }
+
+        }, true)
+    }
+
+    // 获取商品，goodsType区分奖励还是关联商品
+    function getProductsDetailList(productId, goodsType) {
+        $service.get(HOST_PRODUCT + '/v3/h5/item/price.json', {
+            skuStr: productId
+        }, function (ret, err) {
+            // console.log("-------------goodsData----------"+JSON.stringify(ret.data))
+            if (ret) {
+                if (ret.success) {
+                    ret.goodsType = goodsType;
+                    if (goodsType == 1) {
+                        var tpl = document.getElementById("products-tpl").innerHTML;
+                        var fn = doT.template(tpl);
+                        document.getElementById("products-wrap").insertAdjacentHTML('beforeend', fn(ret));
+                    } else {
+                        var tpl = document.getElementById("relativeGoods-tpl").innerHTML;
+                        var fn = doT.template(tpl);
+                        document.getElementById("relativeGoods").insertAdjacentHTML('beforeend', fn(ret));
+                    }
+
+                } else {
+
+                }
+            } else {
+            }
+            api.hideProgress();
+
+        }, true)
+    }
+
+    // 打开我的作品
+    function openMineMore() {
+        if (__DATA__.recruitStatus == 1) {
+            api.openFrame({
+                name: 'mine_oneMore_frame2',
+                url: 'mine_oneMore_frame2.html?v=' + new Date().getTime(),
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                },
+                pageParam: {
+                    rewardType: __DATA__.rewardType,
+                    recruitStatus: __DATA__.recruitStatus,
+                    rulesType: __DATA__.rulesType,
+                    data: __MINEDATA__,
+                    recruitData: __DATA__//后加的 给下个页面分享使用
+                }
+            })
+        } else if (__DATA__.recruitStatus == 2) {
+            api.openFrame({
+                name: 'over_mine_oneMore_frame2',
+                url: 'over_mine_oneMore_frame2.html?v=' + new Date().getTime(),
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: 'auto',
+                    h: 'auto'
+                },
+                pageParam: {
+                    lockingReward: __DATA__.lockingReward,
+                    rewardType: __DATA__.rewardType,
+                    recruitStatus: __DATA__.recruitStatus,
+                    rulesType: __DATA__.rulesType,
+                    data: __MINEDATA__
+                }
+            })
+        }
+
+    }
+
+    function openFrame(name) {
+        api.openFrame({
+            name: name,
+            url: name + '.html',
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            }
+        });
+    }
+
+    function readAll(el) {
+//      document.body.scrollTop = document.getElementById("detail").offsetTop - 60;
+        $(el).toggleClass('on');
+        $('.detail').toggleClass('hidden');
+    }
+
+    function openDetail(id, dataTypeNew) {
+        fnOpenWin('topic_details', '../topic/', {
+            type: dataTypeNew,
+            id: id
+        });
+    }
+
+    //点赞
+    $('.laud').click(function () {
+        $(this).toggleClass('on');
+    });
+
+    // 时间处理
+    function fnTime(status, beginTime, endTime) {
+        beginTime = beginTime.replace(/\-/g, "/");
+        endTime = endTime.replace(/\-/g, "/");
+        var _beginTime = new Date(beginTime);
+        var _endTime = new Date(endTime);
+        _beginTime = _beginTime.getFullYear() + "-" + foo(_beginTime.getMonth() + 1) + "-" + foo(_beginTime.getDate());
+        _endTime = _endTime.getFullYear() + "-" + foo(_endTime.getMonth() + 1) + "-" + foo(_endTime.getDate());
+        switch (status) {
+            case "0":
+                return _beginTime;
+                break;
+            case "1":
+                return '<strong style="color:#ff6600;">' + _beginTime + '</strong>至<strong style="color:#ff6600;">' + _endTime + '</strong>';
+                break;
+
+        }
+    }
+
+    // 时间补0
+    function foo(data) {
+        return data + 1 < 10 ? '0' + data : data;
+    }
+
+    //验证是否可以参与征集
+    function check() {
+        if (__DATA__.participateNum == __DATA__.storyNum) {
+            fnToast('此征集限制参与数为' + __DATA__.participateNum + '，您已参与' + __DATA__.storyNum + '次')
+        } else {
+            api.sendEvent({
+                name: 'can',
+                extra: {}
+            })
+        }
+    }
+
+    // 参与征集
+
+    function fnPartake() {
+        if (__DATA__.participateNum == __DATA__.storyNum) {
+            fnToast('此征集限制参与数为' + __DATA__.participateNum + '，您已参与' + __DATA__.storyNum + '次')
+            return;
+        }
+        api.readFile({
+            path: api.boxDir + '/userid.txt',
+        }, function (ret, err) {
+            if (ret) {
+                // alert(JSON.stringify(ret))
+                var _userid = ret.data;
+                if (!_userid) {
+                    api.sendEvent({
+                        name: 'APICloudCallNaviteMethod',
+                        extra: {
+                            type: 1,
+                            canCallBack: 1,
+                            toPageName: 'Login'
+                        }
+                    });
+                    return;
+                }
+                $service.get('user/isBlackAndFocus.ajax', {
+                    memberId: _userid,
+                    topicId: __DATA__.topicId || ''
+                }, function (ret, err) {
+                    if (ret.ok == 0) {
+                        if (ret.data.content == '需要登录') {
+                            api.sendEvent({
+                                name: 'APICloudCallNaviteMethod',
+                                extra: {
+                                    type: 1,
+                                    canCallBack: 1,
+                                    toPageName: 'Login'
+                                }
+                            });
+                            return;
+                        }
+                        fnToast(ret.data.content, 'middle')
+                    } else {
+                        api.readFile({
+                            path: api.boxDir + '/userType.txt',
+                        }, function (ret, err) {
+                            if (ret.data == 1) {
+                                api.openFrame({
+                                    name: 'upgrade',
+                                    url: '../popup/upgrade.html',
+                                    rect: {
+                                        x: 0,
+                                        y: 0,
+                                        w: 'auto',
+                                        h: 'auto'
+                                    },
+                                    bgColor: 'rgba(0,0,0,0)'
+                                });
+                            } else {
+                                var recruitType = __DATA__.recruitType;
+                                if (recruitType == 1) {
+                                    fnOpenEditTopic();
+                                } else if (recruitType == 2) {
+                                    fnOpenRecord();
+                                } else if (recruitType == 3) {
+                                    fnOpenSelectType();
+                                }
+                            }
+                        })
+                    }
+                })
+            } else {
+                api.sendEvent({
+                    name: 'APICloudCallNaviteMethod',
+                    extra: {
+                        type: 1,
+                        canCallBack: 1,
+                        toPageName: 'Login'
+                    }
+                });
+                return;
+            }
+        })
+
+
+    }
+
+    function fnOpenEditTopic() {
+        fnOpenWin("edit_topic", '../topic/', {
+            winName: api.winName,
+            frameName: api.frameName,
+            recruitId: api.pageParam.id,
+            topicId: __DATA__.topicId,
+            topicName: __DATA__.topicName,
+            source: 'collect',
+            collectId: id
+        });
+        api.writeFile({
+            path: api.boxDir + '/publish_back_winname.txt',
+            data: api.winName
+        }, function (ret, err) {
+
+        });
+        // $api.setStorage('publish_back_winname', api.winName);
+    }
+
+    function fnOpenRecord() {
+        if (api.systemType === 'android') {
+            api.sendEvent({
+                name: 'APICloudCallNaviteMethod',
+                extra: {
+                    type: 9,          // 权限管理
+                    canCallBack: 1,          // 返回1时，说明有权限，可进行下一步操作
+                    command: ['android.permission.WRITE_EXTERNAL_STORAGE', 'android.permission.READ_EXTERNAL_STORAGE', 'android.permission.CAMERA', 'android.permission.RECORD_AUDIO']       // 需要哪些权限就在数组中传过来
+                }
+            });
+        } else {
+            fnOpenWin("video_record", '../topic/', {
+                winName: api.winName,
+                frameName: api.frameName,
+                recruitId: api.pageParam.id,
+                topicId: __DATA__.topicId,
+                topicName: __DATA__.topicName
+            });
+            api.writeFile({
+                path: api.boxDir + '/publish_back_winname.txt',
+                data: api.winName
+            }, function (ret, err) {
+
+            });
+            // $api.setStorage('publish_back_winname', api.winName);
+        }
+        // $api.setStorage('publish_back_winname', api.winName);
+    }
+
+    function fnShowEditBtn() {
+        api.setFrameAttr({
+            name: 'edit_btn_frame',
+            hidden: false
+        });
+        api.closeFrame({
+            name: 'select_topic_type'
+        });
+        api.closeToWin({
+            name: api.winName
+        });
+    }
+
+    function fnOpenSelectType() {
+        api.openFrame({
+            name: 'select_topic_type',
+            url: '../topic/select_topic_type.html',
+            pageParam: {
+                winName: api.winName,
+                frameName: api.frameName,
+                recruitId: api.pageParam.id,
+                topicId: __DATA__.topicId,
+                topicName: __DATA__.topicName,
+                source: 'collect',
+                collectId: id
+            }
+        });
+    }
+
+    // 打开分享
+    function openShare() {
+        api.openFrame({
+            name: 'collect_share_frame',
+            url: 'collect_share_frame.html',
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            },
+            pageParam: {
+                name: 'test'
+            }
+        });
+    }
+
+    //打开分享话题,将分享对象带过去，在分享页面进行分享操作
+    function openShareTopic() {
+        api.openFrame({
+            name: 'topic_share_frame',
+            url: 'topic_share_frame.html?v=' + new Date().getTime(),
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            },
+            pageParam: {
+                item: __MINEDATA__[0],
+                recruitData: __DATA__
+            }
+        });
+    }
+
+    // 打开中奖名单
+    function openWinner() {
+        api.openWin({
+            name: 'winners_win',
+            url: '../topic/winners_win.html',
+            pageParam: {
+                recruitId: id,
+                rewardType: rewardType,
+                rulesType: __DATA__.rulesType,
+                lockingReward: __DATA__.lockingReward
+            }
+        });
+
+    }
+
+
+    //登录相关
+    function fnAddNativeListener() {
+        api.addEventListener({
+            name: 'NaviteCallAPICloudMethod'
+        }, function (rets, err) {
+            var ret = rets.value;
+            if (ret.type == 9) {
+                if (ret.success == 1) {
+                    fnOpenWin("video_record", '../topic/', {
+                        winName: api.winName,
+                        frameName: api.frameName,
+                        recruitId: api.pageParam.id,
+                        topicId: __DATA__.topicId,
+                        topicName: __DATA__.topicName
+                    });
+                    api.writeFile({
+                        path: api.boxDir + '/publish_back_winname.txt',
+                        data: api.winName
+                    }, function (ret, err) {
+
+                    });
+                    // $api.setStorage('publish_back_winname', api.winName);
+                } else {
+                    // fnToast('没有相应权限', 'middle');
+                    api.alert({
+                        title: '提示',
+                        msg: '没有相机权限，请进入设置添加应用的相机/相册权限',
+                        buttons: ['确定']
+                    }, function (ret, err) {
+                        api.closeWin();
+                    });
+                }
+            } else if (ret.type == 1) {
+                if (ret.success == 1) {
+                    fnOnTokenCallBack(ret);
+                } else {
+                    fnToast('登录失败', 'middle');
+                }
+            } else if (ret.type == 3) {
+                api.hideProgress();
+                if (ret.success == 1) {
+                    fnToast('分享成功', 'middle');
+                    api.closeFrame({
+                        name: 'collect_share_frame'
+                    });
+                } else {
+                    fnToast(ret.message, 'middle');
+                }
+            }else if(ret.type == 13){
+                api.hideProgress();
+                if(ret.tag == 'resume'){
+                    api.closeFrame({
+                        name: 'collect_share_frame'
+                    });
+                }
+            }
+        });
+    }
+
+    var isLogin = false;
+
+    function fnOnTokenCallBack(ret) {
+        if (ret.success == 1) {
+            var token = ret.token;
+            pageIndex = 1;
+            loadStatus = true;
+            loadData();
+        }
+    }
+
+    //分享征集
+    function fnShareNativeCollect(platformType) {
+//			alert(__DATA__.descriptionText)
+        isShareing = true;
+        var url = SHARE_HOST + 'collect_detail.html?' + fnGetShareUrlCollect();
+        fnLogStr(url);
+        var storyContent = __DATA__.descriptionText ? fnReplaceComment(__DATA__.descriptionText) : '';
+        if (platformType == 2) {
+            if (storyContent && storyContent.length > 30) {
+                storyContent = storyContent.substring(0, 30);
+            }
+//				storyContent += '&nbsp;'+url;
+        }
+        var title = "邀请您关注「" + __DATA__.recruitName + "」活动  " + fnFilterStatus(__DATA__.recruitStatus);
+        //分享标题
+        var content = storyContent;
+        var pic = __DATA__.mainImg.indexOf('../') == '-1' ? __DATA__.mainImg : 'http://www.ehaier.com/mstatic/wd/v2/img/sg.png';
+        //分享图片，写绝对路径  是否后台获取
+        api.showProgress();
+        api.sendEvent({
+            name: 'APICloudCallNaviteMethod',
+            extra: {
+                tag: api.frameName,
+                type: 3,
+                canCallBack: 1,
+                command: [title, content, pic, url, 0, platformType]
+            }
+        });
+    }
+
+    function fnGetShareUrlCollect() {
+        var params = {
+            id: id,
+            memberId: storageUserId
+        };
+        return new Base64().encode(JSON.stringify(params));
+    }
+
+    function fnReplaceComment(comment) {
+        if (!fnIsEmpty(comment)) {
+            comment = comment.replace(new RegExp(/(<div>)/g), '\n');
+            comment = comment.replace(new RegExp(/(<\/div>)/g), '');
+            comment = comment.replace(new RegExp(/(<span>)/g), '');
+            comment = comment.replace(new RegExp(/(<\/span>)/g), '');
+            comment = comment.replace(new RegExp(/(<p>)/g), '\n');
+            comment = comment.replace(new RegExp(/(<\/p>)/g), '');
+            comment = comment.replace(new RegExp(/(&nbsp;)/g), ' ');
+            comment = comment.replace(new RegExp(/(<br>)/g), '\n');
+            comment = comment.replace(/<br\s*\/?>/gi, "\r\n");
+            comment = comment.replace(/<[^>]+>/g, "");
+            fnLogStr(comment);
+            return comment;
+        }
+        return '';
+    }
+
+    function fnFilterStatus(_s) {
+        switch (_s) {
+            case '0':
+                return '马上开始';
+                break;
+            case '1':
+                return '征集中';
+                break;
+            case '2':
+                return '已结束';
+                break;
+        }
+
+    }
+
+    //添加函数 遍历我的作品，是否有作品中奖，如果有，就将我的作品前面的奖杯显示，如果没有，就不显示
+    function mapMineData(data_) {
+        if (data_.length == 0 || !data_) {
+            return false;
+        }
+        var len = data_.length;
+        for (var i = 0; i < len; i++) {
+            if (data_[i].isAwardOk == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function fnCopy() {
+        var clipBoard = api.require('clipBoard');
+        clipBoard.set({
+            value: SHARE_HOST + 'collect_detail.html?' + fnGetShareUrlCollect()
+        }, function (ret, err) {
+            if (ret && ret.status) {
+                fnToast('复制成功', 'middle');
+                api.closeFrame({
+                    name: 'topic_share_frame'
+                });
+                api.closeFrame({
+                    name: 'collect_share_frame'
+                });
+            } else {
+                fnToast('复制失败', 'middle');
+            }
+        });
+    }
+</script>
+</body>
+</html>

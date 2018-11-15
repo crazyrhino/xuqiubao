@@ -1,0 +1,25 @@
+body, html {
+	background: #FFF;
+}
+header {
+	width: 100%;
+	height: 88px;
+	line-height: 88px;
+	background: #6ac338;
+}
+#header{
+	width: 100%;
+	height: 88px;
+	line-height: 88px;
+	background: #6ac338;
+}
+.c_back_btn {
+	width: 88px;
+	height: 88px;
+	background-image: url(../image/ic_back_btn.png);
+	background-size: 10px 20px;
+}
+.c_title {
+	font-size: 18px;
+	color : #FFF;
+}

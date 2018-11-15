@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+		<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+		<title>群发私信</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/letter_list.css" />
+	</head>
+	<body>
+		<div class="recommendations">
+			<div class="open_group"><img class="open_down" src="../../image/private_letter/down_arrow.png">最近联系的
+			</div>
+			<div class="open_group"><img class="selece_ed" src="../../image/community/select_none.png"><img class="open_down" src="../../image/private_letter/right_arrow.png">合伙人
+			</div>
+			<div class="show_groud">
+				<div class="recommendation_list">
+					<img class="selece_ed selece_rig" src="../../image/community/select_none.png">
+					<div class="list_header"><img src="../../image/test_img/person.jpeg">
+					</div>
+					<div class="list_cont">
+						<p class="cont_name">
+							Sophia索菲亚
+						</p>
+					</div>
+				</div>
+				<div class="recommendation_list">
+					<img class="selece_ed selece_rig" src="../../image/community/select_none.png">
+					<div class="list_header"><img src="../../image/test_img/person.jpeg">
+					</div>
+					<div class="list_cont">
+						<p class="cont_name">
+							Sophia索菲亚
+						</p>
+					</div>
+				</div>
+				<div class="recommendation_list">
+					<img class="selece_ed selece_rig" src="../../image/community/select_none.png">
+					<div class="list_header"><img src="../../image/test_img/person.jpeg">
+					</div>
+					<div class="list_cont">
+						<p class="cont_name">
+							Sophia索菲亚
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="open_group"><img class="selece_ed" src="../../image/community/select_none.png"><img class="open_down" src="../../image/private_letter/right_arrow.png">团队
+			</div>
+			<div class="open_group"><img class="selece_ed selece_rig" src="../../image/community/select_none.png"><img class="open_down" src="../../image/private_letter/down_arrow.png">西安圈子成员
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/mapi.js"></script>
+	<script type="text/javascript" src="../../script/service.js"></script>
+	<script type="text/javascript" src="../../script/flexible.js"></script>
+	<script type="text/javascript">
+		var BASE_URL = HOST + '/v3/sgpm/';
+		apiready = function() {
+			fnGetRecentContacts();
+		};
+		function fnGetRecentContacts() {
+			$service.get('getChildrenMemberList.ajax', {
+			}, function(ret, err) {
+				if (ret.ok == 1) {
+				}
+			});
+		}
+	</script>
+</html>

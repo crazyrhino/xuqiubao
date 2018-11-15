@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+<title>我的征集多个作品弹窗展示</title>
+<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+<link rel="stylesheet" type="text/css" href="../../css/flex-layout.css" />
+<link rel="stylesheet" type="text/css" href="../../css/collect_detail_frame2.css" />
+<style>
+html,body {
+	background: transparent;
+}
+</style>
+</head>
+<body>
+<div class="overlay"></div>
+<div class="pop">
+	<div class="popHeader border-b">我的作品<div class="close" tapmode onClick="api.closeFrame();"></div></div>
+	<div class="scrollBox" id="data-wrap">
+		<!--<div class="btmBar flex-column flex-middle flex-between flex-none border-b">
+
+				<div class="btmBarInfo flex-row flex-center flex-middle bg-orange color-white">
+					<div class="text-center" style="height: 40px" tapmode onclick="openShare()">
+
+					</div>
+					<div>
+					<img class="share_icon" src="../../image/community/share.png" height="24" />
+					</div>
+				</div>
+			<div class="flex-auto aui-ellipsis-1 px-10" tapmode onclick="openDetail('{{=it[i].id}}','{{=it[i].dataTypeNew}}')">{{=it[i].storyName}}</div>
+			<div class="flex-column flex-middle fs12 color-999 pr-15">
+				<img src="../../image/community/Message@3x.png" height="24" alt="">
+				<div class="mr10">{{=it[i].commentNumber||'0'}}</div>
+				<div class="laud">{{=it[i].praiseNumber||'0'}}</div>
+			</div>
+		</div>-->
+	</div>
+	<script type="text/tpl" id="data-tpl">
+	{{for(var i in it){}}
+	<div class="btmBar flex-column flex-middle flex-between flex-none border-b">
+		{{? __STATUS__ == 1}}
+			<div tapmode onclick="openShare('{{= i}}')" class="btmBarInfo flex-row flex-center flex-middle bg-orange color-white">
+				<div class="text-center" style="height: 40px">
+					<div {{? __TYPE__ != 1}}style="line-height:40px"{{?}}>拉人气</div>
+					{{? __TYPE__ == 1&&it[i].rank}}
+					{{? it[i].rank}}<div class="fs10">第{{=it[i].rank||''}}名</div>{{?}}
+					{{??}}
+					<div ></div>
+					{{?}}
+				</div>
+				<div  >
+				<img class="share_icon" src="../../image/community/share.png" height="24" />
+				</div>
+			</div>
+
+		{{?}}
+		<div class="flex-auto aui-ellipsis-1 px-10" tapmode onclick="openDetail('{{=it[i].id}}','{{=it[i].dataTypeNew}}')">{{=it[i].storyContent}}</div>
+		<div class="flex-column flex-middle fs12 color-999 pr-15">
+			<img src="../../image/community/Message@3x.png" height="24" alt="">
+			<div class="mr10">{{=it[i].commentNumber||'0'}}</div>
+			<div class="laud">{{=it[i].praiseNumber||'0'}}</div>
+		</div>
+	</div>
+	{{ } }}
+	</script>
+	<div class="btmBtn color-orange bg-white border-t" tapmode onClick="api.closeFrame();">确定</div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/doT.min.js"></script>
+<script type="text/javascript" src="../../script/mapi.js"></script>
+<script type="text/javascript" src="../../script/service.js"></script>
+<script type="text/javascript">
+	var __DATA__,__TYPE__,__STATUS__,__REWARDTYPE__;
+	var __RECRUITDATA__;//征集对象，分享使用
+	apiready = function(){
+		//fnRefreshOpen();
+		api.parseTapmode();
+		__REWARDTYPE__ = api.pageParam.rewardType;//奖励类型 1：金币 2：钻石 3：实品
+		__TYPE__ = api.pageParam.rulesType;//0：无 1：竞争 2：幸运 3：自定义
+		__DATA__ = api.pageParam.data;
+		__STATUS__ = api.pageParam.recruitStatus;//0 未开始 1 进行中 2 已结束
+		__RECRUITDATA__ = api.pageParam.recruitData;
+		var tpl = document.getElementById("data-tpl").innerHTML;
+		var fn = doT.template(tpl);
+		document.getElementById("data-wrap").innerHTML = fn(api.pageParam.data);
+		api.parseTapmode();
+		
+	}
+	function openShare(i_){
+		var i = parseInt(i_)
+		var item = api.pageParam.data[i_];
+		 api.openFrame({
+            name: 'topic_share_frame',
+            url: 'topic_share_frame.html',
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            },
+            pageParam: {
+                item: item,
+                recruitData:__RECRUITDATA__
+            }
+        });
+	}
+	function openDetail(id,dataTypeNew){
+		setTimeout(function(){
+			api.closeFrame({
+			    // name: 'page2'
+			});
+
+		},500)
+		fnOpenWin('topic_details', '../topic/', {
+			type: dataTypeNew,
+			id: id
+		});
+	}
+	
+</script>
+</html>

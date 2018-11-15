@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="css/api.css" />
+	<link rel="stylesheet" type="text/css" href="css/meui.css" />
+	<style type="text/css">
+		.user_item {
+			width: auto;
+			margin: 25px;
+			padding: 10px;
+			word-wrap: break-word;
+			word-break: break-all;
+			box-sizing: border-box;
+			background: #2979FF;
+			color: #FFF;
+			border-radius: 5px;
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+<div class="user_item" tapmode="meui_click" onclick="fnOpenMain1()">
+	王京炎
+</div>
+
+<div class="user_item" tapmode="meui_click" onclick="fnOpenMain2()">
+	黄雯
+</div>
+
+<div class="user_item" tapmode="meui_click" onclick="fnOpenMain3()">
+	杨美珠
+</div>
+<div class="user_item" tapmode="meui_click" onclick="fnOpenMain4()">
+	需求宝
+</div>
+<div class="user_item" tapmode="meui_click" onclick="fnOpenMain5()">
+	备用2
+</div>
+<div class="user_item" tapmode="meui_click" onclick="fnOpenMain6()">
+	备用3
+</div>
+<div class="user_item" tapmode="meui_click" onclick="fnOpenMain7()">
+	备用4
+</div>
+</body>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/mapi.js"></script>
+<script type="text/javascript" src="script/swiper/swiper-4.2.2.min.js"></script>
+<script type="text/javascript" src="script/service.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+    };
+
+    function fnOpenMain1(){
+        api.openWin({
+            name: 'main',
+            url: 'http://sq.ihaier.me/sgtest1/html/main.html?v='+new Date().getTime()
+        });
+    }
+
+    function fnOpenMain2(){
+        api.openWin({
+            name: 'main',
+            url: 'http://sq.ihaier.me/sgtest2/html/main.html?v='+new Date().getTime()
+        });
+    }
+
+    function fnOpenMain3(){
+        api.openWin({
+            name: 'main',
+            url: 'http://sq.ihaier.me/sgtest3/html/main.html?v='+new Date().getTime()
+        });
+    }
+
+    function fnOpenMain4(){
+        api.openWin({
+            name: 'main',
+            url: 'http://sq.ihaier.me/sgtest4/html/main.html?v='+new Date().getTime()
+        });
+    }
+
+    function fnOpenMain5(){
+        api.openWin({
+            name: 'main',
+            url: 'http://sq.ihaier.me/sgtest5/html/main.html?v='+new Date().getTime()
+        });
+    }
+
+
+    function fnOpenMain6(){
+        api.openWin({
+            name: 'main',
+            url: 'http://sq.ihaier.me/sgtest6/html/main.html?v='+new Date().getTime()
+        });
+    }
+
+    function fnOpenMain7(){
+        api.openWin({
+            name: 'main',
+            url: 'http://sq.ihaier.me/sgtest7/html/main.html?v='+new Date().getTime()
+        });
+    }
+</script>
+</html>
+
